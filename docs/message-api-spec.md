@@ -33,9 +33,9 @@ message-length: 45
   "header": {
     "type": "MESSAGE-TYPE",
     "timestamp": "2024-01-09T12:00:00Z",
-    "sessionId": "UUID" // 로그인 후 서버가 발급한 UUID 세션 ID
+    "sessionId": "UUID"
   },
-  "data": { ... }
+  "data": {}
 }
 ```
 
@@ -50,7 +50,7 @@ message-length: 45
     "timestamp": "2024-01-09T12:00:00Z",
     "success": true
   },
-  "data": { ... }
+  "data": {}
 }
 ```
 
@@ -648,3 +648,5 @@ message-length: 45
   }
 }
 ```
+
+---
