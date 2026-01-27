@@ -35,7 +35,7 @@
                             <finalName>messenger-server</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.nhnacademy.messenger.server.main.ServerMain</mainClass>
+                                    <mainClass>com.nhnacademy.messenger.server.ServerMain</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
