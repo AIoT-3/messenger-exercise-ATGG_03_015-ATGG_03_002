@@ -1,0 +1,31 @@
+package com.nhnacademy.messenger.common.data.common;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public enum ErrorCode {
+    // Auth
+    AUTH_INVALID_CREDENTIALS("AUTH.INVALID_CREDENTIALS"),
+    AUTH_INVALID_SESSION("AUTH.INVALID_SESSION"),
+    AUTH_UNAUTHORIZED("AUTH.UNAUTHORIZED"),
+
+    // User
+    USER_NOT_FOUND("USER.NOT_FOUND"),
+
+    // Room
+    ROOM_NOT_FOUND("ROOM.NOT_FOUND"),
+    ROOM_ALREADY_EXISTS("ROOM.ALREADY_EXISTS"),
+
+    // File
+    FILE_SIZE_EXCEEDED("FILE.SIZE_EXCEEDED");
+
+    private final String value;
+
+    ErrorCode(String value) {
+        this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+}

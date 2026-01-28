@@ -1,7 +1,7 @@
 package com.nhnacademy.messenger.client.ui;
 
-import com.nhnacademy.messenger.common.payload.room.list.ChatRoomListResponse;
-import com.nhnacademy.messenger.common.payload.user.list.UserListResponse;
+import com.nhnacademy.messenger.common.data.room.list.ChatRoomListResponse;
+import com.nhnacademy.messenger.common.data.user.list.UserListResponse;
 import java.util.List;
 
 public interface View {
