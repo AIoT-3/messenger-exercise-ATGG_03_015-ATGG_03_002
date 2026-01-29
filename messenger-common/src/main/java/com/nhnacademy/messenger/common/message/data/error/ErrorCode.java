@@ -17,7 +17,10 @@ public enum ErrorCode {
     ROOM_ALREADY_EXISTS("ROOM.ALREADY_EXISTS"),
 
     // File
-    FILE_SIZE_EXCEEDED("FILE.SIZE_EXCEEDED");
+    FILE_SIZE_EXCEEDED("FILE.SIZE_EXCEEDED"),
+
+    // Server
+    INTERNAL_SERVER_ERROR("SERVER.INTERNAL_SERVER_ERROR");
 
     private final String value;
 

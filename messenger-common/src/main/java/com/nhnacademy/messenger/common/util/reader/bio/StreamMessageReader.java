@@ -64,6 +64,6 @@ public class StreamMessageReader {
         }
 
         // 4. 변환
-        return MessageConverter.deserializeMessage(bytes);
+        return MessageConverter.fromBytes(bytes);
     }
 }

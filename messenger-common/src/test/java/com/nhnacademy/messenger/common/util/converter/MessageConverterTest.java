@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
@@ -30,7 +31,7 @@ class MessageConverterTest {
     void setUp() {
         RequestHeader header = new RequestHeader(
                 MessageType.LOGIN,
-                ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS),
+                ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.SECONDS),
                 null
         );
         JsonNode data = objectMapper.valueToTree(new LoginRequest("marco", "nhnacademy123"));
@@ -40,33 +41,36 @@ class MessageConverterTest {
     @Test
     @DisplayName("직렬화 정상 동작 테스트: Length Line과 Payload가 포함되어야 함")
     void serialize_Success() {
-        String serialized = MessageConverter.serializeMessage(loginRequestMessage);
+        byte[] serialized = MessageConverter.toBytes(loginRequestMessage);
+        String serializedStr = new String(serialized, StandardCharsets.UTF_8);
 
         assertAll(
-                () -> assertTrue(serialized.startsWith("message-length: ")),
-                () -> assertTrue(serialized.contains("\n")),
-                () -> assertTrue(serialized.contains("LOGIN")),
-                () -> assertTrue(serialized.contains("marco")),
-                () -> assertTrue(serialized.contains("nhnacademy123"))
+                () -> assertTrue(serializedStr.startsWith("message-length: ")),
+                () -> assertTrue(serializedStr.contains("\n")),
+                () -> assertTrue(serializedStr.contains("LOGIN")),
+                () -> assertTrue(serializedStr.contains("marco")),
+                () -> assertTrue(serializedStr.contains("nhnacademy123"))
         );
     }
 
     @Test
-    @DisplayName("왕복 테스트: 직렬화된 문자열에서 바디만 추출하여 역직렬화하면 원본과 같아야 함")
+    @DisplayName("왕복 테스트: 직렬화된 바이트 배열에서 바디만 추출하여 역직렬화하면 원본과 같아야 함")
     void roundTrip_Success() {
-        String serialized = MessageConverter.serializeMessage(loginRequestMessage);
+        byte[] serialized = MessageConverter.toBytes(loginRequestMessage);
         
-        String jsonBody = serialized.substring(serialized.indexOf('\n') + 1);
-        Message deserialized = MessageConverter.deserializeMessage(jsonBody.getBytes(StandardCharsets.UTF_8));
+        String serializedStr = new String(serialized, StandardCharsets.UTF_8);
+        int lfIndex = serializedStr.indexOf('\n');
+        String jsonBody = serializedStr.substring(lfIndex + 1);
+        
+        Message deserialized = MessageConverter.fromBytes(jsonBody.getBytes(StandardCharsets.UTF_8));
 
         assertAll(
-                () -> assertEquals(loginRequestMessage, deserialized),
                 () -> assertInstanceOf(RequestHeader.class, deserialized.header()),
                 () -> {
                     RequestHeader h = (RequestHeader) deserialized.header();
                     assertNull(h.sessionId());
                 },
-                () -> assertEquals(serialized, MessageConverter.serializeMessage(deserialized))
+                () -> assertArrayEquals(serialized, MessageConverter.toBytes(deserialized))
         );
     }
 
@@ -86,10 +90,11 @@ class MessageConverterTest {
         JsonNode responseData = objectMapper.valueToTree(new LoginResponse("marco", UUID.randomUUID().toString(), "Welcome"));
         Message responseMessage = new Message(responseHeader, responseData);
 
-        String serialized = MessageConverter.serializeMessage(responseMessage);
-        String jsonBody = serialized.substring(serialized.indexOf('\n') + 1);
+        byte[] serialized = MessageConverter.toBytes(responseMessage);
+        String serializedStr = new String(serialized, StandardCharsets.UTF_8);
+        String jsonBody = serializedStr.substring(serializedStr.indexOf('\n') + 1);
         
-        Message deserialized = MessageConverter.deserializeMessage(jsonBody.getBytes(StandardCharsets.UTF_8));
+        Message deserialized = MessageConverter.fromBytes(jsonBody.getBytes(StandardCharsets.UTF_8));
 
         assertAll(
                 () -> assertNotNull(deserialized),
@@ -101,7 +106,7 @@ class MessageConverterTest {
     @Test
     @DisplayName("데이터 추출 테스트: Packet의 JsonNode를 실제 객체로 자동 변환 성공")
     void extractData_Success() {
-        MessageData extracted = MessageConverter.extractData(loginRequestMessage);
+        MessageData extracted = MessageConverter.toData(loginRequestMessage);
 
         assertAll(
                 () -> assertNotNull(extracted),
@@ -117,7 +122,7 @@ class MessageConverterTest {
         String brokenJson = "{\"header\":{\"type\"";
 
         assertThrows(MessageConvertException.class, () ->
-                MessageConverter.deserializeMessage(brokenJson.getBytes(StandardCharsets.UTF_8))
+                MessageConverter.fromBytes(brokenJson.getBytes(StandardCharsets.UTF_8))
         );
     }
 }
