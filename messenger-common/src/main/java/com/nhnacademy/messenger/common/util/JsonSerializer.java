@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nhnacademy.messenger.common.exception.PacketSerializerException;
-import com.nhnacademy.messenger.common.protocol.Message;
+import com.nhnacademy.messenger.common.message.Message;
 import lombok.experimental.UtilityClass;
 
 import java.nio.charset.StandardCharsets;
