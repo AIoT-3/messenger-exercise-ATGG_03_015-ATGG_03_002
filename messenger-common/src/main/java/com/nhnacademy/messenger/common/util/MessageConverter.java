@@ -3,7 +3,7 @@ package com.nhnacademy.messenger.common.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.nhnacademy.messenger.common.exception.PacketSerializerException;
+import com.nhnacademy.messenger.common.exception.MessageConvertException;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.MessageData;
 import lombok.experimental.UtilityClass;
@@ -36,32 +36,35 @@ public class MessageConverter {
             return messagePrefix + value;
 
         } catch (JsonProcessingException e) {
-            throw new PacketSerializerException("직렬화 실패", e);
+            throw new MessageConvertException("직렬화 실패", e);
         }
     }
 
     public static Message deserializeMessage(String jsonBody) {
         try {
-            // JSON 문자열을 Message 객체로 변환
+            // 1. json -> Message 객체 변환
             return objectMapper.readValue(jsonBody, Message.class);
 
         } catch (JsonProcessingException e) {
-            throw new PacketSerializerException("역직렬화 실패", e);
+            throw new MessageConvertException("역직렬화 실패", e);
         }
     }
 
     public static MessageData extractData(Message message) {
+
+        // 1. 메시지 타입에 해당하는 데이터 클래스 조회
         Class<? extends MessageData> clazz = message.header().type().getDataClass();
         if (Objects.isNull(clazz)) {
             return null;
         }
-        
+
+        // 2. JsonNode -> 데이터 클래스 객체 변환
         try {
             return objectMapper.treeToValue(message.data(), clazz);
         } catch (JsonProcessingException e) {
-            throw new PacketSerializerException("데이터 변환 실패", e);
+            throw new MessageConvertException("데이터 변환 실패", e);
         } catch (IllegalArgumentException e) {
-            throw new PacketSerializerException("데이터 변환 실패 - 호환되지 않는 타입", e);
+            throw new MessageConvertException("데이터 변환 실패 - 호환되지 않는 타입", e);
         }
     }
 }

@@ -9,6 +9,8 @@ import com.nhnacademy.messenger.common.message.data.chat.ChatMessageResponse;
 import com.nhnacademy.messenger.common.message.data.chat.PrivateChatMessageRequest;
 import com.nhnacademy.messenger.common.message.data.chat.PrivateChatMessageResponse;
 import com.nhnacademy.messenger.common.message.data.error.ErrorResponse;
+import com.nhnacademy.messenger.common.message.data.file.FileTransferRequest;
+import com.nhnacademy.messenger.common.message.data.file.FileTransferResponse;
 import com.nhnacademy.messenger.common.message.data.room.ChatRoomCreateRequest;
 import com.nhnacademy.messenger.common.message.data.room.ChatRoomCreateResponse;
 import com.nhnacademy.messenger.common.message.data.room.ChatRoomEnterRequest;
@@ -58,8 +60,8 @@ public enum MessageType {
     PUSH_ROOM_EXIT(null),
 
     // file
-    FILE_TRANSFER(null),
-    FILE_TRANSFER_SUCCESS(null),
+    FILE_TRANSFER(FileTransferRequest.class),
+    FILE_TRANSFER_SUCCESS(FileTransferResponse.class),
 
     // error
     ERROR(ErrorResponse.class);
