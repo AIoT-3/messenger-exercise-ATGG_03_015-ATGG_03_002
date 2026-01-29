@@ -1,7 +1,8 @@
-package com.nhnacademy.messenger.common.message.data.auth;
+package com.nhnacademy.messenger.common.message.data.error;
 import com.nhnacademy.messenger.common.message.data.MessageData;
 
-public record LogoutResponse (
+public record ErrorResponse(
+        ErrorCode code,
         String message
 ) implements MessageData {
 }

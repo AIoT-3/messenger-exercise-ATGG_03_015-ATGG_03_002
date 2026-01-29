@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nhnacademy.messenger.common.exception.PacketSerializerException;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.data.MessageData;
 import lombok.experimental.UtilityClass;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @UtilityClass
-public class JsonSerializer {
+public class MessageConverter {
 
     private static final String MESSAGE_PREFIX = "message-length: ";
 
@@ -40,6 +42,7 @@ public class JsonSerializer {
 
     public static Message deserializeMessage(String jsonBody) {
         try {
+            // JSON 문자열을 Message 객체로 변환
             return objectMapper.readValue(jsonBody, Message.class);
 
         } catch (JsonProcessingException e) {
@@ -47,10 +50,14 @@ public class JsonSerializer {
         }
     }
 
-    public static <T> T extractData(Message message, Class<T> clazz) {
+    public static MessageData extractData(Message message) {
+        Class<? extends MessageData> clazz = message.header().type().getDataClass();
+        if (Objects.isNull(clazz)) {
+            return null;
+        }
+        
         try {
             return objectMapper.treeToValue(message.data(), clazz);
-
         } catch (JsonProcessingException e) {
             throw new PacketSerializerException("데이터 변환 실패", e);
         } catch (IllegalArgumentException e) {

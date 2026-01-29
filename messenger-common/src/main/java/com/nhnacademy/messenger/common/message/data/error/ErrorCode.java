@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.common.message.data.common;
+package com.nhnacademy.messenger.common.message.data.error;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

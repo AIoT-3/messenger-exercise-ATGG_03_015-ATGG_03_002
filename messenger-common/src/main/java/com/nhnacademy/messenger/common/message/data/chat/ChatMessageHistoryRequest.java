@@ -1,8 +1,9 @@
 package com.nhnacademy.messenger.common.message.data.chat;
 import com.nhnacademy.messenger.common.message.data.MessageData;
 
-public record ChatMessageRequest(
+public record ChatMessageHistoryRequest(
         Long roomId,
-        String message
+        Integer limit,
+        Long beforeMessageId
 ) implements MessageData {
 }

@@ -1,12 +1,11 @@
 package com.nhnacademy.messenger.common.message.data.user;
+import com.nhnacademy.messenger.common.message.data.MessageData;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 
 public record UserListResponse(
-        @JsonValue
-        List<UserInfo> data
-) {
+        List<UserInfo> users
+) implements MessageData {
     public record UserInfo(
             String id,
             String name,

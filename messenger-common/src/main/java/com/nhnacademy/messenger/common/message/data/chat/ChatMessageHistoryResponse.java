@@ -1,4 +1,5 @@
-package com.nhnacademy.messenger.common.message.data.room.history;
+package com.nhnacademy.messenger.common.message.data.chat;
+import com.nhnacademy.messenger.common.message.data.MessageData;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -9,7 +10,7 @@ public record ChatMessageHistoryResponse (
         Long roomId,
         List<MessageInfo> messages,
         Boolean hasMore
-){
+) implements MessageData {
     public record MessageInfo(
             Long messageId,
             String senderId,

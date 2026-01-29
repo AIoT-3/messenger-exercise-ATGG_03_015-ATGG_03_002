@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.common.exception;
 
-import com.nhnacademy.messenger.common.message.data.common.ErrorCode;
+import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import lombok.Getter;
 
 public class MessengerException extends RuntimeException {

@@ -3,6 +3,7 @@ package com.nhnacademy.messenger.common.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.messenger.common.exception.PacketSerializerException;
+import com.nhnacademy.messenger.common.message.data.MessageData;
 import com.nhnacademy.messenger.common.message.data.auth.LoginRequest;
 import com.nhnacademy.messenger.common.message.header.MessageHeader;
 import com.nhnacademy.messenger.common.message.header.MessageType;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JsonSerializerTest {
+class MessageConverterTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private Message originalMessage;
@@ -39,7 +40,7 @@ class JsonSerializerTest {
     @Test
     @DisplayName("직렬화 정상 동작 테스트: Length Line과 Payload가 포함되어야 함")
     void serialize_Success() {
-        String serialized = JsonSerializer.serializeMessage(originalMessage);
+        String serialized = MessageConverter.serializeMessage(originalMessage);
 
         assertAll(
                 () -> assertTrue(serialized.startsWith("message-length: ")),
@@ -53,26 +54,27 @@ class JsonSerializerTest {
     @Test
     @DisplayName("왕복 테스트: 직렬화된 문자열에서 바디만 추출하여 역직렬화하면 원본과 같아야 함")
     void roundTrip_Success() {
-        String serialized = JsonSerializer.serializeMessage(originalMessage);
+        String serialized = MessageConverter.serializeMessage(originalMessage);
         
         String jsonBody = serialized.substring(serialized.indexOf('\n') + 1);
-        Message deserialized = JsonSerializer.deserializeMessage(jsonBody);
+        Message deserialized = MessageConverter.deserializeMessage(jsonBody);
 
         assertAll(
                 () -> assertEquals(originalMessage, deserialized),
-                () -> assertEquals(serialized, JsonSerializer.serializeMessage(deserialized))
+                () -> assertEquals(serialized, MessageConverter.serializeMessage(deserialized))
         );
     }
 
     @Test
-    @DisplayName("데이터 추출 테스트: Packet의 JsonNode를 실제 객체(LoginRequest)로 변환 성공")
+    @DisplayName("데이터 추출 테스트: Packet의 JsonNode를 실제 객체로 자동 변환 성공")
     void extractData_Success() {
-        LoginRequest extracted = JsonSerializer.extractData(originalMessage, LoginRequest.class);
+        MessageData extracted = MessageConverter.extractData(originalMessage);
 
         assertAll(
                 () -> assertNotNull(extracted),
-                () -> assertEquals("marco", extracted.userId()),
-                () -> assertEquals("nhnacademy123", extracted.password())
+                () -> assertInstanceOf(LoginRequest.class, extracted),
+                () -> assertEquals("marco", ((LoginRequest) extracted).userId()),
+                () -> assertEquals("nhnacademy123", ((LoginRequest) extracted).password())
         );
     }
 
@@ -82,7 +84,7 @@ class JsonSerializerTest {
         String brokenJson = "{\"header\":{\"type\"";
 
         assertThrows(PacketSerializerException.class, () ->
-                JsonSerializer.deserializeMessage(brokenJson)
+                MessageConverter.deserializeMessage(brokenJson)
         );
     }
 }

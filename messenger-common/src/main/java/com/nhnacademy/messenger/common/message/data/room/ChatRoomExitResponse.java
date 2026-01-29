@@ -1,7 +1,8 @@
-package com.nhnacademy.messenger.common.message.data.auth;
+package com.nhnacademy.messenger.common.message.data.room;
 import com.nhnacademy.messenger.common.message.data.MessageData;
 
-public record LogoutResponse (
+public record ChatRoomExitResponse(
+        Long roomId,
         String message
 ) implements MessageData {
 }
