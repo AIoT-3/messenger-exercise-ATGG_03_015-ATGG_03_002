@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.common.util;
+package com.nhnacademy.messenger.common.util.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,10 +11,10 @@ import lombok.experimental.UtilityClass;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import static com.nhnacademy.messenger.common.config.AppConstant.MESSAGE_LENGTH;
+
 @UtilityClass
 public class MessageConverter {
-
-    private static final String MESSAGE_PREFIX = "message-length: ";
 
     public static final ObjectMapper objectMapper = new ObjectMapper();
     static {
@@ -30,7 +30,7 @@ public class MessageConverter {
             int length = value.getBytes(StandardCharsets.UTF_8).length;
 
             // 3. 헤더 생성
-            String messagePrefix = MESSAGE_PREFIX + length + "\n";
+            String messagePrefix = MESSAGE_LENGTH + length + "\n";
 
             // 4. 최종 결합
             return messagePrefix + value;
@@ -40,12 +40,12 @@ public class MessageConverter {
         }
     }
 
-    public static Message deserializeMessage(String jsonBody) {
+    public static Message deserializeMessage(byte[] jsonBytes) {
         try {
-            // 1. json -> Message 객체 변환
-            return objectMapper.readValue(jsonBody, Message.class);
+            // 1. byte[] -> Message 객체 변환
+            return objectMapper.readValue(jsonBytes, Message.class);
 
-        } catch (JsonProcessingException e) {
+        } catch (java.io.IOException e) {
             throw new MessageConvertException("역직렬화 실패", e);
         }
     }

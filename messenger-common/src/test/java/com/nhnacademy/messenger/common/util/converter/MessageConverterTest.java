@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.common.util;
+package com.nhnacademy.messenger.common.util.converter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
@@ -26,7 +27,6 @@ class MessageConverterTest {
 
     @BeforeEach
     void setUp() {
-        // JSON 포맷(yyyy-MM-dd'T'HH:mm:ss)에 맞춰 나노초 단위 절삭
         RequestHeader header = new RequestHeader(
                 MessageType.LOGIN,
                 java.time.LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
@@ -56,7 +56,7 @@ class MessageConverterTest {
         String serialized = MessageConverter.serializeMessage(loginRequestMessage);
         
         String jsonBody = serialized.substring(serialized.indexOf('\n') + 1);
-        Message deserialized = MessageConverter.deserializeMessage(jsonBody);
+        Message deserialized = MessageConverter.deserializeMessage(jsonBody.getBytes(StandardCharsets.UTF_8));
 
         assertAll(
                 () -> assertEquals(loginRequestMessage, deserialized),
@@ -88,7 +88,7 @@ class MessageConverterTest {
         String serialized = MessageConverter.serializeMessage(responseMessage);
         String jsonBody = serialized.substring(serialized.indexOf('\n') + 1);
         
-        Message deserialized = MessageConverter.deserializeMessage(jsonBody);
+        Message deserialized = MessageConverter.deserializeMessage(jsonBody.getBytes(StandardCharsets.UTF_8));
 
         assertAll(
                 () -> assertNotNull(deserialized),
@@ -116,7 +116,7 @@ class MessageConverterTest {
         String brokenJson = "{\"header\":{\"type\"";
 
         assertThrows(MessageConvertException.class, () ->
-                MessageConverter.deserializeMessage(brokenJson)
+                MessageConverter.deserializeMessage(brokenJson.getBytes(StandardCharsets.UTF_8))
         );
     }
 }
