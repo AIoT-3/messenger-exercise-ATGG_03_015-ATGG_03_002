@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     // User
     USER_NOT_FOUND("USER.NOT_FOUND"),
+    USER_ALREADY_EXISTS("USER.ALREADY_EXISTS"),
 
     // Room
     ROOM_NOT_FOUND("ROOM.NOT_FOUND"),
