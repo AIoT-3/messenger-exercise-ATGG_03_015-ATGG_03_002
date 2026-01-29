@@ -14,9 +14,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +30,7 @@ class MessageConverterTest {
     void setUp() {
         RequestHeader header = new RequestHeader(
                 MessageType.LOGIN,
-                java.time.LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
+                ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS),
                 null
         );
         JsonNode data = objectMapper.valueToTree(new LoginRequest("marco", "nhnacademy123"));
@@ -73,7 +74,7 @@ class MessageConverterTest {
     @DisplayName("일반 요청 테스트: LOGIN이 아닌데 sessionId가 없으면 예외 발생")
     void constructor_Fail_MissingSessionId() {
         assertThrows(IllegalArgumentException.class, () -> 
-            new RequestHeader(MessageType.CHAT_MESSAGE, java.time.LocalDateTime.now(), null)
+            new RequestHeader(MessageType.CHAT_MESSAGE, ZonedDateTime.now(), null)
         );
     }
 

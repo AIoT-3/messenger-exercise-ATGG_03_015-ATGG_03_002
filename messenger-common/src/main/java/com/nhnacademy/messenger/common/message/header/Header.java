@@ -2,7 +2,7 @@ package com.nhnacademy.messenger.common.message.header;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * Header 인터페이스
@@ -20,5 +20,5 @@ import java.time.LocalDateTime;
 })
 public sealed interface Header permits RequestHeader, ResponseHeader {
     MessageType type();
-    LocalDateTime timestamp();
+    ZonedDateTime timestamp();
 }

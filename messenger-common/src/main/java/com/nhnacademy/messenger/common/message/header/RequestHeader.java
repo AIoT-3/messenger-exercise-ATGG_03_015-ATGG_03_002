@@ -1,14 +1,14 @@
 package com.nhnacademy.messenger.common.message.header;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public record RequestHeader(
         MessageType type,
         
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime timestamp,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
+        ZonedDateTime timestamp,
         
         String sessionId
 
@@ -26,11 +26,11 @@ public record RequestHeader(
 
     // 일반 요청용 편의 생성자
     public static RequestHeader of(MessageType type, String sessionId) {
-        return new RequestHeader(type, LocalDateTime.now(), sessionId);
+        return new RequestHeader(type, ZonedDateTime.now(), sessionId);
     }
     
     // 로그인 요청용 편의 생성자
     public static RequestHeader login() {
-        return new RequestHeader(MessageType.LOGIN, LocalDateTime.now(), null);
+        return new RequestHeader(MessageType.LOGIN, ZonedDateTime.now(), null);
     }
 }

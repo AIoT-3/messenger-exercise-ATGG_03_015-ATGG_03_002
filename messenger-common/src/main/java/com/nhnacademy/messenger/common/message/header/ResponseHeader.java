@@ -1,14 +1,14 @@
 package com.nhnacademy.messenger.common.message.header;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public record ResponseHeader(
         MessageType type,
         
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime timestamp,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
+        ZonedDateTime timestamp,
         
         boolean success
 
@@ -21,11 +21,11 @@ public record ResponseHeader(
 
     // 성공 응답 생성 팩토리
     public static ResponseHeader success(MessageType type) {
-        return new ResponseHeader(type, LocalDateTime.now(), true);
+        return new ResponseHeader(type, ZonedDateTime.now(), true);
     }
 
     // 실패 응답 생성 팩토리
     public static ResponseHeader fail(MessageType type) {
-        return new ResponseHeader(type, LocalDateTime.now(), false);
+        return new ResponseHeader(type, ZonedDateTime.now(), false);
     }
 }
