@@ -35,10 +35,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- 
-       여기에 정의된 의존성들은 모든 자식 모듈(common, server, client)에 자동으로 상속됩니다.
-       편의를 위해 공통적으로 쓰일 법한 라이브러리들을 이곳에 두었습니다.
-    -->
     <dependencies>
         <!-- Test -->
         <dependency>

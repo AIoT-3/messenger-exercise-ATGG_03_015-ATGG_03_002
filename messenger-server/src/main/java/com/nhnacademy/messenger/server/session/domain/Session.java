@@ -5,6 +5,7 @@ import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import com.nhnacademy.messenger.common.message.data.error.ErrorResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
+import com.nhnacademy.messenger.common.message.header.RequestHeader;
 import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.common.util.reader.bio.StreamMessageReader;
@@ -21,6 +22,11 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * Session
+ * 역할
+ * 1. 연결 단위에서 공통 규칙 보장
+ */
 @Slf4j
 public class Session implements Runnable {
 
@@ -55,6 +61,9 @@ public class Session implements Runnable {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 Message request = reader.readMessage();
+                if (!validateMessage(request)) {
+                    continue;
+                }
                 MessageDispatcher.dispatch(this, request);
             }
         } catch (EOFException e) {
@@ -83,6 +92,35 @@ public class Session implements Runnable {
         ResponseHeader header = ResponseHeader.fail(MessageType.ERROR);
         JsonNode data = MessageConverter.objectMapper.valueToTree(new ErrorResponse(code, message));
         sendMessage(new Message(header, data));
+    }
+
+    private boolean validateMessage(Message message) {
+        if (message == null || message.header() == null || message.header().type() == null) {
+            sendError(ErrorCode.INTERNAL_SERVER_ERROR, "유효하지 않은 메시지입니다.");
+            return false;
+        }
+
+        if (!(message.header() instanceof RequestHeader requestHeader)) {
+            sendError(ErrorCode.AUTH_UNAUTHORIZED, "요청 헤더가 아닙니다.");
+            return false;
+        }
+
+        MessageType type = requestHeader.type();
+        if (type != MessageType.LOGIN) {
+            if (requestHeader.sessionId() == null) {
+                sendError(ErrorCode.AUTH_UNAUTHORIZED, "세션이 필요합니다.");
+                return false;
+            }
+
+            if (sessionManager.getSession(requestHeader.sessionId())
+                    .filter(existing -> existing == this)
+                    .isEmpty()) {
+                sendError(ErrorCode.AUTH_INVALID_SESSION, "유효하지 않은 세션입니다.");
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void disconnect() {

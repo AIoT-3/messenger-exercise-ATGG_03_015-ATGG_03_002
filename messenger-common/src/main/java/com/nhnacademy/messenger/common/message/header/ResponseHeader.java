@@ -12,6 +12,8 @@ public record ResponseHeader(
         
         boolean success
 
+        // 필드 확장 시, jackson의 deduction을 고려해 충돌 방지 생각해야 함
+
 ) implements Header {
 
     public ResponseHeader {

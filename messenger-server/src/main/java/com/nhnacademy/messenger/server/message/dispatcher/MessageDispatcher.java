@@ -9,11 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Message Dispatcher
+ * 역할
+ * 1. 요청 메시지 지원 여부 판단
+ * 2. 요청 메시지 라우팅
+ */
 @Slf4j
 @UtilityClass
 public class MessageDispatcher {
@@ -25,16 +30,12 @@ public class MessageDispatcher {
     }
 
     private static void initHandlers() {
-        // handler 패키지 하위를 스캔하여 MessageHandler 구현체 검색
+        // 1. handler 패키지 하위를 스캔하여 MessageHandler 구현체 검색
         Reflections reflections = new Reflections("com.nhnacademy.messenger.server.message.handler.impl");
         Set<Class<? extends MessageHandler>> handlerClasses = reflections.getSubTypesOf(MessageHandler.class);
 
-        for (Class<? extends MessageHandler> clazz : handlerClasses) {
-            // 추상 클래스나 인터페이스는 제외
-            if (!Modifier.isAbstract(clazz.getModifiers()) && !clazz.isInterface()) {
-                registerHandler(clazz);
-            }
-        }
+        // 2. 각 핸들러 등록
+        handlerClasses.forEach(MessageDispatcher::registerHandler);
     }
 
     private static void registerHandler(Class<? extends MessageHandler> clazz) {

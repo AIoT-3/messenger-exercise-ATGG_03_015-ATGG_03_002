@@ -1,5 +1,8 @@
 package com.nhnacademy.messenger.common.config;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class AppConstant {
 
     public static final String DEFAULT_SERVER_ADDRESS = "localhost";

@@ -8,7 +8,6 @@ import com.nhnacademy.messenger.common.util.writer.MessageWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Objects;
 
 public class StreamMessageWriter implements MessageWriter {
 
@@ -16,9 +15,6 @@ public class StreamMessageWriter implements MessageWriter {
 
     public StreamMessageWriter(OutputStream outputStream) {
         this.out = new DataOutputStream(outputStream);
-        if (Objects.isNull(outputStream)) {
-            // TODO: 이 때 어떻게 처리할지 고민
-        }
     }
 
     @Override
