@@ -7,5 +7,5 @@ public interface UserService {
 
     User getUserById(String userId);
 
-    User login(String userId, String password);
+    User doLogin(String userId, String password);
 }

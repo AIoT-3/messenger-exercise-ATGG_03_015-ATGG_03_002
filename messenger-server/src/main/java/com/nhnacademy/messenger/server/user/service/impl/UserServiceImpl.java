@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(String userId, String password) {
+    public User doLogin(String userId, String password) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new MessengerException(AUTH_INVALID_CREDENTIALS, "존재하지 않는 사용자이거나 잘못된 비밀번호입니다."));
         //TODO: 나중에 암호화된 비밀번호 비교로 변경 필요

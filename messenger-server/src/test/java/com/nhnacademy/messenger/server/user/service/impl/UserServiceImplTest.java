@@ -89,13 +89,13 @@ class UserServiceImplTest {
 
     @Test
     @DisplayName("로그인: 인증 성공 확인")
-    void login_Success() {
+    void doLogin_Success() {
         // Given
         User user = new User("marco", "마르코", "nhnacademy123");
         given(userRepository.findById("marco")).willReturn(Optional.of(user));
 
         // When
-        User result = userService.login("marco", "nhnacademy123");
+        User result = userService.doLogin("marco", "nhnacademy123");
 
         // Then
         assertAll(
@@ -106,27 +106,27 @@ class UserServiceImplTest {
 
     @Test
     @DisplayName("로그인: 미존재 ID 인증 실패 확인")
-    void login_Fail_IdNotFound() {
+    void doLogin_Fail_IdNotFound() {
         // Given
         given(userRepository.findById("unknown")).willReturn(Optional.empty());
 
         // When & Then
         MessengerException e = assertThrows(MessengerException.class, () ->
-            userService.login("unknown", "pass")
+            userService.doLogin("unknown", "pass")
         );
         assertEquals(ErrorCode.AUTH_INVALID_CREDENTIALS, e.getErrorCode());
     }
 
     @Test
     @DisplayName("로그인: 비밀번호 불일치 인증 실패 확인")
-    void login_Fail_PasswordMismatch() {
+    void doLogin_Fail_PasswordMismatch() {
         // Given
         User user = new User("marco", "마르코", "nhnacademy123");
         given(userRepository.findById("marco")).willReturn(Optional.of(user));
 
         // When & Then
         MessengerException e = assertThrows(MessengerException.class, () ->
-            userService.login("marco", "wrong_password")
+            userService.doLogin("marco", "wrong_password")
         );
         assertEquals(ErrorCode.AUTH_INVALID_CREDENTIALS, e.getErrorCode());
     }

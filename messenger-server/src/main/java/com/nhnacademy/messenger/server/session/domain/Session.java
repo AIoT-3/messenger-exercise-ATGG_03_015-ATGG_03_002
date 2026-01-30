@@ -1,37 +1,99 @@
 package com.nhnacademy.messenger.server.session.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
+import com.nhnacademy.messenger.common.message.data.error.ErrorResponse;
+import com.nhnacademy.messenger.common.message.header.MessageType;
+import com.nhnacademy.messenger.common.message.header.ResponseHeader;
+import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.common.util.reader.bio.StreamMessageReader;
+import com.nhnacademy.messenger.common.util.writer.MessageWriter;
+import com.nhnacademy.messenger.common.util.writer.bio.StreamMessageWriter;
+import com.nhnacademy.messenger.server.message.dispatcher.MessageDispatcher;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.service.UserService;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
 import java.net.Socket;
 
+@Slf4j
 public class Session implements Runnable {
 
     @Getter
-    private final String id;
-    private final Socket socket;
-    private final UserService userService;
-    private final SessionManager sessionManager;
-
+    private String id; // 로그인 성공 시 발급
     @Getter
     private User user; // 로그인 전에는 null
 
     private StreamMessageReader reader;
-    private DataOutputStream out;
+    private MessageWriter writer;
 
-    public Session(Socket socket, UserService userService, SessionManager sessionManager) {
-        this.id = java.util.UUID.randomUUID().toString();
+    private final Socket socket;
+    @Getter
+    private final SessionManager sessionManager;
+    @Getter
+    private final UserService userService;
+
+    public Session(Socket socket, SessionManager sessionManager, UserService userService) {
         this.socket = socket;
-        this.userService = userService;
         this.sessionManager = sessionManager;
+        this.userService = userService;
+        try {
+            this.reader = new StreamMessageReader(socket.getInputStream());
+            this.writer = new StreamMessageWriter(socket.getOutputStream());
+        } catch (IOException e) {
+            log.error("스트림 초기화 실패", e);
+        }
     }
 
     @Override
     public void run() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                Message request = reader.readMessage();
+                MessageDispatcher.dispatch(this, request);
+            }
+        } catch (EOFException e) {
+            log.info("클라이언트가 연결을 종료했습니다.");
+        } catch (IOException e) {
+            log.error("통신 오류: {}", e.getMessage());
+        } finally {
+            disconnect();
+        }
+    }
 
+    // 외부 핸들러에서 상태 변경을 위해 호출
+    public void registerUser(User user, String sessionId) {
+        if (this.user != null) {
+            throw new IllegalStateException("이미 로그인된 세션입니다.");
+        }
+        this.user = user;
+        this.id = sessionId;
+    }
+
+    public void sendMessage(Message message) {
+        writer.writeMessage(message);
+    }
+
+    public void sendError(ErrorCode code, String message) {
+        ResponseHeader header = ResponseHeader.fail(MessageType.ERROR);
+        JsonNode data = MessageConverter.objectMapper.valueToTree(new ErrorResponse(code, message));
+        sendMessage(new Message(header, data));
+    }
+
+    private void disconnect() {
+        if (this.id != null) {
+            sessionManager.removeSession(this.id);
+        }
+        try {
+            socket.close();
+        } catch (IOException e) {
+            // 무시
+        }
+        log.info("세션 종료: {}", this.id);
     }
 }

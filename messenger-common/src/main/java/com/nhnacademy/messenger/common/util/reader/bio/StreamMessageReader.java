@@ -14,12 +14,13 @@ public class StreamMessageReader {
 
     private final InputStream inputStream;
     private static final int MAX_HEADER_LENGTH = 100; // 헤더 무한 읽기 방어
+    // TODO: data의 크기 제한도 생각해보기
 
     public StreamMessageReader(InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
-    public Message read() throws IOException {
+    public Message readMessage() throws IOException {
         // 1. 헤더 읽기 (1바이트씩 읽어서 \n까지)
         StringBuilder headerBuilder = new StringBuilder();
         int b;
