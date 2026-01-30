@@ -21,26 +21,28 @@ public class MessageConverter {
         objectMapper.registerModule(new JavaTimeModule());
     }
 
-    public static String serializeMessage(Message message) {
+    public static byte[] toBytes(Message message) {
         try {
-            // 1. json 변환
-            String value = objectMapper.writeValueAsString(message);
+            // 1. Message -> byte[] 변환
+            byte[] jsonBytes = objectMapper.writeValueAsBytes(message);
 
-            // 2. 길이 계산
-            int length = value.getBytes(StandardCharsets.UTF_8).length;
+            // 2. 헤더 생성
+            String prefix = MESSAGE_LENGTH + jsonBytes.length + "\n";
+            byte[] prefixBytes = prefix.getBytes(StandardCharsets.UTF_8);
 
-            // 3. 헤더 생성
-            String messagePrefix = MESSAGE_LENGTH + length + "\n";
+            // 3. 최종 byte 배열 합치기
+            byte[] result = new byte[prefixBytes.length + jsonBytes.length];
+            System.arraycopy(prefixBytes, 0, result, 0, prefixBytes.length);
+            System.arraycopy(jsonBytes, 0, result, prefixBytes.length, jsonBytes.length);
 
-            // 4. 최종 결합
-            return messagePrefix + value;
+            return result;
 
         } catch (JsonProcessingException e) {
             throw new MessageConvertException("직렬화 실패", e);
         }
     }
 
-    public static Message deserializeMessage(byte[] jsonBytes) {
+    public static Message fromBytes(byte[] jsonBytes) {
         try {
             // 1. byte[] -> Message 객체 변환
             return objectMapper.readValue(jsonBytes, Message.class);
@@ -50,8 +52,7 @@ public class MessageConverter {
         }
     }
 
-    public static MessageData extractData(Message message) {
-
+    public static MessageData toData(Message message) {
         // 1. 메시지 타입에 해당하는 데이터 클래스 조회
         Class<? extends MessageData> clazz = message.header().type().getDataClass();
         if (Objects.isNull(clazz)) {
