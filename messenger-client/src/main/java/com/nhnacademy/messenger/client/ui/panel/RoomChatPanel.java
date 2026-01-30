@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.client.ui.panel;
 
 import com.nhnacademy.messenger.client.config.ClientConstant;
 import com.nhnacademy.messenger.client.ui.listener.RoomExitButtonEventListener;
+import com.nhnacademy.messenger.client.ui.listener.SendButtonEventListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -15,8 +16,10 @@ public class RoomChatPanel extends JFrame {
 
     private JPanel userListPanel;
     private JPanel messagePanel;
+    private JTextField chatInputField;
+    private long roomId;
 
-    public RoomChatPanel() {
+    public RoomChatPanel(long roomId) {
         super("Test Text");
 
         setSize(800, 500);
@@ -64,23 +67,7 @@ public class RoomChatPanel extends JFrame {
         exitButton.setPreferredSize(new Dimension(USERLIST_PANEL_WIDTH, 50)); // 버튼 높이 지정
 
         // TODO: 액션 리스너 분리
-        exitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int choice = JOptionPane.showConfirmDialog(
-                        getContentPane(),
-                        "정말로 나가시겠습니까?",
-                        "나가기 확인",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE
-                );
-
-                // '예(Yes)'를 눌렀을 때의 동작
-                if (choice == JOptionPane.YES_OPTION) {
-                    log.info("채팅방을 나갑니다.");
-                }
-            }
-        });
+        exitButton.addActionListener(new RoomExitButtonEventListener(roomId, getContentPane()));
 
         userListPanel.add(exitButton, BorderLayout.SOUTH);
 
@@ -101,23 +88,21 @@ public class RoomChatPanel extends JFrame {
         inputPanel.setLayout(new BorderLayout());
         inputPanel.setBackground(ClientConstant.SECONDARY_COLOR);
 
-        JTextField inputField = new JTextField();
-        inputField.setBackground(ClientConstant.PRIMARY_COLOR);
-        inputField.setForeground(ClientConstant.TEXT_COLOR);
+        chatInputField = new JTextField();
+        chatInputField.setBackground(ClientConstant.PRIMARY_COLOR);
+        chatInputField.setForeground(ClientConstant.TEXT_COLOR);
 
-        inputField.setPreferredSize(new Dimension(0, 50));
+        chatInputField.setPreferredSize(new Dimension(0, 50));
 
         JButton sendButton = new JButton("전송");
         sendButton.setBackground(ClientConstant.TRANSPARENT_COLOR);
         sendButton.setForeground(ClientConstant.SECONDARY_COLOR);
-        sendButton.addActionListener(e -> {
-            // TODO: 채팅 전송 이벤트
-        });
+        sendButton.addActionListener(new SendButtonEventListener(roomId, chatInputField));
 
 
         sendButton.setPreferredSize(new Dimension(80, 50));
 
-        inputPanel.add(inputField, BorderLayout.CENTER);
+        inputPanel.add(chatInputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
         chatPanel.add(inputPanel, BorderLayout.SOUTH);
         add(chatPanel, BorderLayout.CENTER);

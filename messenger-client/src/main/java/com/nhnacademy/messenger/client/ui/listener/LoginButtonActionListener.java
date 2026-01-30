@@ -21,6 +21,5 @@ public class LoginButtonActionListener implements ActionListener {
         LoginRequest loginRequest = new LoginRequest(userId, password);
 
         // TODO: LoginRequest 전송
-
     }
 }
