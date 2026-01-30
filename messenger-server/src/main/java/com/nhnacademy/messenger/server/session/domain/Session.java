@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 
 /**
  * Session
@@ -39,10 +40,9 @@ public class Session implements Runnable {
     @Getter
     private User user; // 로그인 전에는 null
 
-    private StreamMessageReader reader;
-    private MessageWriter writer;
-
     private final Socket socket;
+    private final StreamMessageReader reader;
+    private final MessageWriter writer;
 
     // Getter: 리플렉션에 의해 동적으로 생성되는 핸들러에서 주입이 힘들기 때문에 getter 사용
     @Getter
@@ -58,7 +58,8 @@ public class Session implements Runnable {
             this.reader = new StreamMessageReader(socket.getInputStream());
             this.writer = new StreamMessageWriter(socket.getOutputStream());
         } catch (IOException e) {
-            log.error("스트림 초기화 실패", e);
+            log.error("세션 스트림 초기화 실패: {}", e.getMessage());
+            throw new IllegalStateException("세션 초기화 실패", e);
         }
     }
 
@@ -67,19 +68,24 @@ public class Session implements Runnable {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
+                    // 1. 메시지 수신
                     Message request = reader.readMessage();
-                    if (!validateMessage(request)) {
-                        continue;
-                    }
+                    // 2. 공통 규칙 검사
+                    validateMessage(request);
+                    // 3. 메시지 디스패치
                     MessageDispatcher.dispatch(this, request);
+
                 } catch (MessageConvertException e) {
-                    log.warn("메시지 변환 실패: {}", e.getMessage());
-                    sendError(ErrorCode.REQUEST_INVALID_MESSAGE, "유효하지 않은 메시지 형식입니다.");
+                    // 메시지 변환에 실패한 경우
+                    sendError(ErrorCode.REQUEST_INVALID_MESSAGE, "메시지 형식이 올바르지 않습니다. 요청을 다시 확인해주세요.");
+
                 } catch (MessengerException e) {
+                    // 공통 규칙 검사 or 핸들러에서 발생한 메시지 처리에서 예외가 발생한 경우
                     sendError(e.getErrorCode(), e.getMessage());
+
                 } catch (RuntimeException e) {
-                    log.error("메시지 처리 중 알 수 없는 오류", e);
-                    sendError(ErrorCode.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
+                    // 그 외 예기치 못한 예외가 발생한 경우
+                    sendError(ErrorCode.INTERNAL_SERVER_ERROR, "서버 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
                 }
             }
         } catch (EOFException e) {
@@ -91,56 +97,81 @@ public class Session implements Runnable {
         }
     }
 
-    // 외부 핸들러에서 상태 변경을 위해 호출
+    // 세션에 사용자 등록
     public void registerUser(User user, String sessionId) {
-        if (this.user != null) {
+        if (Objects.nonNull(this.user)) {
             throw new IllegalStateException("이미 로그인된 세션입니다.");
         }
         this.user = user;
         this.id = sessionId;
     }
 
+    // 메시지 전송
     public void sendMessage(Message message) {
         writer.writeMessage(message);
     }
 
+    // 에러 응답 전송
     public void sendError(ErrorCode code, String message) {
         ResponseHeader header = ResponseHeader.fail(MessageType.ERROR);
         JsonNode data = MessageConverter.objectMapper.valueToTree(new ErrorResponse(code, message));
         sendMessage(new Message(header, data));
     }
 
-    private boolean validateMessage(Message message) {
-        if (message == null || message.header() == null || message.header().type() == null) {
-            sendError(ErrorCode.REQUEST_INVALID_MESSAGE, "유효하지 않은 메시지입니다.");
-            return false;
+    // 에러 응답과 함께 세션 종료
+    public void closeWithReason(ErrorCode code, String message) {
+        try {
+            sendError(code, message);
+        } catch (RuntimeException e) {
+            log.warn("종료 알림 전송 실패: {}", e.getMessage());
+        } finally {
+            disconnect();
+        }
+    }
+
+    // 공통 규칙 검사
+    private void validateMessage(Message message) {
+
+        // 1. 메시지 헤더 및 타입 검사
+        if (Objects.isNull(message) || Objects.isNull(message.header()) || Objects.isNull(message.header().type())) {
+            throw new MessengerException(ErrorCode.REQUEST_INVALID_MESSAGE,
+                    "메시지 헤더 또는 타입이 누락되었습니다.");
         }
 
         if (!(message.header() instanceof RequestHeader requestHeader)) {
-            sendError(ErrorCode.REQUEST_INVALID_MESSAGE, "요청 헤더가 아닙니다.");
-            return false;
+            throw new MessengerException(ErrorCode.REQUEST_INVALID_MESSAGE,
+                    "요청 헤더 형식이 아닙니다.");
         }
 
-        MessageType type = requestHeader.type();
-        if (type != MessageType.LOGIN) {
-            if (requestHeader.sessionId() == null) {
-                sendError(ErrorCode.AUTH_UNAUTHORIZED, "세션이 필요합니다.");
-                return false;
-            }
-
-            if (sessionManager.getSession(requestHeader.sessionId())
-                    .filter(existing -> existing == this)
-                    .isEmpty()) {
-                sendError(ErrorCode.AUTH_INVALID_SESSION, "유효하지 않은 세션입니다.");
-                return false;
-            }
+        // 로그인 요청은 세션 검증 제외
+        if (requestHeader.type() == MessageType.LOGIN) {
+            return;
         }
 
-        return true;
+        if (Objects.isNull(requestHeader.sessionId())) {
+            throw new MessengerException(ErrorCode.AUTH_UNAUTHORIZED,
+                    "로그인 후 이용 가능합니다. sessionId가 누락되었습니다.");
+        }
+
+        validateSessionIntegrity(requestHeader.sessionId());
     }
 
+    // 세션 무결성 검사
+    private void validateSessionIntegrity(String requestSessionId) {
+        boolean isValid = sessionManager.getSession(requestSessionId)
+                .filter(existing -> existing == this) // 주소 비교로 동일 세션인지 확인
+                .isPresent();
+
+        if (!isValid) {
+            throw new MessengerException(
+                    ErrorCode.AUTH_INVALID_SESSION,
+                    "유효하지 않은 세션입니다. 다시 로그인해주세요.");
+        }
+    }
+
+    // 세션 종료 처리
     private void disconnect() {
-        if (this.id != null) {
+        if (Objects.nonNull(this.id)) {
             sessionManager.removeSession(this.id);
         }
         try {

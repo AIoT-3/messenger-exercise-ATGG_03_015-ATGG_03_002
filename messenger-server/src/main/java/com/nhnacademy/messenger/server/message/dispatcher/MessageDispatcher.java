@@ -1,12 +1,9 @@
 package com.nhnacademy.messenger.server.message.dispatcher;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
-import com.nhnacademy.messenger.common.message.data.error.ErrorResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
-import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.message.handler.MessageHandler;
 import com.nhnacademy.messenger.server.session.domain.Session;
 import lombok.experimental.UtilityClass;
@@ -71,13 +68,10 @@ public class MessageDispatcher {
 
         // 2. 핸들러가 없으면 에러 응답 전송
         if (Objects.isNull(handler)) {
-            ResponseHeader header = ResponseHeader.fail(MessageType.ERROR);
-            JsonNode data = MessageConverter.objectMapper.valueToTree(new ErrorResponse(
+            throw new MessengerException(
                     ErrorCode.MESSAGE_TYPE_UNSUPPORTED,
                     "지원하지 않는 메시지 타입입니다: " + type
-            ));
-            session.sendMessage(new Message(header, data));
-            return;
+            );
         }
 
         // 3. 핸들러에 메시지 처리 위임
