@@ -2,6 +2,8 @@ package com.nhnacademy.messenger.server.session.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.exception.MessageConvertException;
+import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import com.nhnacademy.messenger.common.message.data.error.ErrorResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
@@ -25,7 +27,9 @@ import java.net.Socket;
 /**
  * Session
  * 역할
- * 1. 연결 단위에서 공통 규칙 보장
+ * 1. 메시지 수신/전송
+ * 2. 공통 규칙 검사 (sessionId 검사, 세션 유효성)
+ * 3. 중앙 에러 응답 생성
  */
 @Slf4j
 public class Session implements Runnable {
@@ -39,6 +43,8 @@ public class Session implements Runnable {
     private MessageWriter writer;
 
     private final Socket socket;
+
+    // Getter: 리플렉션에 의해 동적으로 생성되는 핸들러에서 주입이 힘들기 때문에 getter 사용
     @Getter
     private final SessionManager sessionManager;
     @Getter
@@ -60,11 +66,21 @@ public class Session implements Runnable {
     public void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                Message request = reader.readMessage();
-                if (!validateMessage(request)) {
-                    continue;
+                try {
+                    Message request = reader.readMessage();
+                    if (!validateMessage(request)) {
+                        continue;
+                    }
+                    MessageDispatcher.dispatch(this, request);
+                } catch (MessageConvertException e) {
+                    log.warn("메시지 변환 실패: {}", e.getMessage());
+                    sendError(ErrorCode.REQUEST_INVALID_MESSAGE, "유효하지 않은 메시지 형식입니다.");
+                } catch (MessengerException e) {
+                    sendError(e.getErrorCode(), e.getMessage());
+                } catch (RuntimeException e) {
+                    log.error("메시지 처리 중 알 수 없는 오류", e);
+                    sendError(ErrorCode.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
                 }
-                MessageDispatcher.dispatch(this, request);
             }
         } catch (EOFException e) {
             log.info("클라이언트가 연결을 종료했습니다.");
@@ -96,12 +112,12 @@ public class Session implements Runnable {
 
     private boolean validateMessage(Message message) {
         if (message == null || message.header() == null || message.header().type() == null) {
-            sendError(ErrorCode.INTERNAL_SERVER_ERROR, "유효하지 않은 메시지입니다.");
+            sendError(ErrorCode.REQUEST_INVALID_MESSAGE, "유효하지 않은 메시지입니다.");
             return false;
         }
 
         if (!(message.header() instanceof RequestHeader requestHeader)) {
-            sendError(ErrorCode.AUTH_UNAUTHORIZED, "요청 헤더가 아닙니다.");
+            sendError(ErrorCode.REQUEST_INVALID_MESSAGE, "요청 헤더가 아닙니다.");
             return false;
         }
 
