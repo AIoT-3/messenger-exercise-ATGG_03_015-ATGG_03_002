@@ -44,8 +44,12 @@ public class MessageServer implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 Socket socket = serverSocket.accept();
-                Session session = new Session(socket, sessionManager, userService);
-                Thread.ofVirtual().start(session);
+                try {
+                    Session session = new Session(socket, sessionManager, userService);
+                    Thread.ofVirtual().start(session);
+                } catch (Exception e) {
+                    log.error("세션 초기화 중 오류 발생: {}", e.getMessage());
+                }
             } catch (IOException e) {
                 log.error("서버 소켓 오류: {}", e.getMessage());
                 break;

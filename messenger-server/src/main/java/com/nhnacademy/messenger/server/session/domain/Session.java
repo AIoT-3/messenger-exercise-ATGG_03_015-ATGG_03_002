@@ -58,7 +58,7 @@ public class Session implements Runnable {
             this.reader = new StreamMessageReader(socket.getInputStream());
             this.writer = new StreamMessageWriter(socket.getOutputStream());
         } catch (IOException e) {
-            log.error("세션 스트림 초기화 실패: {}", e.getMessage());
+            disconnect();
             throw new IllegalStateException("세션 초기화 실패", e);
         }
     }
