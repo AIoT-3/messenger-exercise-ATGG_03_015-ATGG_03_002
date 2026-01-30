@@ -33,7 +33,7 @@ public class LoginMessageHandler implements MessageHandler {
         session.getSessionManager()
                 .getSessionByUserId(authenticatedUser.getUserId())
                 .ifPresent(existing -> existing.closeWithReason(
-                        ErrorCode.AUTH_UNAUTHORIZED,
+                        ErrorCode.AUTH_INVALID_SESSION,
                         "다른 위치에서 로그인되어 현재 세션이 종료됩니다."
                 ));
         String sessionId = UUID.randomUUID().toString();
