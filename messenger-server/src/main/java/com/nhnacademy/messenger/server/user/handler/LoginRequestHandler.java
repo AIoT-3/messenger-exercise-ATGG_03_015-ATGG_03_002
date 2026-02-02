@@ -9,23 +9,26 @@ import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
-import com.nhnacademy.messenger.server.network.annotation.RequestMapping;
 import com.nhnacademy.messenger.server.session.domain.Session;
 import com.nhnacademy.messenger.server.user.domain.User;
+import com.nhnacademy.messenger.server.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
 @Slf4j
-@RequestMapping(type = MessageType.LOGIN)
+@RequiredArgsConstructor
 public class LoginRequestHandler implements RequestHandler {
+
+    private final UserService userService;
 
     @Override
     public void handle(Session session, Message message) {
         LoginRequest loginData = (LoginRequest) MessageConverter.toData(message);
 
         // 1. 유저 인증
-        User authenticatedUser = session.getUserService().doLogin(loginData.userId(), loginData.password());
+        User authenticatedUser = userService.doLogin(loginData.userId(), loginData.password());
 
         session.getSessionManager()
                 .getSessionByUserId(authenticatedUser.getUserId())

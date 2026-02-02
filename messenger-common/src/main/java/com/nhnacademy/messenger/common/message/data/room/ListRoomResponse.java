@@ -3,7 +3,7 @@ import com.nhnacademy.messenger.common.message.data.MessageData;
 
 import java.util.List;
 
-public record ChatRoomListResponse(
+public record ListRoomResponse(
         List<RoomInfo> rooms
 ) implements MessageData {
 

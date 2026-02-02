@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.client.event;
+package com.nhnacademy.messenger.common.event;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.ui.gui.listener;
 
-import com.nhnacademy.messenger.common.message.data.chat.ChatMessageRequest;
+import com.nhnacademy.messenger.common.message.data.chat.ChatRequest;
 import lombok.AllArgsConstructor;
 
 import javax.swing.*;
@@ -17,7 +17,7 @@ public class ChatMessageListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String text = chatInputField.getText();
         // TODO: 임시 roodId, 추가 수정 필요함!
-        ChatMessageRequest chatMessageRequest = new ChatMessageRequest(roomId, text);
+        ChatRequest chatRequest = new ChatRequest(roomId, text);
         // TODO: ChatMessageRequest 전송
     }
 }

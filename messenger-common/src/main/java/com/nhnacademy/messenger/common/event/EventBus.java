@@ -1,9 +1,11 @@
-package com.nhnacademy.messenger.client.event;
+package com.nhnacademy.messenger.common.event;
 
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 이벤트 버스
@@ -12,9 +14,10 @@ import java.util.*;
  * 2. 이벤트 발행
  */
 @Slf4j
-public class EventBus {
+public enum EventBus {
+    INSTANCE;
 
-    private final Map<Class<?>, List<Subscriber>> subscribers = new HashMap<>();
+    private final Map<Class<?>, List<Subscriber>> subscribers = new ConcurrentHashMap<>();
 
     public void register(Object listener) {
         for (Method method : listener.getClass().getMethods()) {
@@ -24,7 +27,7 @@ public class EventBus {
                     continue;
                 }
                 Class<?> eventType = method.getParameterTypes()[0];
-                subscribers.computeIfAbsent(eventType, k -> new ArrayList<>())
+                subscribers.computeIfAbsent(eventType, k -> new CopyOnWriteArrayList<>())
                            .add(new Subscriber(listener, method));
             }
         }

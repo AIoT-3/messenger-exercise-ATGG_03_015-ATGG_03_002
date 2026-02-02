@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record ChatMessageHistoryResponse (
+public record ChatHistoryResponse(
         Long roomId,
         List<MessageInfo> messages,
         Boolean hasMore

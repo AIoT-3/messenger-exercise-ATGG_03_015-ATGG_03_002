@@ -1,23 +1,17 @@
 package com.nhnacademy.messenger.client.domain.user.handler;
 
 import com.nhnacademy.messenger.client.domain.user.event.LoginSuccessEvent;
-import com.nhnacademy.messenger.client.event.EventBus;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
-import com.nhnacademy.messenger.client.network.annotation.ResponseMapping;
 import com.nhnacademy.messenger.client.session.ClientSession;
+import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.auth.LoginResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
-@ResponseMapping(type = MessageType.LOGIN_SUCCESS)
 public class LoginResponseHandler implements ResponseHandler {
-
-    private final EventBus eventBus;
 
     @Override
     public void handle(Message message) {
@@ -34,11 +28,11 @@ public class LoginResponseHandler implements ResponseHandler {
             session.setUserId(response.userId());
             session.setUserName(response.userId());
             
-            eventBus.publish(new LoginSuccessEvent(response.userId()));
+            EventBus.INSTANCE.publish(new LoginSuccessEvent(response.userId()));
             
         } catch (Exception e) {
             log.error("로그인 응답 처리 중 오류 발생", e);
-            // TODO: 에러 이벤트도 발행? 해볼지 생각
+            // 에러 이벤트도 발행하면 좋겠지만, 일단 로그만 남김
         }
     }
 }

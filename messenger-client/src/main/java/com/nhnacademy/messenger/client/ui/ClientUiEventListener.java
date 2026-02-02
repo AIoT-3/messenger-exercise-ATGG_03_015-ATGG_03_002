@@ -2,7 +2,7 @@ package com.nhnacademy.messenger.client.ui;
 
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.user.event.LoginSuccessEvent;
-import com.nhnacademy.messenger.client.event.EventListener;
+import com.nhnacademy.messenger.common.event.EventListener;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

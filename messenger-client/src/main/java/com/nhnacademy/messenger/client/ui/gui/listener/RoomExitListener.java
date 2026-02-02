@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.ui.gui.listener;
 
-import com.nhnacademy.messenger.common.message.data.room.ChatRoomExitRequest;
+import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +29,7 @@ public class RoomExitListener implements ActionListener {
         // '예(Yes)'를 눌렀을 때의 동작
         if (choice == JOptionPane.YES_OPTION) {
             log.info("채팅방을 나갑니다.");
-            ChatRoomExitRequest chatRoomExitRequest = new ChatRoomExitRequest(roomId);
+            ExitRoomRequest exitRoomRequest = new ExitRoomRequest(roomId);
         }
     }
 }
