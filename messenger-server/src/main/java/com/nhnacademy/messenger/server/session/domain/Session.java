@@ -53,6 +53,7 @@ public class Session implements Runnable {
     private final MessageWriter writer;
 
     // Getter: 리플렉션에 의해 동적으로 생성되는 핸들러에서 주입이 힘들기 때문에 getter 사용
+    private final MessageDispatcher messageDispatcher;
     @Getter
     private final SessionManager sessionManager;
     @Getter
@@ -60,10 +61,12 @@ public class Session implements Runnable {
 
     public Session(
             Socket socket,
+            MessageDispatcher messageDispatcher,
             SessionManager sessionManager,
             UserService userService
     ) {
         this.socket = socket;
+        this.messageDispatcher = messageDispatcher;
         this.sessionManager = sessionManager;
         this.userService = userService;
 
@@ -86,7 +89,7 @@ public class Session implements Runnable {
                     // 2. 공통 규칙 검사
                     validateMessage(request);
                     // 3. 메시지 디스패치
-                    MessageDispatcher.dispatch(this, request);
+                    messageDispatcher.dispatch(this, request);
 
                 } catch (MessageConvertException e) {
                     // 메시지 변환에 실패한 경우
