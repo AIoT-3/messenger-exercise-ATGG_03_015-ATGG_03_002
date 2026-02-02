@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.client.ui.gui.listener;
+package com.nhnacademy.messenger.client.domain.user.listener;
 
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import lombok.AllArgsConstructor;

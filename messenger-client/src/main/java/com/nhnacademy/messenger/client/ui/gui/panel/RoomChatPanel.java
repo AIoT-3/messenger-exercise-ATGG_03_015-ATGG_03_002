@@ -1,8 +1,8 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
-import com.nhnacademy.messenger.client.ui.gui.listener.ChatMessageListener;
-import com.nhnacademy.messenger.client.ui.gui.listener.RoomExitListener;
+import com.nhnacademy.messenger.client.domain.chat.listener.ChatMessageListener;
+import com.nhnacademy.messenger.client.domain.room.listener.RoomExitListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
