@@ -10,6 +10,7 @@ import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.session.domain.Session;
+import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class LoginRequestHandler implements RequestHandler {
 
     private final UserService userService;
+    private final SessionManager sessionManager;
 
     @Override
     public void handle(Session session, Message message) {
@@ -30,8 +32,7 @@ public class LoginRequestHandler implements RequestHandler {
         // 1. 유저 인증
         User authenticatedUser = userService.doLogin(loginData.userId(), loginData.password());
 
-        session.getSessionManager()
-                .getSessionByUserId(authenticatedUser.getUserId())
+        sessionManager.getSessionByUserId(authenticatedUser.getUserId())
                 .ifPresent(existing -> existing.closeWithReason(
                         ErrorCode.AUTH_INVALID_SESSION,
                         "다른 위치에서 로그인되어 현재 세션이 종료됩니다."
@@ -42,7 +43,7 @@ public class LoginRequestHandler implements RequestHandler {
         session.registerUser(authenticatedUser, sessionId);
 
         // 3. 매니저 등록
-        session.getSessionManager().addSession(session);
+        sessionManager.addSession(session);
 
         // 4. 성공 응답 전송
         ResponseHeader header = ResponseHeader.success(MessageType.LOGIN_SUCCESS);

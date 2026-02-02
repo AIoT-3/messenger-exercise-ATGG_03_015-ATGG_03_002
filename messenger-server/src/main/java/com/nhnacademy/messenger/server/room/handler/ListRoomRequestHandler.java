@@ -1,7 +1,6 @@
 package com.nhnacademy.messenger.server.room.handler;
 
 import com.nhnacademy.messenger.common.message.Message;
-import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.room.service.ChatRoomService;
 import com.nhnacademy.messenger.server.session.domain.Session;
