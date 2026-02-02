@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 public class LoginCommandHandler implements CommandExecutable {
 
     private final UserController userController;
+    public final static String COMMAND = "/login";
 
     @Override
     public void execute(Command command, ConsoleView view) {

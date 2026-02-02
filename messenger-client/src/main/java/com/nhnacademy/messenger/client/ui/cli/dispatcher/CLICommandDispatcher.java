@@ -21,7 +21,7 @@ public class CLICommandDispatcher {
             log.warn("명령어 핸들러가 교체됩니다: {}", command);
         }
         handlerMap.put(command, handler);
-        log.info("CLI 핸들러 등록: {} -> {}", command, handler.getClass().getSimpleName());
+        log.debug("CLI 핸들러 등록: {} -> {}", command, handler.getClass().getSimpleName());
     }
 
     public void dispatch(Command command) {

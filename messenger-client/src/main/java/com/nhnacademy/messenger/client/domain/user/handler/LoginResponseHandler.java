@@ -1,12 +1,12 @@
 package com.nhnacademy.messenger.client.domain.user.handler;
 
+import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.user.event.LoginSuccessEvent;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.auth.LoginResponse;
-import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,16 +23,15 @@ public class LoginResponseHandler implements ResponseHandler {
             }
 
             // 세션 정보 갱신
-            ClientSession session = ClientSession.INSTANCE;
-            session.setSessionId(response.sessionId());
-            session.setUserId(response.userId());
-            session.setUserName(response.userId());
+            ClientSession.INSTANCE.setSessionId(response.sessionId());
+            ClientSession.INSTANCE.setUserId(response.userId());
+            ClientSession.INSTANCE.setUserName(response.userId());
             
             EventBus.INSTANCE.publish(new LoginSuccessEvent(response.userId()));
             
         } catch (Exception e) {
+            EventBus.INSTANCE.publish(new ErrorEvent("로그인 응답 처리 중 오류가 발생했습니다."));
             log.error("로그인 응답 처리 중 오류 발생", e);
-            // 에러 이벤트도 발행하면 좋겠지만, 일단 로그만 남김
         }
     }
 }

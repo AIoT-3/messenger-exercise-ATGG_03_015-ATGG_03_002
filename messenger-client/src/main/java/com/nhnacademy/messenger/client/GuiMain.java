@@ -1,6 +1,9 @@
 package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
@@ -27,13 +30,14 @@ public class GuiMain {
         // 1. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
         networkDispatcher.register(MessageType.LOGIN_SUCCESS, new LoginResponseHandler());
+        networkDispatcher.register(MessageType.CHAT_ROOM_CREATE, new CreateRoomResponseHandler());
         networkDispatcher.register(MessageType.ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
 
         // 2. 도메인 컨트롤러 초기화
-        UserClientService userClientService = new UserClientService(client);
-        UserController userController = new UserController(userClientService);
+        UserController userController = new UserController(new UserClientService(client));
+        ChatRoomController chatRoomController = new ChatRoomController(new ChatRoomClientService(client));
 
         // 3. GUI 초기화
         LoginPanel loginPanel = new LoginPanel(userController);
