@@ -1,10 +1,7 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
-import com.nhnacademy.messenger.client.ui.gui.listener.LogoutListener;
-import com.nhnacademy.messenger.client.ui.gui.listener.RefreshListener;
-import com.nhnacademy.messenger.client.ui.gui.listener.RoomCreateListener;
-import com.nhnacademy.messenger.client.ui.gui.listener.RoomJoinListener;
+import com.nhnacademy.messenger.client.ui.gui.listener.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -196,6 +193,7 @@ public class RoomListPanel extends JFrame {
         button.setFocusPainted(false);
         button.setRolloverEnabled(true);
 
+        button.addActionListener(new RoomEnterListener());
         button.addChangeListener(e -> {
             ButtonModel model = button.getModel();
             if (model.isPressed()) {
