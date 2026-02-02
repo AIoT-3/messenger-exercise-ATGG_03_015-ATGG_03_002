@@ -1,10 +1,12 @@
 package com.nhnacademy.messenger.server.room.service.impl;
 
+import com.nhnacademy.messenger.common.event.EventListener;
 import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.server.room.domain.ChatRoom;
 import com.nhnacademy.messenger.server.room.repository.ChatRoomRepository;
 import com.nhnacademy.messenger.server.room.service.ChatRoomService;
 import com.nhnacademy.messenger.server.session.domain.Session;
+import com.nhnacademy.messenger.server.session.event.SessionDisconnectedEvent;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -40,6 +42,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom chatRoom = getChatRoomById(roomId);
         // 일단은 여러 chatRoom에 들어가기 허용
         chatRoom.addSession(session);
+        session.joinRoom(roomId);
     }
 
     @Override
@@ -48,9 +51,22 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         ChatRoom chatRoom = getChatRoomById(roomId);
         chatRoom.removeSession(session);
+        session.leaveRoom(roomId);
         if (chatRoom.getSessions().isEmpty()) {
             chatRoomRepository.deleteById(roomId);
         }
     }
 
+    @EventListener
+    public void onSessionDisconnected(SessionDisconnectedEvent event) {
+        Session session = event.session();
+        session.getJoinedRoomIds().forEach(roomId -> {
+            chatRoomRepository.findById(roomId).ifPresent(chatRoom -> {
+                chatRoom.removeSession(session);
+                if (chatRoom.getSessions().isEmpty()) {
+                    chatRoomRepository.deleteById(roomId);
+                }
+            });
+        });
+    }
 }

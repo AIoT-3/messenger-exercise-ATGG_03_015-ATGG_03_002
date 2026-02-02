@@ -15,7 +15,7 @@ import com.nhnacademy.messenger.common.util.reader.bio.StreamMessageReader;
 import com.nhnacademy.messenger.common.util.writer.MessageWriter;
 import com.nhnacademy.messenger.common.util.writer.bio.StreamMessageWriter;
 import com.nhnacademy.messenger.server.network.MessageDispatcher;
-import com.nhnacademy.messenger.server.room.service.ChatRoomService;
+import com.nhnacademy.messenger.server.session.event.SessionDisconnectedEvent;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.service.UserService;
@@ -45,30 +45,27 @@ public class Session implements Runnable {
     private String id; // 로그인 성공 시 발급
     @Getter
     private User user; // 로그인 전에는 null
+    @Getter
+    private final Set<Long> joinedRoomIds = ConcurrentHashMap.newKeySet();
 
     private final Socket socket;
     private final StreamMessageReader reader;
     private final MessageWriter writer;
-//    private final EventBus eventBus = eventBus
-    private final Set<Long> joinedRoomIds = ConcurrentHashMap.newKeySet();
 
     // Getter: 리플렉션에 의해 동적으로 생성되는 핸들러에서 주입이 힘들기 때문에 getter 사용
     @Getter
     private final SessionManager sessionManager;
     @Getter
     private final UserService userService;
-    private final ChatRoomService chatRoomService;
 
     public Session(
             Socket socket,
             SessionManager sessionManager,
-            UserService userService,
-            ChatRoomService chatRoomService
+            UserService userService
     ) {
         this.socket = socket;
         this.sessionManager = sessionManager;
         this.userService = userService;
-        this.chatRoomService = chatRoomService;
 
         try {
             this.reader = new StreamMessageReader(socket.getInputStream());
@@ -155,6 +152,14 @@ public class Session implements Runnable {
         }
     }
 
+    public void joinRoom(Long roomId) {
+        joinedRoomIds.add(roomId);
+    }
+
+    public void leaveRoom(Long roomId) {
+        joinedRoomIds.remove(roomId);
+    }
+
     // --- Private Methods ---
 
     // 공통 규칙 검사
@@ -203,6 +208,7 @@ public class Session implements Runnable {
         }
         try {
             socket.close();
+            EventBus.INSTANCE.publish(new SessionDisconnectedEvent(this));
         } catch (IOException e) {
             // 무시
         }

@@ -1,5 +1,6 @@
 package com.nhnacademy.messenger.server.network;
 
+import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.server.room.repository.impl.InMemoryChatRoomRepository;
 import com.nhnacademy.messenger.server.room.service.ChatRoomService;
 import com.nhnacademy.messenger.server.room.service.impl.ChatRoomServiceImpl;
@@ -37,6 +38,8 @@ public class MessageServer implements Runnable {
         this.userService = new UserServiceImpl(new InMemoryUserRepository());
         this.chatRoomService = new ChatRoomServiceImpl(new InMemoryChatRoomRepository());
 
+        EventBus.INSTANCE.register(this.chatRoomService);
+
         try {
             this.serverSocket = new ServerSocket(port);
         } catch (IOException e) {
@@ -51,7 +54,7 @@ public class MessageServer implements Runnable {
                 Socket socket = serverSocket.accept();
                 try {
                     Session session = new Session(
-                            socket, sessionManager, userService, chatRoomService);
+                            socket, sessionManager, userService);
                     Thread.ofVirtual().start(session);
                 } catch (Exception e) {
                     log.error("세션 초기화 중 오류 발생: {}", e.getMessage());
