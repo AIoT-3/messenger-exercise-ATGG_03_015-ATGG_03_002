@@ -1,10 +1,10 @@
-package com.nhnacademy.messenger.server.message.dispatcher;
+package com.nhnacademy.messenger.server.network;
 
 import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.server.message.handler.MessageHandler;
+import com.nhnacademy.messenger.server.network.annotation.RequestMapping;
 import com.nhnacademy.messenger.server.session.domain.Session;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -25,35 +25,42 @@ import java.util.Set;
 @UtilityClass
 public class MessageDispatcher {
 
-    private static final Map<MessageType, MessageHandler> handlerMap = new EnumMap<>(MessageType.class);
+    private static final Map<MessageType, RequestHandler> handlerMap = new EnumMap<>(MessageType.class);
 
     static {
         initHandlers();
     }
 
     private static void initHandlers() {
-        // 1. handler 패키지 하위를 스캔하여 MessageHandler 구현체 검색
-        Reflections reflections = new Reflections("com.nhnacademy.messenger.server.message.handler.impl");
-        Set<Class<? extends MessageHandler>> handlerClasses = reflections.getSubTypesOf(MessageHandler.class);
+        // 1. 서버 패키지 전체 스캔하여 @RequestMapping 검색
+        Reflections reflections = new Reflections(new org.reflections.util.ConfigurationBuilder()
+                .forPackages("com.nhnacademy.messenger.server")
+                .addScanners(org.reflections.scanners.Scanners.TypesAnnotated));
+        
+        Set<Class<?>> handlerClasses = reflections.getTypesAnnotatedWith(RequestMapping.class);
+        log.info("스캔된 핸들러 클래스 개수: {}", handlerClasses.size());
 
         // 2. 각 핸들러 등록
         handlerClasses.forEach(MessageDispatcher::registerHandler);
     }
 
-    private static void registerHandler(Class<? extends MessageHandler> clazz) {
+    private static void registerHandler(Class<?> clazz) {
+        if (!RequestHandler.class.isAssignableFrom(clazz)) {
+            log.warn("@MessageMapping이 있지만 MessageHandler를 구현하지 않음: {}", clazz.getName());
+            return;
+        }
+
         try {
             // 1. 핸들러 인스턴스 생성
-            MessageHandler handler = clazz.getDeclaredConstructor().newInstance();
-            MessageType type = handler.getType();
-
-            // 2. 핸들러 타입 유효성 검사
-            if (Objects.isNull(type)) {
-                log.warn("핸들러 타입이 지정되지 않음: {}", clazz.getSimpleName());
-                return;
-            }
+            RequestHandler handler = (RequestHandler) clazz.getDeclaredConstructor().newInstance();
+            
+            // 2. 어노테이션에서 타입 추출
+            RequestMapping mapping = clazz.getAnnotation(RequestMapping.class);
+            MessageType type = mapping.type();
 
             // 3. 핸들러 등록
             handlerMap.put(type, handler);
+            log.info("핸들러 등록 완료: {} -> {}", type, clazz.getSimpleName());
 
         } catch (Exception e) {
             log.error("핸들러 인스턴스 생성 실패: {}", clazz.getName(), e);
@@ -64,7 +71,7 @@ public class MessageDispatcher {
     public static void dispatch(Session session, Message message) {
         // 1. 메시지 타입에 맞는 핸들러 조회
         MessageType type = message.header().type();
-        MessageHandler handler = handlerMap.get(type);
+        RequestHandler handler = handlerMap.get(type);
 
         // 2. 핸들러가 없으면 에러 응답 전송
         if (Objects.isNull(handler)) {

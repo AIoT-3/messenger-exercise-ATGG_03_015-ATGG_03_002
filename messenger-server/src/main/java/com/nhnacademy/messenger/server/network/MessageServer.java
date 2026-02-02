@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.server.runnable;
+package com.nhnacademy.messenger.server.network;
 
 import com.nhnacademy.messenger.server.session.domain.Session;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;

@@ -13,7 +13,7 @@ import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.common.util.reader.bio.StreamMessageReader;
 import com.nhnacademy.messenger.common.util.writer.MessageWriter;
 import com.nhnacademy.messenger.common.util.writer.bio.StreamMessageWriter;
-import com.nhnacademy.messenger.server.message.dispatcher.MessageDispatcher;
+import com.nhnacademy.messenger.server.network.MessageDispatcher;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.service.UserService;
