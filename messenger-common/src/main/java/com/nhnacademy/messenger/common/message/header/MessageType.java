@@ -41,6 +41,8 @@ public enum MessageType {
     CHAT_MESSAGE_SUCCESS(ChatMessageResponse.class),
     PRIVATE_MESSAGE(PrivateChatMessageRequest.class),
     PRIVATE_MESSAGE_SUCCESS(PrivateChatMessageResponse.class),
+    CHAT_MESSAGE_HISTORY(ChatMessageHistoryRequest.class),
+    CHAT_MESSAGE_HISTORY_SUCCESS(ChatMessageHistoryResponse.class),
 
     // room
     CHAT_ROOM_CREATE(ChatRoomCreateRequest.class),
@@ -51,8 +53,6 @@ public enum MessageType {
     CHAT_ROOM_ENTER_SUCCESS(ChatRoomEnterResponse.class),
     CHAT_ROOM_EXIT(ChatRoomExitRequest.class),
     CHAT_ROOM_EXIT_SUCCESS(ChatRoomExitResponse.class),
-    CHAT_MESSAGE_HISTORY(ChatMessageHistoryRequest.class),
-    CHAT_MESSAGE_HISTORY_SUCCESS(ChatMessageHistoryResponse.class),
 
     // push
     PUSH_NEW_MESSAGE(null),
