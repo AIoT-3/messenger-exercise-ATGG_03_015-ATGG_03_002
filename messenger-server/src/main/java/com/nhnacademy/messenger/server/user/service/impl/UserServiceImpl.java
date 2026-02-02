@@ -5,11 +5,12 @@ import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.repository.UserRepository;
 import com.nhnacademy.messenger.server.user.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 
 import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

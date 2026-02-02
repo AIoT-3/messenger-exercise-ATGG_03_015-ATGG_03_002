@@ -1,0 +1,56 @@
+package com.nhnacademy.messenger.server.room.service.impl;
+
+import com.nhnacademy.messenger.common.exception.MessengerException;
+import com.nhnacademy.messenger.server.room.domain.ChatRoom;
+import com.nhnacademy.messenger.server.room.repository.ChatRoomRepository;
+import com.nhnacademy.messenger.server.room.service.ChatRoomService;
+import com.nhnacademy.messenger.server.session.domain.Session;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.Objects;
+
+import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
+
+@RequiredArgsConstructor
+public class ChatRoomServiceImpl implements ChatRoomService {
+
+    private final ChatRoomRepository chatRoomRepository;
+
+    @Override
+    public ChatRoom createChatRoom(ChatRoom chatRoom) {
+        return chatRoomRepository.save(chatRoom);
+    }
+
+    @Override
+    public ChatRoom getChatRoomById(Long roomId) {
+        return chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new MessengerException(ROOM_NOT_FOUND, "채팅방을 찾을 수 없습니다: " + roomId));
+    }
+
+    @Override
+    public List<ChatRoom> getAllChatRooms() {
+        return chatRoomRepository.findAll();
+    }
+
+    @Override
+    public void enterChatRoom(Long roomId, Session session) {
+        session.validateLoggedIn();
+
+        ChatRoom chatRoom = getChatRoomById(roomId);
+        // 일단은 여러 chatRoom에 들어가기 허용
+        chatRoom.addSession(session);
+    }
+
+    @Override
+    public void leaveChatRoom(Long roomId, Session session) {
+        session.validateLoggedIn();
+
+        ChatRoom chatRoom = getChatRoomById(roomId);
+        chatRoom.removeSession(session);
+        if (chatRoom.getSessions().isEmpty()) {
+            chatRoomRepository.deleteById(roomId);
+        }
+    }
+
+}

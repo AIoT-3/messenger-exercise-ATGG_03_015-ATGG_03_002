@@ -14,6 +14,7 @@ import com.nhnacademy.messenger.common.util.reader.bio.StreamMessageReader;
 import com.nhnacademy.messenger.common.util.writer.MessageWriter;
 import com.nhnacademy.messenger.common.util.writer.bio.StreamMessageWriter;
 import com.nhnacademy.messenger.server.network.MessageDispatcher;
+import com.nhnacademy.messenger.server.room.service.ChatRoomService;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.service.UserService;
@@ -24,6 +25,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Objects;
+
+import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
 
 /**
  * Session
@@ -49,11 +52,19 @@ public class Session implements Runnable {
     private final SessionManager sessionManager;
     @Getter
     private final UserService userService;
+    private final ChatRoomService chatRoomService;
 
-    public Session(Socket socket, SessionManager sessionManager, UserService userService) {
+    public Session(
+            Socket socket,
+            SessionManager sessionManager,
+            UserService userService,
+            ChatRoomService chatRoomService
+    ) {
         this.socket = socket;
         this.sessionManager = sessionManager;
         this.userService = userService;
+        this.chatRoomService = chatRoomService;
+
         try {
             this.reader = new StreamMessageReader(socket.getInputStream());
             this.writer = new StreamMessageWriter(socket.getOutputStream());
@@ -77,7 +88,8 @@ public class Session implements Runnable {
 
                 } catch (MessageConvertException e) {
                     // 메시지 변환에 실패한 경우
-                    sendError(ErrorCode.REQUEST_INVALID_MESSAGE, "메시지 형식이 올바르지 않습니다. 요청을 다시 확인해주세요.");
+                    sendError(REQUEST_INVALID_MESSAGE,
+                            "메시지 형식이 올바르지 않습니다. 요청을 다시 확인해주세요.");
 
                 } catch (MessengerException e) {
                     // 공통 규칙 검사 or 핸들러에서 발생한 메시지 처리에서 예외가 발생한 경우
@@ -85,7 +97,8 @@ public class Session implements Runnable {
 
                 } catch (RuntimeException e) {
                     // 그 외 예기치 못한 예외가 발생한 경우
-                    sendError(ErrorCode.INTERNAL_SERVER_ERROR, "서버 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                    sendError(INTERNAL_SERVER_ERROR,
+                            "서버 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
                 }
             }
         } catch (EOFException e) {
@@ -129,17 +142,27 @@ public class Session implements Runnable {
         }
     }
 
+    // 세션이 로그인 상태인지 확인
+    public void validateLoggedIn() {
+        if (Objects.isNull(this.user)) {
+            throw new MessengerException(AUTH_UNAUTHORIZED,
+                    "로그인 후 이용 가능합니다.");
+        }
+    }
+
+    // --- Private Methods ---
+
     // 공통 규칙 검사
     private void validateMessage(Message message) {
 
         // 1. 메시지 헤더 및 타입 검사
         if (Objects.isNull(message) || Objects.isNull(message.header()) || Objects.isNull(message.header().type())) {
-            throw new MessengerException(ErrorCode.REQUEST_INVALID_MESSAGE,
+            throw new MessengerException(REQUEST_INVALID_MESSAGE,
                     "메시지 헤더 또는 타입이 누락되었습니다.");
         }
 
         if (!(message.header() instanceof RequestHeader requestHeader)) {
-            throw new MessengerException(ErrorCode.REQUEST_INVALID_MESSAGE,
+            throw new MessengerException(REQUEST_INVALID_MESSAGE,
                     "요청 헤더 형식이 아닙니다.");
         }
 
@@ -149,7 +172,7 @@ public class Session implements Runnable {
         }
 
         if (Objects.isNull(requestHeader.sessionId())) {
-            throw new MessengerException(ErrorCode.AUTH_UNAUTHORIZED,
+            throw new MessengerException(AUTH_UNAUTHORIZED,
                     "로그인 후 이용 가능합니다. sessionId가 누락되었습니다.");
         }
 
@@ -163,14 +186,13 @@ public class Session implements Runnable {
                 .isPresent();
 
         if (!isValid) {
-            throw new MessengerException(
-                    ErrorCode.AUTH_INVALID_SESSION,
+            throw new MessengerException(AUTH_INVALID_SESSION,
                     "유효하지 않은 세션입니다. 다시 로그인해주세요.");
         }
     }
 
     // 세션 종료 처리
-    private void disconnect() {
+    public void disconnect() {
         if (Objects.nonNull(this.id)) {
             sessionManager.removeSession(this.id);
         }
