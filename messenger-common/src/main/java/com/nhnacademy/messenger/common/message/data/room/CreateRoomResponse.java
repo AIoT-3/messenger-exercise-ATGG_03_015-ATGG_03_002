@@ -1,10 +1,8 @@
 package com.nhnacademy.messenger.common.message.data.room;
 import com.nhnacademy.messenger.common.message.data.MessageData;
 
-import java.util.List;
-
-public record ChatRoomEnterResponse(
+public record CreateRoomResponse(
         Long roomId,
-        List<String> users
+        String roomName
 ) implements MessageData {
 }
