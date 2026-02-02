@@ -21,13 +21,12 @@ public class ClientMain {
     public static void main(String[] args) {
 
         // 1. 이벤트 버스 및 UI 리스너 초기화
-        EventBus eventBus = new EventBus();
         ConsoleView view = new ConsoleView();
         ClientUiEventListener uiListener = new ClientUiEventListener(view);
-        eventBus.register(uiListener); // View가 이벤트를 구독
+        EventBus.INSTANCE.register(uiListener); // View가 이벤트를 구독
 
         // 2. 네트워크 초기화
-        ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher(eventBus);
+        ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
         networkDispatcher.init("com.nhnacademy.messenger.client.domain"); // 네트워크 핸들러 스캔
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);

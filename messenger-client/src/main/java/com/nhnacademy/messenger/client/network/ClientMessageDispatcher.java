@@ -1,6 +1,5 @@
 package com.nhnacademy.messenger.client.network;
 
-import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.annotation.ResponseMapping;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.header.MessageType;
@@ -20,7 +19,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ClientMessageDispatcher {
 
-    private final EventBus eventBus;
     private final Map<MessageType, ResponseHandler> handlerMap = new EnumMap<>(MessageType.class);
 
     public void init(String basePackage) {
@@ -52,16 +50,8 @@ public class ClientMessageDispatcher {
     }
 
     private ResponseHandler createHandlerInstance(Class<?> clazz) throws Exception {
-        try {
-            // 1. EventBus를 받는 생성자가 있는지 확인
-            Constructor<?> constructor = clazz.getConstructor(EventBus.class);
-            return (ResponseHandler) constructor.newInstance(eventBus);
-
-        } catch (NoSuchMethodException e) {
-            // 2. 없으면 기본 생성자 시도
-            Constructor<?> constructor = clazz.getConstructor();
-            return (ResponseHandler) constructor.newInstance();
-        }
+        Constructor<?> constructor = clazz.getConstructor();
+        return (ResponseHandler) constructor.newInstance();
     }
 
     public void dispatch(Message message) {

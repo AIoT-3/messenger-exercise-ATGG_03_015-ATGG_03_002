@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.server.session.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.exception.MessageConvertException;
 import com.nhnacademy.messenger.common.exception.MessengerException;
@@ -25,6 +26,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
 
@@ -46,6 +49,8 @@ public class Session implements Runnable {
     private final Socket socket;
     private final StreamMessageReader reader;
     private final MessageWriter writer;
+//    private final EventBus eventBus = eventBus
+    private final Set<Long> joinedRoomIds = ConcurrentHashMap.newKeySet();
 
     // Getter: 리플렉션에 의해 동적으로 생성되는 핸들러에서 주입이 힘들기 때문에 getter 사용
     @Getter
