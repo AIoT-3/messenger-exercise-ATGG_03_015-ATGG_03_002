@@ -3,7 +3,6 @@ package com.nhnacademy.messenger.client.domain.error.handler;
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
-import com.nhnacademy.messenger.client.network.annotation.ResponseMapping;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.error.ErrorResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
@@ -11,7 +10,6 @@ import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ResponseMapping(type = MessageType.ERROR)
 public class ErrorResponseHandler implements ResponseHandler {
 
     @Override

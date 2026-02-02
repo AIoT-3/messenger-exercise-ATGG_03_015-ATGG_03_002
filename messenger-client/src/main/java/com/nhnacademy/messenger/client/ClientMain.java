@@ -1,6 +1,9 @@
 package com.nhnacademy.messenger.client;
 
+import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
+import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;
+import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
@@ -10,6 +13,7 @@ import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.CommandParser;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CLICommandDispatcher;
+import com.nhnacademy.messenger.common.message.header.MessageType;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_ADDRESS;
@@ -27,7 +31,8 @@ public class ClientMain {
 
         // 2. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
-        networkDispatcher.init("com.nhnacademy.messenger.client.domain"); // 네트워크 핸들러 스캔
+        networkDispatcher.register(MessageType.LOGIN_SUCCESS, new LoginResponseHandler());
+        networkDispatcher.register(MessageType.ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
         CommandParser parser = new CommandParser();
@@ -38,8 +43,7 @@ public class ClientMain {
 
         // 4. CLI 명령어 디스패처 초기화
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
-        cliDispatcher.registerDependency(userController);
-        cliDispatcher.init("com.nhnacademy.messenger.client.domain"); // CLI 핸들러 스캔
+        cliDispatcher.register("/login", new LoginCommandHandler(userController));
 
         try {
             // 5. 서버 연결

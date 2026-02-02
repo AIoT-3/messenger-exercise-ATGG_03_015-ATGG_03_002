@@ -9,7 +9,6 @@ import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
-import com.nhnacademy.messenger.server.network.annotation.RequestMapping;
 import com.nhnacademy.messenger.server.session.domain.Session;
 import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.service.UserService;
@@ -20,7 +19,6 @@ import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(type = MessageType.LOGIN)
 public class LoginRequestHandler implements RequestHandler {
 
     private final UserService userService;

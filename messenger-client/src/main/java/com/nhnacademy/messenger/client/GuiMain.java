@@ -1,6 +1,8 @@
 package com.nhnacademy.messenger.client;
 
+import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
+import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
@@ -10,6 +12,7 @@ import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
 import com.nhnacademy.messenger.common.event.EventBus;
+import com.nhnacademy.messenger.common.message.header.MessageType;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -23,7 +26,8 @@ public class GuiMain {
     public static void main(String[] args) {
         // 1. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
-        networkDispatcher.init("com.nhnacademy.messenger.client.domain");
+        networkDispatcher.register(MessageType.LOGIN_SUCCESS, new LoginResponseHandler());
+        networkDispatcher.register(MessageType.ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
 
