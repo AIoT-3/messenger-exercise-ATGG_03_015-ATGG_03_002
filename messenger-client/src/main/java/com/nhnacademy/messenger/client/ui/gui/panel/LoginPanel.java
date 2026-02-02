@@ -2,13 +2,14 @@ package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
-import com.nhnacademy.messenger.client.ui.gui.listener.LoginButtonEventListener;
+import com.nhnacademy.messenger.client.ui.gui.listener.LoginListener;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class LoginPanel extends JFrame {
     private static final String TITLE_TEXT = "로그인";
+    private static final String TITLE_LABEL_TEXT = "로그인";
     private static final String ID_LABEL_TEXT = "아이디";
     private static final String PW_LABEL_TEXT = "비밀번호";
     private static final String LOGIN_BUTTON_TEXT = "로그인";
@@ -19,7 +20,7 @@ public class LoginPanel extends JFrame {
     private static final int FIELD_COLUMNS = 15;
     private static final int SPACING_SMALL = 10;
     private static final int SPACING_MEDIUM = 15;
-    private static final int PADDING = 20;
+    private static final int PADDING = 40;
 
     private JTextField idField;
     private JPasswordField passwordField;
@@ -57,7 +58,7 @@ public class LoginPanel extends JFrame {
     }
 
     private JLabel createTitleLabel() {
-        JLabel title = new JLabel(TITLE_TEXT);
+        JLabel title = new JLabel(TITLE_LABEL_TEXT);
         title.setFont(title.getFont().deriveFont(Font.BOLD, TITLE_FONT_SIZE));
         title.setForeground(AppConstant.TEXT_COLOR);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -87,7 +88,7 @@ public class LoginPanel extends JFrame {
     private JButton createLoginButton() {
         JButton loginButton = new JButton(LOGIN_BUTTON_TEXT);
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loginButton.addActionListener(new LoginButtonEventListener(idField, passwordField, userController));
+        loginButton.addActionListener(new LoginListener(idField, passwordField, userController));
         getRootPane().setDefaultButton(loginButton);
         return loginButton;
     }

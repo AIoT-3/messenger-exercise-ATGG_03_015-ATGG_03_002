@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 @AllArgsConstructor
-public class LoginButtonEventListener implements ActionListener {
+public class LoginListener implements ActionListener {
     private final JTextField idField;
     private final JPasswordField passwordField;
     private final UserController userController;

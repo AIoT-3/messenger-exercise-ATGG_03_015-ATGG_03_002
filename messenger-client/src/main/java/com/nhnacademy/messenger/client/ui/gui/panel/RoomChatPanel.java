@@ -1,8 +1,8 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
-import com.nhnacademy.messenger.client.ui.gui.listener.RoomExitButtonEventListener;
-import com.nhnacademy.messenger.client.ui.gui.listener.SendButtonEventListener;
+import com.nhnacademy.messenger.client.ui.gui.listener.ChatMessageListener;
+import com.nhnacademy.messenger.client.ui.gui.listener.RoomExitListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -10,7 +10,7 @@ import java.awt.*;
 
 @Slf4j
 public class RoomChatPanel extends JFrame {
-    private static final int USERLIST_PANEL_WIDTH = 200;
+    private static final int USERLIST_PANEL_WIDTH = 150;
 
     private JPanel userListPanel;
     private JPanel messagePanel;
@@ -19,6 +19,7 @@ public class RoomChatPanel extends JFrame {
 
     public RoomChatPanel(long roomId) {
         super("Test Text");
+        this.roomId = roomId;
 
         setSize(800, 500);
         setLocationRelativeTo(null);
@@ -64,7 +65,7 @@ public class RoomChatPanel extends JFrame {
         exitButton.setForeground(AppConstant.SECONDARY_COLOR);
         exitButton.setPreferredSize(new Dimension(USERLIST_PANEL_WIDTH, 50)); // 버튼 높이 지정
 
-        exitButton.addActionListener(new RoomExitButtonEventListener(roomId, getContentPane()));
+        exitButton.addActionListener(new RoomExitListener(roomId, getContentPane()));
 
         userListPanel.add(exitButton, BorderLayout.SOUTH);
 
@@ -94,7 +95,7 @@ public class RoomChatPanel extends JFrame {
         JButton sendButton = new JButton("전송");
         sendButton.setBackground(AppConstant.TRANSPARENT_COLOR);
         sendButton.setForeground(AppConstant.SECONDARY_COLOR);
-        sendButton.addActionListener(new SendButtonEventListener(roomId, chatInputField));
+        sendButton.addActionListener(new ChatMessageListener(roomId, chatInputField));
 
 
         sendButton.setPreferredSize(new Dimension(80, 50));

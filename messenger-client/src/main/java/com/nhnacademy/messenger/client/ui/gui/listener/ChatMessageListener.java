@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 @AllArgsConstructor
-public class SendButtonEventListener implements ActionListener {
+public class ChatMessageListener implements ActionListener {
     // TODO: roomId를 가져오는 메서드 추가
     private long roomId;
     private JTextField chatInputField;

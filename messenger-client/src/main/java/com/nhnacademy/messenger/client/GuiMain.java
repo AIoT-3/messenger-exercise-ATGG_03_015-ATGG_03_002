@@ -8,9 +8,12 @@ import com.nhnacademy.messenger.client.network.MessageClient;
 import com.nhnacademy.messenger.client.ui.ClientUiEventListener;
 import com.nhnacademy.messenger.client.ui.gui.GuiView;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
+import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
+import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
+import javax.swing.tree.RowMapper;
 
 import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_ADDRESS;
 import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_PORT;
@@ -34,13 +37,15 @@ public class GuiMain {
 
         // 4. GUI 초기화
         LoginPanel loginPanel = new LoginPanel(userController);
-        GuiView view = new GuiView(loginPanel);
+        RoomListPanel roomListPanel = new RoomListPanel();
+        // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
+        //  ClientSession.isInChatRoom으로 방 진입 체크
+        RoomChatPanel roomChatPanel = new RoomChatPanel(0);
+        GuiView view = new GuiView(loginPanel, roomListPanel, roomChatPanel);
 
         // 5. UI 리스너 등록
         ClientUiEventListener uiListener = new ClientUiEventListener(view);
         eventBus.register(uiListener);
-
-
 
         try {
             // 6. 서버 연결 및 앱 시작
