@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.awt.*;
 
 @UtilityClass
-public class ClientConstant {
+public class AppConstant {
     // UI 구성을 위한 색상 값
     public static final Color TRANSPARENT_COLOR = new Color(0, 0, 0, 0);
     public static final Color PRIMARY_COLOR = Color.decode("#424549");

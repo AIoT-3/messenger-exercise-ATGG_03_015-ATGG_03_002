@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.client.ui.listener;
+package com.nhnacademy.messenger.client.ui.gui.listener;
 
 import com.nhnacademy.messenger.common.message.data.room.ChatRoomExitRequest;
 import lombok.AllArgsConstructor;

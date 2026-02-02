@@ -1,14 +1,12 @@
-package com.nhnacademy.messenger.client.ui.panel;
+package com.nhnacademy.messenger.client.ui.gui.panel;
 
-import com.nhnacademy.messenger.client.config.ClientConstant;
-import com.nhnacademy.messenger.client.ui.listener.RoomExitButtonEventListener;
-import com.nhnacademy.messenger.client.ui.listener.SendButtonEventListener;
+import com.nhnacademy.messenger.client.config.AppConstant;
+import com.nhnacademy.messenger.client.ui.gui.listener.RoomExitButtonEventListener;
+import com.nhnacademy.messenger.client.ui.gui.listener.SendButtonEventListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 @Slf4j
 public class RoomChatPanel extends JFrame {
@@ -26,7 +24,7 @@ public class RoomChatPanel extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        getContentPane().setBackground(ClientConstant.SECONDARY_COLOR);
+        getContentPane().setBackground(AppConstant.SECONDARY_COLOR);
         createUIComponents();
     }
 
@@ -40,33 +38,32 @@ public class RoomChatPanel extends JFrame {
         // 1. userListPanel 설정 (전체 틀: BorderLayout)
         userListPanel = new JPanel();
         userListPanel.setLayout(new BorderLayout()); // 상/중/하 분리를 위해 변경
-        userListPanel.setBackground(ClientConstant.PRIMARY_COLOR);
+        userListPanel.setBackground(AppConstant.PRIMARY_COLOR);
         userListPanel.setPreferredSize(new Dimension(USERLIST_PANEL_WIDTH, getHeight()));
 
         JLabel titleLabel = new JLabel("유저 목록", SwingConstants.CENTER); // 텍스트 중앙 정렬
         titleLabel.setFont(new Font("Dialog", Font.BOLD, 16)); // 폰트 설정
-        titleLabel.setForeground(ClientConstant.TEXT_COLOR);
+        titleLabel.setForeground(AppConstant.TEXT_COLOR);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         userListPanel.add(titleLabel, BorderLayout.NORTH);
 
         JPanel listContainer = new JPanel();
         listContainer.setLayout(new BoxLayout(listContainer, BoxLayout.Y_AXIS)); // 목록은 세로로 쌓임
-        listContainer.setBackground(ClientConstant.PRIMARY_COLOR);
+        listContainer.setBackground(AppConstant.PRIMARY_COLOR);
 
         JScrollPane scrollPane = new JScrollPane(listContainer);
         scrollPane.setBorder(null);
-        scrollPane.getViewport().setBackground(ClientConstant.PRIMARY_COLOR); // 배경색 통일
+        scrollPane.getViewport().setBackground(AppConstant.PRIMARY_COLOR); // 배경색 통일
 
         userListPanel.add(scrollPane, BorderLayout.CENTER);
 
         JButton exitButton = new JButton("채팅방 나가기");
 
-        exitButton.setBackground(ClientConstant.TRANSPARENT_COLOR);
-        exitButton.setForeground(ClientConstant.SECONDARY_COLOR);
+        exitButton.setBackground(AppConstant.TRANSPARENT_COLOR);
+        exitButton.setForeground(AppConstant.SECONDARY_COLOR);
         exitButton.setPreferredSize(new Dimension(USERLIST_PANEL_WIDTH, 50)); // 버튼 높이 지정
 
-        // TODO: 액션 리스너 분리
         exitButton.addActionListener(new RoomExitButtonEventListener(roomId, getContentPane()));
 
         userListPanel.add(exitButton, BorderLayout.SOUTH);
@@ -77,26 +74,26 @@ public class RoomChatPanel extends JFrame {
     private void addChatUI() {
         JPanel chatPanel = new JPanel();
         chatPanel.setLayout(new BorderLayout());
-        chatPanel.setBackground(ClientConstant.TRANSPARENT_COLOR);
+        chatPanel.setBackground(AppConstant.TRANSPARENT_COLOR);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
-        messagePanel.setBackground(ClientConstant.TRANSPARENT_COLOR);
+        messagePanel.setBackground(AppConstant.TRANSPARENT_COLOR);
         chatPanel.add(messagePanel, BorderLayout.CENTER);
 
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BorderLayout());
-        inputPanel.setBackground(ClientConstant.SECONDARY_COLOR);
+        inputPanel.setBackground(AppConstant.SECONDARY_COLOR);
 
         chatInputField = new JTextField();
-        chatInputField.setBackground(ClientConstant.PRIMARY_COLOR);
-        chatInputField.setForeground(ClientConstant.TEXT_COLOR);
+        chatInputField.setBackground(AppConstant.PRIMARY_COLOR);
+        chatInputField.setForeground(AppConstant.TEXT_COLOR);
 
         chatInputField.setPreferredSize(new Dimension(0, 50));
 
         JButton sendButton = new JButton("전송");
-        sendButton.setBackground(ClientConstant.TRANSPARENT_COLOR);
-        sendButton.setForeground(ClientConstant.SECONDARY_COLOR);
+        sendButton.setBackground(AppConstant.TRANSPARENT_COLOR);
+        sendButton.setForeground(AppConstant.SECONDARY_COLOR);
         sendButton.addActionListener(new SendButtonEventListener(roomId, chatInputField));
 
 
