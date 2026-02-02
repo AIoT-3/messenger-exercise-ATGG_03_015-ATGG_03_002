@@ -40,7 +40,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         session.validateLoggedIn();
 
         ChatRoom chatRoom = getChatRoomById(roomId);
-        // 일단은 여러 chatRoom에 들어가기 허용
         chatRoom.addSession(session);
         session.joinRoom(roomId);
     }
