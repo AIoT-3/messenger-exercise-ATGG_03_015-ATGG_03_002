@@ -1,6 +1,10 @@
 package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomCommandHandler;
+import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
@@ -32,18 +36,20 @@ public class ClientMain {
         // 2. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
         networkDispatcher.register(MessageType.LOGIN_SUCCESS, new LoginResponseHandler());
+        networkDispatcher.register(MessageType.CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(MessageType.ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
         CommandParser parser = new CommandParser();
 
         // 3. 도메인 컨트롤러 초기화
-        UserClientService userClientService = new UserClientService(client);
-        UserController userController = new UserController(userClientService);
+        UserController userController = new UserController(new UserClientService(client));
+        ChatRoomController chatRoomController = new ChatRoomController(new ChatRoomClientService(client));
 
         // 4. CLI 명령어 디스패처 초기화
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
-        cliDispatcher.register("/login", new LoginCommandHandler(userController));
+        cliDispatcher.register(LoginCommandHandler.COMMAND, new LoginCommandHandler(userController));
+        cliDispatcher.register(CreateRoomCommandHandler.COMMAND, new CreateRoomCommandHandler(chatRoomController));
 
         try {
             // 5. 서버 연결

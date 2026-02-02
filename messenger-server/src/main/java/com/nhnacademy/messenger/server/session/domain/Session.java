@@ -52,23 +52,17 @@ public class Session implements Runnable {
     private final StreamMessageReader reader;
     private final MessageWriter writer;
 
-    // Getter: 리플렉션에 의해 동적으로 생성되는 핸들러에서 주입이 힘들기 때문에 getter 사용
     private final MessageDispatcher messageDispatcher;
-    @Getter
     private final SessionManager sessionManager;
-    @Getter
-    private final UserService userService;
 
     public Session(
             Socket socket,
             MessageDispatcher messageDispatcher,
-            SessionManager sessionManager,
-            UserService userService
+            SessionManager sessionManager
     ) {
         this.socket = socket;
         this.messageDispatcher = messageDispatcher;
         this.sessionManager = sessionManager;
-        this.userService = userService;
 
         try {
             this.reader = new StreamMessageReader(socket.getInputStream());

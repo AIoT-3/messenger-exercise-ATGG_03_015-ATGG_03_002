@@ -69,6 +69,7 @@ public class ConsoleView implements View {
 
     public String readInput() {
         out.print("> ");
+        out.flush();
         String line = scanner.nextLine();
         return StringUtils.trim(line);
     }

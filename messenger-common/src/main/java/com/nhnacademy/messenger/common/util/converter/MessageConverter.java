@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.common.util.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nhnacademy.messenger.common.exception.MessageConvertException;
@@ -67,5 +68,9 @@ public class MessageConverter {
         } catch (IllegalArgumentException e) {
             throw new MessageConvertException("데이터 변환 실패 - 호환되지 않는 타입", e);
         }
+    }
+
+    public static JsonNode toJsonNode(MessageData data) {
+        return objectMapper.valueToTree(data);
     }
 }

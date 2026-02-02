@@ -9,12 +9,13 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class UserClientService {
+
     private final MessageClient messageClient;
 
     public void login(String userId, String password) {
         LoginRequest data = new LoginRequest(userId, password);
         RequestHeader header = RequestHeader.login();
-        Message message = new Message(header, MessageConverter.objectMapper.valueToTree(data));
+        Message message = new Message(header, MessageConverter.toJsonNode(data));
         
         messageClient.send(message);
     }

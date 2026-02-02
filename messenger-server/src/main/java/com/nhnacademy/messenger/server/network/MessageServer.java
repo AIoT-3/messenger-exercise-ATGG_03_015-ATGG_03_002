@@ -50,7 +50,7 @@ public class MessageServer implements Runnable {
 
         // 2. 디스패처 및 핸들러 초기화
         this.messageDispatcher = new MessageDispatcher();
-        this.messageDispatcher.register(MessageType.LOGIN, new LoginRequestHandler(userService));
+        this.messageDispatcher.register(MessageType.LOGIN, new LoginRequestHandler(userService, sessionManager));
         this.messageDispatcher.register(MessageType.CHAT_ROOM_CREATE, new CreateRoomRequestHandler(chatRoomService));
         this.messageDispatcher.register(MessageType.CHAT_ROOM_LIST, new ListRoomRequestHandler(chatRoomService));
         this.messageDispatcher.register(MessageType.CHAT_ROOM_ENTER, new EnterRoomRequestHandler(chatRoomService));
@@ -70,7 +70,7 @@ public class MessageServer implements Runnable {
                 Socket socket = serverSocket.accept();
                 try {
                     Session session = new Session(
-                            socket, messageDispatcher, sessionManager, userService);
+                            socket, messageDispatcher, sessionManager); // userService 제거됨
                     Thread.ofVirtual().start(session);
                 } catch (Exception e) {
                     log.error("세션 초기화 중 오류 발생: {}", e.getMessage());
