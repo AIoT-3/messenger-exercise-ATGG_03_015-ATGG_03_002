@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.client.ui.gui.listener;
+package com.nhnacademy.messenger.client.domain.chat.listener;
 
 import com.nhnacademy.messenger.common.message.data.chat.ChatRequest;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,10 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
-import com.nhnacademy.messenger.client.ui.gui.listener.*;
+import com.nhnacademy.messenger.client.domain.room.listener.RefreshListener;
+import com.nhnacademy.messenger.client.domain.room.listener.RoomCreateListener;
+import com.nhnacademy.messenger.client.domain.room.listener.RoomEnterListener;
+import com.nhnacademy.messenger.client.domain.user.listener.LogoutListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -149,6 +152,12 @@ public class RoomListPanel extends JFrame {
     }
 
     // ===== Public Methods =====
+
+    /**
+     * RoomListUI의 roomList에 room을 추가합니다.
+     * @param roomId 고유 방 번호
+     * @param roomName 표시 될 방 이름
+     */
     public void addRoomItem(long roomId, String roomName) {
         JButton roomButton = new JButton(roomName);
         styleButton(roomButton);
@@ -158,14 +167,19 @@ public class RoomListPanel extends JFrame {
         roomButton.setMaximumSize(size);
         roomButton.setMinimumSize(new Dimension(0, ROOM_BUTTON_HEIGHT));
         roomButton.setPreferredSize(new Dimension(0, ROOM_BUTTON_HEIGHT));
-        
-        roomButton.addActionListener(new RoomJoinListener());
+
+        // CHAT-ROOM-ENTER 전송을 위한 리스너
+        roomButton.addActionListener(new RoomEnterListener());
 
         roomListContainer.add(roomButton);
         roomListContainer.add(Box.createRigidArea(new Dimension(0, SPACING_SMALL)));
         refreshContainer(roomListContainer);
     }
 
+    /**
+     * RoomListUI의 userList에 user를 추가합니다.
+     * @param userId 표시 될 유저 ID
+     */
     public void addUserItem(String userId) {
         JLabel userLabel = new JLabel(userId);
         userLabel.setForeground(AppConstant.TEXT_COLOR);
@@ -176,6 +190,9 @@ public class RoomListPanel extends JFrame {
         refreshContainer(userListContainer);
     }
 
+    /**
+     * 새로운 roomList와 userList를 불러오기 전에 UI list들을 초기화합니다.
+     */
     public void clearLists() {
         roomListContainer.removeAll();
         userListContainer.removeAll();
@@ -193,7 +210,6 @@ public class RoomListPanel extends JFrame {
         button.setFocusPainted(false);
         button.setRolloverEnabled(true);
 
-        button.addActionListener(new RoomEnterListener());
         button.addChangeListener(e -> {
             ButtonModel model = button.getModel();
             if (model.isPressed()) {

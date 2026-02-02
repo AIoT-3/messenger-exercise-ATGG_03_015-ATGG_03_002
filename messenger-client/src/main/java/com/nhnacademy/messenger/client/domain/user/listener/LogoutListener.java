@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.client.ui.gui.listener;
+package com.nhnacademy.messenger.client.domain.user.listener;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 
 @Slf4j
 @AllArgsConstructor
-public class RoomEnterListener implements ActionListener {
+public class LogoutListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {

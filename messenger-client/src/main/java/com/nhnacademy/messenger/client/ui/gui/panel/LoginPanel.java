@@ -2,7 +2,7 @@ package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
-import com.nhnacademy.messenger.client.ui.gui.listener.LoginListener;
+import com.nhnacademy.messenger.client.domain.user.listener.LoginListener;
 
 import javax.swing.*;
 import java.awt.*;
