@@ -2,7 +2,6 @@ package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
-import com.nhnacademy.messenger.client.event.EventBus;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
 import com.nhnacademy.messenger.client.ui.ClientUiEventListener;
@@ -10,6 +9,7 @@ import com.nhnacademy.messenger.client.ui.gui.GuiView;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
+import com.nhnacademy.messenger.common.event.EventBus;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -21,20 +21,17 @@ import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_
 public class GuiMain {
 
     public static void main(String[] args) {
-        // 1. 이벤트 버스 초기화
-        EventBus eventBus = new EventBus();
-
-        // 2. 네트워크 초기화
-        ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher(eventBus);
+        // 1. 네트워크 초기화
+        ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
         networkDispatcher.init("com.nhnacademy.messenger.client.domain");
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
 
-        // 3. 도메인 컨트롤러 초기화
+        // 2. 도메인 컨트롤러 초기화
         UserClientService userClientService = new UserClientService(client);
         UserController userController = new UserController(userClientService);
 
-        // 4. GUI 초기화
+        // 3. GUI 초기화
         LoginPanel loginPanel = new LoginPanel(userController);
         RoomListPanel roomListPanel = new RoomListPanel();
         // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
@@ -42,12 +39,12 @@ public class GuiMain {
         RoomChatPanel roomChatPanel = new RoomChatPanel(0);
         GuiView view = new GuiView(loginPanel, roomListPanel, roomChatPanel);
 
-        // 5. UI 리스너 등록
+        // 4. UI 리스너 등록
         ClientUiEventListener uiListener = new ClientUiEventListener(view);
-        eventBus.register(uiListener);
+        EventBus.INSTANCE.register(uiListener);
 
         try {
-            // 6. 서버 연결 및 앱 시작
+            // 5. 서버 연결 및 앱 시작
             client.connect();
             view.start();
             log.info("GUI 메신저 클라이언트를 시작합니다.");
