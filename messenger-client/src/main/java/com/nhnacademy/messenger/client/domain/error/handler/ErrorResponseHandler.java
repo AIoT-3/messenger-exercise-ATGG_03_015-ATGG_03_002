@@ -1,7 +1,7 @@
 package com.nhnacademy.messenger.client.domain.error.handler;
 
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
-import com.nhnacademy.messenger.client.event.EventBus;
+import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
 import com.nhnacademy.messenger.client.network.annotation.ResponseMapping;
 import com.nhnacademy.messenger.common.message.Message;

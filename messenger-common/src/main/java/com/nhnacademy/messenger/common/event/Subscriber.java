@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.client.event;
+package com.nhnacademy.messenger.common.event;
 
 import lombok.extern.slf4j.Slf4j;
 

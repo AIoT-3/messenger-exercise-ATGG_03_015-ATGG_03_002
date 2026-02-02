@@ -2,7 +2,7 @@ package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
-import com.nhnacademy.messenger.client.event.EventBus;
+import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
 import com.nhnacademy.messenger.client.ui.ClientUiEventListener;

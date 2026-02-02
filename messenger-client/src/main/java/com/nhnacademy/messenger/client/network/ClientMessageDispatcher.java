@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.network;
 
-import com.nhnacademy.messenger.client.event.EventBus;
+import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.annotation.ResponseMapping;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.header.MessageType;
