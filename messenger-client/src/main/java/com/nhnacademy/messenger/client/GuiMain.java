@@ -13,7 +13,6 @@ import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
-import javax.swing.tree.RowMapper;
 
 import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_ADDRESS;
 import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_PORT;
