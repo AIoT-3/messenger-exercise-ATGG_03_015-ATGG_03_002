@@ -24,6 +24,7 @@ public class GuiView implements View {
         });
     }
 
+    // TODO: label view 전환
     private void switchView() {
 
     }
