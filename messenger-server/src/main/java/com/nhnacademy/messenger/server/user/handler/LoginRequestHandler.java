@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.server.message.handler.impl;
+package com.nhnacademy.messenger.server.user.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.message.Message;
@@ -8,7 +8,8 @@ import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
-import com.nhnacademy.messenger.server.message.handler.MessageHandler;
+import com.nhnacademy.messenger.server.network.RequestHandler;
+import com.nhnacademy.messenger.server.network.annotation.RequestMapping;
 import com.nhnacademy.messenger.server.session.domain.Session;
 import com.nhnacademy.messenger.server.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 
 @Slf4j
-public class LoginMessageHandler implements MessageHandler {
-
-    @Override
-    public MessageType getType() {
-        return MessageType.LOGIN;
-    }
+@RequestMapping(type = MessageType.LOGIN)
+public class LoginRequestHandler implements RequestHandler {
 
     @Override
     public void handle(Session session, Message message) {

@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.server;
 
-import com.nhnacademy.messenger.server.runnable.MessageServer;
+import com.nhnacademy.messenger.server.network.MessageServer;
 
 public class ServerMain {
 
