@@ -8,6 +8,7 @@ import com.nhnacademy.messenger.client.domain.room.listener.EnterRoomListener;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.listener.LogoutListener;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -48,7 +49,9 @@ public class RoomListPanel extends JFrame {
     private JPanel roomListContainer;
     private JPanel userListContainer;
 
+    @Getter
     private final ChatRoomController chatRoomController;
+
     private final UserController userController;
 
     private final Map<Long, RoomListItem> roomListMap = new HashMap<>();

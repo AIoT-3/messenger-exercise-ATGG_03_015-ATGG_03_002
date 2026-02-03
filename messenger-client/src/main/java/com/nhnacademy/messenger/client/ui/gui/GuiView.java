@@ -79,7 +79,17 @@ public class GuiView implements View {
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
         SwingUtilities.invokeLater(() -> {
+            // Note: Room name is not provided in response. 
+            // Ideally we should get it. For now, we can rely on default title or update it if we have info.
             roomChatManager.openRoom(roomId);
+        });
+    }
+
+    @Override
+    public void showRoomExitSuccess(Long roomId) {
+        SwingUtilities.invokeLater(() -> {
+            roomChatManager.closeRoom(roomId);
+            showSystemMessage("채팅방(ID:" + roomId + ")에서 퇴장했습니다.");
         });
     }
 

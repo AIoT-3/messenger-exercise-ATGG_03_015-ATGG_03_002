@@ -19,4 +19,8 @@ public class ChatRoomController {
     public void requestEnterRoom(long roomId) {
         chatRoomClientService.enterRoom(roomId);
     }
+
+    public void requestExitRoom(long roomId) {
+        chatRoomClientService.exitRoom(roomId);
+    }
 }

@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
 import com.nhnacademy.messenger.client.domain.chat.listener.ChatMessageListener;
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.listener.ExitRoomListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,12 +29,15 @@ public class RoomChatPanel extends JFrame {
     private JPanel messagePanel;
     private JTextField chatInputField;
     private JLabel roomTitleLabel;
-    private JButton sendButton; // 필드로 승격
-    private long roomId; // final 제거
+    private JButton sendButton;
+    private long roomId;
 
-    public RoomChatPanel(long roomId) {
+    private final ChatRoomController chatRoomController;
+
+    public RoomChatPanel(long roomId, ChatRoomController chatRoomController) {
         super(TITLE_TEXT);
         this.roomId = roomId;
+        this.chatRoomController = chatRoomController;
 
         initWindow();
         initUI();
@@ -102,7 +106,7 @@ public class RoomChatPanel extends JFrame {
         JButton exitButton = new JButton(TEXT_EXIT);
         exitButton.setBackground(AppConstant.TRANSPARENT_COLOR);
         exitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
-        exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane()));
+        exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane(), chatRoomController));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         rightPanel.setOpaque(false);

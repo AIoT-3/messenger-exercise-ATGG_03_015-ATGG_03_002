@@ -3,6 +3,7 @@ package com.nhnacademy.messenger.client.ui;
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.room.event.CreateRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.room.event.EnterRoomSuccessEvent;
+import com.nhnacademy.messenger.client.domain.room.event.ExitRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.room.event.ListRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.user.event.LoginSuccessEvent;
 import com.nhnacademy.messenger.client.domain.user.event.LogoutSuccessEvent;
@@ -33,6 +34,11 @@ public class ClientUiEventListener {
     @EventListener
     public void onRoomEnter(EnterRoomSuccessEvent event) {
         view.showRoomEnterSuccess(event.roomId(), event.users());
+    }
+
+    @EventListener
+    public void onRoomExit(ExitRoomSuccessEvent event) {
+        view.showRoomExitSuccess(event.roomId());
     }
 
     @EventListener

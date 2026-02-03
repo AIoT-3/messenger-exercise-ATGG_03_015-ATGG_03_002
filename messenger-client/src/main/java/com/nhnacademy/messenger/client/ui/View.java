@@ -18,6 +18,7 @@ public interface View {
     // 채팅방 관련
     void showRoomList(List<RoomInfo> rooms);
     void showRoomEnterSuccess(Long roomId, List<String> users);
+    void showRoomExitSuccess(Long roomId);
     
     // 메시지 출력
     void appendMessage(String sender, String content);

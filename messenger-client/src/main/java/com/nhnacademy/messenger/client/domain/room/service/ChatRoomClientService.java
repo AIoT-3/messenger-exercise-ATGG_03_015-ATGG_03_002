@@ -5,6 +5,7 @@ import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.room.CreateRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomRequest;
+import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
 import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.RequestHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
@@ -40,6 +41,16 @@ public class ChatRoomClientService {
 
         EnterRoomRequest data = new EnterRoomRequest(roomId);
         RequestHeader header = RequestHeader.of(MessageType.CHAT_ROOM_ENTER, sessionId);
+        Message message = new Message(header, MessageConverter.toJsonNode(data));
+
+        messageClient.send(message);
+    }
+
+    public void exitRoom(long roomId) {
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+
+        ExitRoomRequest data = new ExitRoomRequest(roomId);
+        RequestHeader header = RequestHeader.of(MessageType.CHAT_ROOM_EXIT, sessionId);
         Message message = new Message(header, MessageConverter.toJsonNode(data));
 
         messageClient.send(message);

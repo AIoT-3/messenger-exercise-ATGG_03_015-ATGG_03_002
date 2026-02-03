@@ -4,6 +4,7 @@ import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler
 import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.handler.ExitRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
@@ -36,6 +37,7 @@ public class GuiMain {
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
+        networkDispatcher.register(CHAT_ROOM_EXIT_SUCCESS, new ExitRoomResponseHandler());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
 
 
@@ -49,7 +51,7 @@ public class GuiMain {
         LoginPanel loginPanel = new LoginPanel(userController);
         RoomListPanel roomListPanel = new RoomListPanel(userController, chatRoomController);
         
-        RoomChatManager roomChatManager = new RoomChatManager();
+        RoomChatManager roomChatManager = new RoomChatManager(chatRoomController);
         GuiView view = new GuiView(loginPanel, roomListPanel, roomChatManager);
 
         // 4. UI 리스너 등록

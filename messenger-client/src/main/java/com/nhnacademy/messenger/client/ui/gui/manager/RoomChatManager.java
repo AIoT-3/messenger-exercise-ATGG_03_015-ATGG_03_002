@@ -1,6 +1,8 @@
 package com.nhnacademy.messenger.client.ui.gui.manager;
 
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -10,8 +12,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
+@RequiredArgsConstructor
 public class RoomChatManager {
     private final Map<Long, RoomChatPanel> chatRooms = new ConcurrentHashMap<>();
+    private final ChatRoomController chatRoomController;
 
     public void openRoom(long roomId) {
         if (chatRooms.containsKey(roomId)) {
@@ -21,9 +25,11 @@ public class RoomChatManager {
             }
             panel.toFront();
         } else {
-            RoomChatPanel panel = new RoomChatPanel(roomId);
+            RoomChatPanel panel = new RoomChatPanel(roomId, chatRoomController);
             panel.setRoomTitle("채팅방 " + roomId);
             panel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+            // Remove from map when closed
 
             panel.addWindowListener(new WindowAdapter() {
                 @Override
