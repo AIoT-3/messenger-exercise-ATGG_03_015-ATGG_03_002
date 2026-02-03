@@ -1,5 +1,8 @@
 package com.nhnacademy.messenger.client;
 
+import com.nhnacademy.messenger.client.domain.chat.handler.ChatCommandHandler;
+import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
+import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomCommandHandler;
@@ -15,6 +18,7 @@ import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
+import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
@@ -45,6 +49,8 @@ public class ClientMain {
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
+        networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
+        networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageListener());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
@@ -61,6 +67,7 @@ public class ClientMain {
         cliDispatcher.register(CreateRoomCommandHandler.COMMAND, new CreateRoomCommandHandler(chatRoomController));
         cliDispatcher.register(ListRoomCommandHandler.COMMAND, new ListRoomCommandHandler(chatRoomController));
         cliDispatcher.register(EnterRoomCommandHandler.COMMAND, new EnterRoomCommandHandler(chatRoomController));
+        cliDispatcher.register(ChatCommandHandler.COMMAND, new ChatCommandHandler(chatRoomController));
 
         try {
             // 5. 서버 연결
@@ -72,6 +79,17 @@ public class ClientMain {
             while (running) {
                 String input = view.readInput();
                 if (input.isEmpty()) continue;
+
+                // 채팅 모드 처리 (일반 텍스트)
+                if (!input.startsWith("/")) {
+                    Long currentRoomId = ClientSession.INSTANCE.getCurrentRoomId();
+                    if (currentRoomId != null) {
+                        chatRoomController.requestSendMessage(currentRoomId, input);
+                    } else {
+                        view.showErrorMessage("활성화된 채팅방이 없습니다. /enter <roomId> 로 입장하거나 /chat 명령어를 사용하세요.");
+                    }
+                    continue;
+                }
 
                 Command command = parser.parse(input);
 

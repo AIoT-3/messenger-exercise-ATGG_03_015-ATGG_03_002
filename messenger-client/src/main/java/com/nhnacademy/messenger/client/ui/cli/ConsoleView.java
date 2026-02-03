@@ -20,60 +20,72 @@ public class ConsoleView implements View {
         this.out = System.out;
     }
 
+    // --- Helpers ---
+
+    private void printWithPrompt(String message) {
+        // 현재 줄의 프롬프트를 덮어쓰기 위해 \r 사용
+        out.print("\r" + message + "\n> ");
+        out.flush();
+    }
+
     // --- View 인터페이스 구현 ---
 
     @Override
     public void showSystemMessage(String message) {
-        out.println("[시스템] " + message);
+        printWithPrompt("[시스템] " + message);
     }
 
     @Override
     public void showErrorMessage(String message) {
-        out.println("[오류] " + message);
+        printWithPrompt("[오류] " + message);
     }
 
     @Override
     public void showLoginSuccess(String userName) {
-        out.println("환영합니다, " + userName + "님!");
+        printWithPrompt("환영합니다, " + userName + "님!");
     }
 
     @Override
     public void showLogoutSuccess() {
-        out.println("[로그아웃] 로그아웃 되었습니다. /login [ID] [PW] 로 로그인하세요");
+        printWithPrompt("[로그아웃] 로그아웃 되었습니다. /login [ID] [PW] 로 로그인하세요");
     }
 
     @Override
     public void showRoomList(List<RoomInfo> rooms) {
-        out.println("============== 채팅방 목록 ==============");
+        StringBuilder sb = new StringBuilder();
+        sb.append("============== 채팅방 목록 ==============\n");
         if (rooms == null || rooms.isEmpty()) {
-            out.println("(채팅방이 없습니다)");
+            sb.append("(채팅방이 없습니다)\n");
         } else {
             for (RoomInfo info : rooms) {
-                out.printf("- [%d] %s (인원: %d명)%n",
-                        info.roomId(), info.roomName(), info.userCount());
+                sb.append(String.format("- [%d] %s (인원: %d명)%n",
+                        info.roomId(), info.roomName(), info.userCount()));
             }
         }
-        out.println("========================================");
+        sb.append("=======================================");
+        printWithPrompt(sb.toString());
     }
 
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
-        out.println(">> [" + roomId + "] 번 방에 입장했습니다.");
-        out.println("참여자: " + String.join(", ", users));
+        String msg = ">> [" + roomId + "] 번 방에 입장했습니다.\n참여자: " + String.join(", ", users);
+        printWithPrompt(msg);
     }
 
     @Override
     public void appendMessage(String sender, String content) {
-        // [보낸이]: 내용 형식
-        out.println("[" + sender + "]: " + content);
+        printWithPrompt("[" + sender + "]: " + content);
     }
 
     // --- CLI 전용 기능 ---
 
     public String readInput() {
-        out.print("> ");
+        out.print("\r> ");
         out.flush();
-        String line = scanner.nextLine();
-        return StringUtils.trim(line);
+        if (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            return StringUtils.trim(line);
+        }
+        return "";
     }
 }

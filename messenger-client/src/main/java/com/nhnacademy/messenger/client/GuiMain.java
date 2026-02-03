@@ -1,5 +1,7 @@
 package com.nhnacademy.messenger.client;
 
+import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
+import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
@@ -36,6 +38,8 @@ public class GuiMain {
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
+        networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
+        networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageListener());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
 
 
@@ -50,7 +54,7 @@ public class GuiMain {
         RoomListPanel roomListPanel = new RoomListPanel(userController, chatRoomController);
         // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
         //  ClientSession.isInChatRoom으로 방 진입 체크
-        RoomChatPanel roomChatPanel = new RoomChatPanel(0);
+        RoomChatPanel roomChatPanel = new RoomChatPanel(chatRoomController);
         GuiView view = new GuiView(loginPanel, roomListPanel, roomChatPanel);
 
         // 4. UI 리스너 등록

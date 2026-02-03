@@ -3,6 +3,7 @@ package com.nhnacademy.messenger.client.domain.room.handler;
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.room.event.EnterRoomSuccessEvent;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
+import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomResponse;
@@ -20,6 +21,7 @@ public class EnterRoomResponseHandler implements ResponseHandler {
                 throw new IllegalStateException("입장 응답 데이터가 비어있습니다.");
             }
 
+            ClientSession.INSTANCE.setCurrentRoomId(response.roomId());
             EventBus.INSTANCE.publish(new EnterRoomSuccessEvent(response.roomId(), response.users()));
 
         } catch (Exception e) {
