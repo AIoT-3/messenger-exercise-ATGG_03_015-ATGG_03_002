@@ -2,6 +2,11 @@ package com.nhnacademy.messenger.server.network;
 
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.header.MessageType;
+import com.nhnacademy.messenger.server.chat.handler.ChatRequestHandler;
+import com.nhnacademy.messenger.server.chat.repository.ChatRepository;
+import com.nhnacademy.messenger.server.chat.repository.impl.InMemoryChatRepository;
+import com.nhnacademy.messenger.server.chat.service.ChatService;
+import com.nhnacademy.messenger.server.chat.service.impl.ChatServiceImpl;
 import com.nhnacademy.messenger.server.room.handler.CreateRoomRequestHandler;
 import com.nhnacademy.messenger.server.room.handler.EnterRoomRequestHandler;
 import com.nhnacademy.messenger.server.room.handler.ExitRoomRequestHandler;
@@ -31,6 +36,7 @@ public class MessageServer implements Runnable {
     private final SessionManager sessionManager;
     private final UserService userService;
     private final ChatRoomService chatRoomService;
+    private final ChatService chatService;
     private final MessageDispatcher messageDispatcher;
 
     public MessageServer() {
@@ -47,6 +53,9 @@ public class MessageServer implements Runnable {
         this.userService = new UserServiceImpl(new InMemoryUserRepository());
         this.chatRoomService = new ChatRoomServiceImpl(new InMemoryChatRoomRepository());
         
+        ChatRepository chatRepository = new InMemoryChatRepository();
+        this.chatService = new ChatServiceImpl(chatRepository);
+        
         EventBus.INSTANCE.register(this.chatRoomService);
 
         // 2. 디스패처 및 핸들러 초기화
@@ -57,6 +66,7 @@ public class MessageServer implements Runnable {
         this.messageDispatcher.register(MessageType.CHAT_ROOM_LIST, new ListRoomRequestHandler(chatRoomService));
         this.messageDispatcher.register(MessageType.CHAT_ROOM_ENTER, new EnterRoomRequestHandler(chatRoomService));
         this.messageDispatcher.register(MessageType.CHAT_ROOM_EXIT, new ExitRoomRequestHandler(chatRoomService));
+        this.messageDispatcher.register(MessageType.CHAT_MESSAGE, new ChatRequestHandler(chatService, chatRoomService));
 
         try {
             this.serverSocket = new ServerSocket(port);

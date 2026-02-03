@@ -33,7 +33,7 @@ public class UserClientService {
         }
         RequestHeader header = RequestHeader.of(MessageType.LOGOUT, sessionId);
         Message message = new Message(header, null);
-        
+
         messageClient.send(message);
     }
 }
