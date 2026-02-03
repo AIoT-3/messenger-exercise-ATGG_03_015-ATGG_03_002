@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.server.room.handler;
 
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.room.ListRoomResponse;
+import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
@@ -26,8 +27,8 @@ public class ListRoomRequestHandler implements RequestHandler {
 
         List<ChatRoom> chatRooms = chatRoomService.getAllChatRooms();
 
-        List<ListRoomResponse.RoomInfo> roomInfos = chatRooms.stream()
-                .map(room -> new ListRoomResponse.RoomInfo(
+        List<RoomInfo> roomInfos = chatRooms.stream()
+                .map(room -> new RoomInfo(
                         room.getRoomId(),
                         room.getRoomName(),
                         room.getSessions().size()

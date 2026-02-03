@@ -4,6 +4,8 @@ import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler
 import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomCommandHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomCommandHandler;
+import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomCommandHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
@@ -39,6 +41,7 @@ public class ClientMain {
         networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
+        networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
@@ -53,6 +56,7 @@ public class ClientMain {
         cliDispatcher.register(LoginCommandHandler.COMMAND, new LoginCommandHandler(userController));
         cliDispatcher.register(CreateRoomCommandHandler.COMMAND, new CreateRoomCommandHandler(chatRoomController));
         cliDispatcher.register(ListRoomCommandHandler.COMMAND, new ListRoomCommandHandler(chatRoomController));
+        cliDispatcher.register(EnterRoomCommandHandler.COMMAND, new EnterRoomCommandHandler(chatRoomController));
 
         try {
             // 5. 서버 연결

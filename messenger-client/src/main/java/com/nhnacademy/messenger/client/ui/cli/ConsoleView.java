@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.client.ui.cli;
 
 import com.nhnacademy.messenger.client.ui.View;
+import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,21 +38,23 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void showRoomList(List<String> rooms) {
+    public void showRoomList(List<RoomInfo> rooms) {
         out.println("============== 채팅방 목록 ==============");
         if (rooms == null || rooms.isEmpty()) {
             out.println("(채팅방이 없습니다)");
         } else {
-            for (String room : rooms) {
-                out.println("- " + room);
+            for (RoomInfo info : rooms) {
+                out.printf("- [%d] %s (인원: %d명)%n",
+                        info.roomId(), info.roomName(), info.userCount());
             }
         }
         out.println("========================================");
     }
 
     @Override
-    public void showRoomEnterSuccess(String roomName) {
-        out.println(">> [" + roomName + "] 방에 입장했습니다.");
+    public void showRoomEnterSuccess(Long roomId, List<String> users) {
+        out.println(">> [" + roomId + "] 번 방에 입장했습니다.");
+        out.println("참여자: " + String.join(", ", users));
     }
 
     @Override

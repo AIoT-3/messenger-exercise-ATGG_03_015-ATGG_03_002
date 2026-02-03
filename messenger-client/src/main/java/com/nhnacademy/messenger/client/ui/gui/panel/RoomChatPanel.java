@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import javax.swing.*;
 import java.awt.*;
 
+import java.awt.event.ActionListener;
+
 @Slf4j
 public class RoomChatPanel extends JFrame {
 
@@ -26,7 +28,8 @@ public class RoomChatPanel extends JFrame {
     private JPanel messagePanel;
     private JTextField chatInputField;
     private JLabel roomTitleLabel;
-    private final long roomId;
+    private JButton sendButton; // 필드로 승격
+    private long roomId; // final 제거
 
     public RoomChatPanel(long roomId) {
         super(TITLE_TEXT);
@@ -50,6 +53,27 @@ public class RoomChatPanel extends JFrame {
         contentPane.add(createTopPanel(), BorderLayout.NORTH);
         contentPane.add(createCenterPanel(), BorderLayout.CENTER);
         contentPane.add(createBottomPanel(), BorderLayout.SOUTH);
+    }
+    
+    // 방 정보 업데이트 및 리셋
+    public void updateRoomInfo(long roomId) {
+        this.roomId = roomId;
+        setRoomTitle("채팅방 " + roomId);
+        
+        // 메시지 영역 초기화
+        if (messagePanel != null) {
+            messagePanel.removeAll();
+            messagePanel.revalidate();
+            messagePanel.repaint();
+        }
+
+        // 전송 버튼 리스너 교체
+        if (sendButton != null) {
+            for (ActionListener al : sendButton.getActionListeners()) {
+                sendButton.removeActionListener(al);
+            }
+            sendButton.addActionListener(new ChatMessageListener(roomId, chatInputField));
+        }
     }
 
     public void setRoomTitle(String title) {
@@ -119,7 +143,7 @@ public class RoomChatPanel extends JFrame {
         chatInputField.setPreferredSize(new Dimension(0, INPUT_HEIGHT));
         chatInputField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        JButton sendButton = new JButton(TEXT_SEND);
+        sendButton = new JButton(TEXT_SEND); // 필드 사용
         sendButton.setBackground(AppConstant.TRANSPARENT_COLOR);
         sendButton.setForeground(AppConstant.SECONDARY_COLOR);
         sendButton.setPreferredSize(new Dimension(BUTTON_WIDTH, INPUT_HEIGHT));

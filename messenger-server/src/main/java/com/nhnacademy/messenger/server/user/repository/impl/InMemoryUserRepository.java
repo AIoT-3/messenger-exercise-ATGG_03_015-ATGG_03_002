@@ -14,6 +14,8 @@ public class InMemoryUserRepository implements UserRepository {
     public InMemoryUserRepository() {
         this.userMap = new ConcurrentHashMap<>();
         userMap.put("marco", new User("marco", "마르코", "nhnacademy123"));
+        userMap.put("d", new User("d", "d", "d"));
+        userMap.put("f", new User("f", "f", "f"));
     }
 
     @Override
