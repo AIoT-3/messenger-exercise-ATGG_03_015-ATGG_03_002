@@ -1,6 +1,8 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
+import com.nhnacademy.messenger.client.domain.chat.listener.ChatMessageListener;
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.listener.ExitRoomListener;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class RoomChatPanel extends JFrame {
     private JLabel roomTitleLabel;
     private JButton sendButton;
     private long roomId;
+
     private final ChatRoomClientService chatRoomClientService;
 
     public RoomChatPanel(ChatRoomClientService chatRoomClientService) {
@@ -68,7 +71,13 @@ public class RoomChatPanel extends JFrame {
             messagePanel.repaint();
         }
 
-        // 전송 버튼 리스너 재설정 불필요 (sendMessage가 roomId 참조함)
+        // 전송 버튼 리스너 교체
+        if (sendButton != null) {
+            for (ActionListener al : sendButton.getActionListeners()) {
+                sendButton.removeActionListener(al);
+            }
+            sendButton.addActionListener(new ChatMessageListener(roomId, chatInputField));
+        }
     }
 
     public void setRoomTitle(String title) {
@@ -134,7 +143,7 @@ public class RoomChatPanel extends JFrame {
         chatInputField.setForeground(AppConstant.TEXT_COLOR);
         chatInputField.setPreferredSize(new Dimension(0, INPUT_HEIGHT));
         chatInputField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        
+
         // 엔터 입력 시 전송
         chatInputField.addActionListener(e -> sendMessage());
 
@@ -153,7 +162,7 @@ public class RoomChatPanel extends JFrame {
     private void sendMessage() {
         String content = chatInputField.getText();
         if (content == null || content.trim().isEmpty()) return;
-        
+
         chatRoomClientService.sendMessage(this.roomId, content);
         chatInputField.setText("");
     }
@@ -167,7 +176,7 @@ public class RoomChatPanel extends JFrame {
         messagePanel.add(label);
         messagePanel.revalidate();
         messagePanel.repaint();
-        
+
         SwingUtilities.invokeLater(() -> {
             if (messagePanel.getParent() != null && messagePanel.getParent().getParent() instanceof JScrollPane scrollPane) {
                 JScrollBar vertical = scrollPane.getVerticalScrollBar();

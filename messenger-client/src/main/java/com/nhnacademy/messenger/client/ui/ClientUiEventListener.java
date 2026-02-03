@@ -4,6 +4,7 @@ import com.nhnacademy.messenger.client.domain.chat.event.ReceiveMessageEvent;
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.room.event.CreateRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.room.event.EnterRoomSuccessEvent;
+import com.nhnacademy.messenger.client.domain.room.event.ExitRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.room.event.ListRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.user.event.LoginSuccessEvent;
 import com.nhnacademy.messenger.common.event.EventListener;
@@ -18,6 +19,9 @@ public class ClientUiEventListener {
     public void onLoginSuccess(LoginSuccessEvent event) {
         view.showLoginSuccess(event.userId());
     }
+
+    @EventListener
+    public void onLogoutSuccess(LogoutSuccessEvent event) { view.showLogoutSuccess(); }
 
     @EventListener
     public void onRoomCreated(CreateRoomSuccessEvent event) {
@@ -37,6 +41,11 @@ public class ClientUiEventListener {
     @EventListener
     public void onMessageReceived(ReceiveMessageEvent event) {
         view.appendMessage(event.senderId(), event.content());
+    }
+
+    @EventListener
+    public void onRoomExit(ExitRoomSuccessEvent event) {
+        view.showRoomExitSuccess(event.roomId());
     }
 
     @EventListener

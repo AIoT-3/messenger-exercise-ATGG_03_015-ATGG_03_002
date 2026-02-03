@@ -73,6 +73,11 @@ public class ConsoleView implements View {
     }
 
     @Override
+    public void showRoomExitSuccess(Long roomId) {
+        out.println(">> [" + roomId + "] 번 방에서 퇴장했습니다.");
+    }
+
+    @Override
     public void appendMessage(String sender, String content) {
         printWithPrompt("[" + sender + "]: " + content);
     }

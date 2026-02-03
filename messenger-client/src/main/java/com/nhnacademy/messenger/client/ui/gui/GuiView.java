@@ -1,8 +1,8 @@
 package com.nhnacademy.messenger.client.ui.gui;
 
 import com.nhnacademy.messenger.client.ui.View;
+import com.nhnacademy.messenger.client.ui.gui.manager.RoomChatManager;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
-import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +15,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GuiView implements View {
 
-    // 나중에 Panel 전용 Manager로 관리하기
     private final LoginPanel loginPanel;
     private final RoomListPanel roomListPanel;
-    private final RoomChatPanel roomChatPanel;
+    private final RoomChatManager roomChatManager;
 
     public void start() {
         SwingUtilities.invokeLater(() ->
@@ -29,7 +28,6 @@ public class GuiView implements View {
     private void switchView(JFrame targetFrame) {
         loginPanel.setVisible(false);
         roomListPanel.setVisible(false);
-        roomChatPanel.setVisible(false);
 
         if (targetFrame != null) {
             targetFrame.setVisible(true);
@@ -66,6 +64,7 @@ public class GuiView implements View {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(null, "성공적으로 로그아웃 되었습니다.");
             roomListPanel.clearLists(); // 로그아웃 시 목록 초기화
+            roomChatManager.closeAll();
             switchView(loginPanel);
         });
     }
@@ -73,21 +72,24 @@ public class GuiView implements View {
     @Override
     public void showRoomList(List<RoomInfo> rooms) {
         SwingUtilities.invokeLater(() -> {
-            roomListPanel.clearLists();
-            if (rooms != null) {
-                for (RoomInfo info : rooms) {
-                    String displayName = String.format("%s (%d명)", info.roomName(), info.userCount());
-                    roomListPanel.addRoomItem(info.roomId(), displayName);
-                }
-            }
+            roomListPanel.updateRoomList(rooms);
         });
     }
 
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
         SwingUtilities.invokeLater(() -> {
-            roomChatPanel.updateRoomInfo(roomId);
-            switchView(roomChatPanel);
+            // Note: Room name is not provided in response. 
+            // Ideally we should get it. For now, we can rely on default title or update it if we have info.
+            roomChatManager.openRoom(roomId);
+        });
+    }
+
+    @Override
+    public void showRoomExitSuccess(Long roomId) {
+        SwingUtilities.invokeLater(() -> {
+            roomChatManager.closeRoom(roomId);
+            showSystemMessage("채팅방(ID:" + roomId + ")에서 퇴장했습니다.");
         });
     }
 

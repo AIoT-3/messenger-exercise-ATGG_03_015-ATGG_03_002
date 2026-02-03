@@ -6,6 +6,7 @@ import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.chat.ChatRequest;
 import com.nhnacademy.messenger.common.message.data.room.CreateRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomRequest;
+import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
 import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.RequestHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
@@ -32,6 +33,7 @@ public class ChatRoomClientService {
     public void getRoomList() {
         String sessionId = ClientSession.INSTANCE.getSessionId();
 
+        // 요청 데이터는 없음
         RequestHeader header = RequestHeader.of(MessageType.CHAT_ROOM_LIST, sessionId);
         Message message = new Message(header, null);
 
@@ -48,11 +50,21 @@ public class ChatRoomClientService {
         messageClient.send(message);
     }
 
+    public void exitRoom(long roomId) {
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+
+        ExitRoomRequest data = new ExitRoomRequest(roomId);
+        RequestHeader header = RequestHeader.of(MessageType.CHAT_ROOM_EXIT, sessionId);
+        Message message = new Message(header, MessageConverter.toJsonNode(data));
+
+        messageClient.send(message);
+    }
+
     public void sendMessage(Long roomId, String content) {
         if (Objects.isNull(roomId) || StringUtils.isBlank(content)) {
             return;
         }
-        
+
         String sessionId = ClientSession.INSTANCE.getSessionId();
 
         ChatRequest data = new ChatRequest(roomId, content);

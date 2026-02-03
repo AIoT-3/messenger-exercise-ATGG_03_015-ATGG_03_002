@@ -4,6 +4,7 @@ import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -13,12 +14,24 @@ import java.awt.event.ActionListener;
 public class RefreshListener implements ActionListener {
 
     private final ChatRoomClientService chatRoomClientService;
+    private static final int COOLDOWN_MS = 3000;
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        // 응답 리퀘스트가 빈번해지는 것을 막기 위해 3초에 1번만 누를 수 있도록 변경
+        Object source = e.getSource();
+        if (source instanceof JButton button) {
+            button.setEnabled(false);
+            Timer timer = new Timer(COOLDOWN_MS, event -> button.setEnabled(true));
+            timer.setRepeats(false);
+            timer.start();
+        }
+
         log.info("새로고침 요청");
         try {
             chatRoomClientService.getRoomList();
+            // TODO: 유저 리스트 같이 리퀘스트
         } catch (Exception ex) {
             log.error("새로고침 실패", ex);
         }

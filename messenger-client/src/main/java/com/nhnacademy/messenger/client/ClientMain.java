@@ -10,6 +10,8 @@ import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomCommandHandl
 import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomCommandHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.handler.*;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
@@ -48,6 +50,7 @@ public class ClientMain {
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
+        networkDispatcher.register(CHAT_ROOM_EXIT_SUCCESS, new ExitRoomResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
         networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageListener());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
@@ -66,6 +69,7 @@ public class ClientMain {
         cliDispatcher.register(new CreateRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ListRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new EnterRoomCommandHandler(chatRoomClientService));
+        cliDispatcher.register(new ExitRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ChatCommandHandler(chatRoomClientService));
         cliDispatcher.register(new HelpCommandHandler(cliDispatcher));
 

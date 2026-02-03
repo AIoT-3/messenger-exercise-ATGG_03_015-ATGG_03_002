@@ -18,7 +18,6 @@ import com.nhnacademy.messenger.server.network.MessageDispatcher;
 import com.nhnacademy.messenger.server.session.event.SessionDisconnectedEvent;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.domain.User;
-import com.nhnacademy.messenger.server.user.service.UserService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
