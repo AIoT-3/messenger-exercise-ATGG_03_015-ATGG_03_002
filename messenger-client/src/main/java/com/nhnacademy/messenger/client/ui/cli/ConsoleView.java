@@ -37,11 +37,6 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void showLoginFail() {
-        out.println("[로그인 실패] 아이디와 비밀번호를 확인해주세요.");
-    }
-
-    @Override
     public void showRoomList(List<String> rooms) {
         out.println("============== 채팅방 목록 ==============");
         if (rooms == null || rooms.isEmpty()) {

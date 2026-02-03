@@ -12,7 +12,6 @@ public interface View {
 
     // 로그인 관련
     void showLoginSuccess(String userName);
-    void showLoginFail();
 
     // 채팅방 관련
     void showRoomList(List<String> rooms); // 임시로 String 리스트, 추후 DTO로 변경

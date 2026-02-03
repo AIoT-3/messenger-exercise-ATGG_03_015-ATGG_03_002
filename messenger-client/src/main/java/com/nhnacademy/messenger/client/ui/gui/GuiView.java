@@ -54,13 +54,6 @@ public class GuiView implements View {
     }
 
     @Override
-    public void showLoginFail() {
-        SwingUtilities.invokeLater(() -> 
-            JOptionPane.showMessageDialog(loginPanel, "Login Failed", "Error", JOptionPane.ERROR_MESSAGE)
-        );
-    }
-
-    @Override
     public void showRoomList(List<String> rooms) {
         SwingUtilities.invokeLater(() -> {
             roomListPanel.clearLists();
