@@ -1,13 +1,12 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
-import com.nhnacademy.messenger.client.domain.chat.listener.ChatMessageListener;
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.listener.ExitRoomListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-
 import java.awt.event.ActionListener;
 
 @Slf4j
@@ -28,12 +27,14 @@ public class RoomChatPanel extends JFrame {
     private JPanel messagePanel;
     private JTextField chatInputField;
     private JLabel roomTitleLabel;
-    private JButton sendButton; // 필드로 승격
-    private long roomId; // final 제거
+    private JButton sendButton;
+    private long roomId;
+    private final ChatRoomController controller;
 
-    public RoomChatPanel(long roomId) {
+    public RoomChatPanel(ChatRoomController controller) {
         super(TITLE_TEXT);
-        this.roomId = roomId;
+        this.controller = controller;
+        this.roomId = 0;
 
         initWindow();
         initUI();
@@ -67,13 +68,7 @@ public class RoomChatPanel extends JFrame {
             messagePanel.repaint();
         }
 
-        // 전송 버튼 리스너 교체
-        if (sendButton != null) {
-            for (ActionListener al : sendButton.getActionListeners()) {
-                sendButton.removeActionListener(al);
-            }
-            sendButton.addActionListener(new ChatMessageListener(roomId, chatInputField));
-        }
+        // 전송 버튼 리스너 재설정 불필요 (sendMessage가 roomId 참조함)
     }
 
     public void setRoomTitle(String title) {
@@ -86,22 +81,20 @@ public class RoomChatPanel extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(AppConstant.PRIMARY_COLOR);
 
-        // Left spacer for balancing center alignment
         JPanel leftSpacer = new JPanel();
         leftSpacer.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
         leftSpacer.setOpaque(false);
         panel.add(leftSpacer, BorderLayout.WEST);
 
-        // Title
         roomTitleLabel = new JLabel(TITLE_TEXT, SwingConstants.CENTER);
         roomTitleLabel.setFont(new Font("Dialog", Font.BOLD, 18));
         roomTitleLabel.setForeground(AppConstant.TEXT_COLOR);
         panel.add(roomTitleLabel, BorderLayout.CENTER);
 
-        // Exit Button
         JButton exitButton = new JButton(TEXT_EXIT);
         exitButton.setBackground(AppConstant.TRANSPARENT_COLOR);
         exitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
+        // TODO: ExitRoomListener도 Controller 사용하도록 변경 필요
         exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane()));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -142,12 +135,15 @@ public class RoomChatPanel extends JFrame {
         chatInputField.setForeground(AppConstant.TEXT_COLOR);
         chatInputField.setPreferredSize(new Dimension(0, INPUT_HEIGHT));
         chatInputField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        // 엔터 입력 시 전송
+        chatInputField.addActionListener(e -> sendMessage());
 
-        sendButton = new JButton(TEXT_SEND); // 필드 사용
+        sendButton = new JButton(TEXT_SEND);
         sendButton.setBackground(AppConstant.TRANSPARENT_COLOR);
         sendButton.setForeground(AppConstant.SECONDARY_COLOR);
         sendButton.setPreferredSize(new Dimension(BUTTON_WIDTH, INPUT_HEIGHT));
-        sendButton.addActionListener(new ChatMessageListener(roomId, chatInputField));
+        sendButton.addActionListener(e -> sendMessage());
 
         inputPanel.add(chatInputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
@@ -155,11 +151,14 @@ public class RoomChatPanel extends JFrame {
         return inputPanel;
     }
 
-    /**
-     * 채팅에 새 메세지를 추가합니다.
-     * @param userId 유저 ID
-     * @param text 채팅 내용
-     */
+    private void sendMessage() {
+        String content = chatInputField.getText();
+        if (content == null || content.trim().isEmpty()) return;
+        
+        controller.requestSendMessage(this.roomId, content);
+        chatInputField.setText("");
+    }
+
     public void addMessage(String userId, String text) {
         JLabel label = new JLabel(userId + ": " + text);
         label.setFont(FONT_MESSAGE);
@@ -170,10 +169,11 @@ public class RoomChatPanel extends JFrame {
         messagePanel.revalidate();
         messagePanel.repaint();
         
-        // Auto-scroll to bottom
         SwingUtilities.invokeLater(() -> {
-            JScrollBar vertical = ((JScrollPane) messagePanel.getParent().getParent()).getVerticalScrollBar();
-            vertical.setValue(vertical.getMaximum());
+            if (messagePanel.getParent() != null && messagePanel.getParent().getParent() instanceof JScrollPane scrollPane) {
+                JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
+            }
         });
     }
 }

@@ -19,4 +19,14 @@ public class ChatRoomController {
     public void requestEnterRoom(long roomId) {
         chatRoomClientService.enterRoom(roomId);
     }
+
+    public void requestSendMessage(Long roomId, String content) {
+        if (roomId == null) {
+            return;
+        }
+        if (content == null || content.trim().isEmpty()) {
+            return;
+        }
+        chatRoomClientService.sendMessage(roomId, content);
+    }
 }

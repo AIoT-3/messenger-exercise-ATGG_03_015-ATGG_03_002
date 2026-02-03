@@ -5,4 +5,7 @@ import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 
 public interface CommandExecutable {
     void execute(Command command, ConsoleView view);
+
+    String getCommand();
+    String getDescription();
 }

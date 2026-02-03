@@ -1,30 +1,30 @@
-package com.nhnacademy.messenger.client.domain.room.handler;
+package com.nhnacademy.messenger.client.domain.chat.handler;
 
 import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RequiredArgsConstructor
-public class EnterRoomCommandHandler implements CommandExecutable {
+public class ChatCommandHandler implements CommandExecutable {
 
-    private static final String COMMAND = "/enter";
-    private static final String DESCRIPTION = "/enter <roomId> - 채팅방에 입장합니다.";
+    private static final String COMMAND = "/chat";
+    private static final String DESCRIPTION = "/chat <roomId> <message> - 특정 방에 메시지를 전송합니다.";
     private final ChatRoomController controller;
 
     @Override
     public void execute(Command command, ConsoleView view) {
-        if (command.args().isEmpty()) {
+        if (command.args().size() < 2) {
             view.showSystemMessage("사용법: " + DESCRIPTION);
             return;
         }
 
         try {
-            long roomId = Long.parseLong(command.args().getFirst());
-            controller.requestEnterRoom(roomId);
+            Long roomId = Long.parseLong(command.args().get(0));
+            String message = String.join(" ", command.args().subList(1, command.args().size()));
+            
+            controller.requestSendMessage(roomId, message);
         } catch (NumberFormatException e) {
             view.showErrorMessage("방 ID는 숫자여야 합니다.");
         }

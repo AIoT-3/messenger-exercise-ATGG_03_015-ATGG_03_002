@@ -8,7 +8,7 @@ public enum ClientSession {
     private final AtomicReference<String> sessionId = new AtomicReference<>();
     private final AtomicReference<String> userId = new AtomicReference<>();
     private final AtomicReference<String> userName = new AtomicReference<>();
-    private final AtomicReference<String> currentRoomId = new AtomicReference<>();
+    private final AtomicReference<Long> currentRoomId = new AtomicReference<>();
 
     public String getSessionId() {
         return sessionId.get();
@@ -34,11 +34,11 @@ public enum ClientSession {
         this.userName.set(userName);
     }
 
-    public String getCurrentRoomId() {
+    public Long getCurrentRoomId() {
         return currentRoomId.get();
     }
 
-    public void setCurrentRoomId(String currentRoomId) {
+    public void setCurrentRoomId(Long currentRoomId) {
         this.currentRoomId.set(currentRoomId);
     }
 

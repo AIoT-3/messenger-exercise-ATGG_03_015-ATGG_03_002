@@ -5,6 +5,7 @@ import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -16,7 +17,8 @@ public class CLICommandDispatcher {
     private final ConsoleView view;
     private final Map<String, CommandExecutable> handlerMap = new HashMap<>();
 
-    public void register(String command, CommandExecutable handler) {
+    public void register(CommandExecutable handler) {
+        String command = handler.getCommand();
         if (handlerMap.containsKey(command)) {
             log.warn("명령어 핸들러가 교체됩니다: {}", command);
         }
@@ -42,5 +44,9 @@ public class CLICommandDispatcher {
                             }
                         }
                 );
+    }
+
+    public Collection<CommandExecutable> getHandlers() {
+        return handlerMap.values();
     }
 }

@@ -9,11 +9,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ListRoomCommandHandler implements CommandExecutable {
 
-    public static final String COMMAND = "/list";
+    private static final String COMMAND = "/list";
+    private static final String DESCRIPTION = "/list - 채팅방 목록을 조회합니다.";
     private final ChatRoomController controller;
 
     @Override
     public void execute(Command command, ConsoleView view) {
         controller.requestRoomList();
+    }
+
+    @Override
+    public String getCommand() {
+        return COMMAND;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
     }
 }

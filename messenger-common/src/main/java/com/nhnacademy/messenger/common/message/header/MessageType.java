@@ -19,6 +19,9 @@ import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.ExitRoomResponse;
 import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryRequest;
 import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryResponse;
+import com.nhnacademy.messenger.common.message.data.push.PushNewMessage;
+import com.nhnacademy.messenger.common.message.data.push.PushRoomEnter;
+import com.nhnacademy.messenger.common.message.data.push.PushRoomExit;
 import com.nhnacademy.messenger.common.message.data.room.ListRoomResponse;
 import com.nhnacademy.messenger.common.message.data.user.UserListResponse;
 import lombok.Getter;
@@ -57,9 +60,9 @@ public enum MessageType {
     CHAT_ROOM_EXIT_SUCCESS(ExitRoomResponse.class),
 
     // push
-    PUSH_NEW_MESSAGE(null),
-    PUSH_ROOM_ENTER(null),
-    PUSH_ROOM_EXIT(null),
+    PUSH_NEW_MESSAGE(PushNewMessage.class),
+    PUSH_ROOM_ENTER(PushRoomEnter.class),
+    PUSH_ROOM_EXIT(PushRoomExit.class),
 
     // file
     FILE_TRANSFER(FileTransferRequest.class),
