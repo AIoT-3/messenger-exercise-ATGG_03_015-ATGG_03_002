@@ -163,6 +163,19 @@ public class Session implements Runnable {
         joinedRoomIds.remove(roomId);
     }
 
+    public void logout() {
+        if (Objects.nonNull(this.id)) {
+            sessionManager.removeSession(this.id);
+        }
+        // 로그아웃 시에도 채팅방 등 자원 정리를 위해 이벤트 발행
+        EventBus.INSTANCE.publish(new SessionDisconnectedEvent(this));
+        
+        this.user = null;
+        this.id = null;
+        this.joinedRoomIds.clear();
+        log.info("사용자 로그아웃 완료");
+    }
+
     // --- Private Methods ---
 
     // 공통 규칙 검사

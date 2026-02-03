@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GuiView implements View {
 
+    // 나중에 Panel 전용 Manager로 관리하기
     private final LoginPanel loginPanel;
     private final RoomListPanel roomListPanel;
     private final RoomChatPanel roomChatPanel;
@@ -51,6 +52,7 @@ public class GuiView implements View {
     public void showLoginSuccess(String userName) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
+            loginPanel.clearFields();
             switchView(roomListPanel);
         });
     }
