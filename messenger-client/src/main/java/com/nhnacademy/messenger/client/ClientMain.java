@@ -4,6 +4,7 @@ import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
+import com.nhnacademy.messenger.client.domain.user.handler.LogoutCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.common.event.EventBus;
@@ -46,6 +47,7 @@ public class ClientMain {
         // 4. CLI 명령어 디스패처 초기화
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
         cliDispatcher.register("/login", new LoginCommandHandler(userController));
+        cliDispatcher.register("/logout", new LogoutCommandHandler(userController));
 
         try {
             // 5. 서버 연결
