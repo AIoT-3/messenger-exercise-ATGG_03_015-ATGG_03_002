@@ -3,6 +3,7 @@ package com.nhnacademy.messenger.client;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
@@ -16,7 +17,6 @@ import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
 import com.nhnacademy.messenger.common.event.EventBus;
-import com.nhnacademy.messenger.common.message.header.MessageType;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -33,6 +33,7 @@ public class GuiMain {
         networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
+        networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
 
 

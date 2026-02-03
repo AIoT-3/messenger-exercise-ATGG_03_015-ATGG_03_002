@@ -50,8 +50,9 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void showRoomEnterSuccess(String roomName) {
-        out.println(">> [" + roomName + "] 방에 입장했습니다.");
+    public void showRoomEnterSuccess(Long roomId, List<String> users) {
+        out.println(">> [" + roomId + "] 번 방에 입장했습니다.");
+        out.println("참여자: " + String.join(", ", users));
     }
 
     @Override

@@ -15,4 +15,8 @@ public class ChatRoomController {
     public void requestRoomList() {
         chatRoomClientService.getRoomList();
     }
+
+    public void requestEnterRoom(long roomId) {
+        chatRoomClientService.enterRoom(roomId);
+    }
 }

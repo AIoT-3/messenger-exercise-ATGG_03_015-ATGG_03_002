@@ -173,7 +173,7 @@ public class RoomListPanel extends JFrame {
         roomButton.setPreferredSize(new Dimension(0, ROOM_BUTTON_HEIGHT));
 
         // CHAT-ROOM-ENTER 전송을 위한 리스너
-        roomButton.addActionListener(new EnterRoomListener());
+        roomButton.addActionListener(new EnterRoomListener(chatRoomController, roomId));
 
         roomListContainer.add(roomButton);
         roomListContainer.add(Box.createRigidArea(new Dimension(0, SPACING_SMALL)));
