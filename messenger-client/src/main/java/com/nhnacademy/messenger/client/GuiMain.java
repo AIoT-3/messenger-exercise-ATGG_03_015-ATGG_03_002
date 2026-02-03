@@ -47,7 +47,7 @@ public class GuiMain {
 
         // 3. GUI 초기화
         LoginPanel loginPanel = new LoginPanel(userController);
-        RoomListPanel roomListPanel = new RoomListPanel(chatRoomController);
+        RoomListPanel roomListPanel = new RoomListPanel(userController, chatRoomController);
         // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
         //  ClientSession.isInChatRoom으로 방 진입 체크
         RoomChatPanel roomChatPanel = new RoomChatPanel(0);
