@@ -70,6 +70,7 @@ public class MessageServer implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 Socket socket = serverSocket.accept();
+                log.info("새로운 클라이언트 연결됨: {}", socket.getRemoteSocketAddress());
                 try {
                     Session session = new Session(
                             socket, messageDispatcher, sessionManager); // userService 제거됨
