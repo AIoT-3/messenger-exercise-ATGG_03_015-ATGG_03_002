@@ -15,11 +15,21 @@ public class ChatRoomClientService {
     private final MessageClient messageClient;
 
     public void createRoom(String roomName) {
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+
         CreateRoomRequest data = new CreateRoomRequest(roomName);
-        RequestHeader header = RequestHeader.of(
-                MessageType.CHAT_ROOM_CREATE,
-                ClientSession.INSTANCE.getSessionId());
+        RequestHeader header = RequestHeader.of(MessageType.CHAT_ROOM_CREATE, sessionId);
         Message message = new Message(header, MessageConverter.toJsonNode(data));
+
+        messageClient.send(message);
+    }
+
+    public void getRoomList() {
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+
+        // 요청 데이터는 없음
+        RequestHeader header = RequestHeader.of(MessageType.CHAT_ROOM_LIST, sessionId);
+        Message message = new Message(header, null);
 
         messageClient.send(message);
     }

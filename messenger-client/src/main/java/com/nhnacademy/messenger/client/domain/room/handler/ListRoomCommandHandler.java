@@ -7,18 +7,13 @@ import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class CreateRoomCommandHandler implements CommandExecutable {
+public class ListRoomCommandHandler implements CommandExecutable {
 
-    public final static String COMMAND = "/create";
-    private final ChatRoomController chatRoomController;
+    public static final String COMMAND = "/list";
+    private final ChatRoomController controller;
 
     @Override
     public void execute(Command command, ConsoleView view) {
-        if (command.args().isEmpty()) {
-            view.showErrorMessage("사용법: /create [방이름]");
-            return;
-        }
-        String roomName = command.args().getFirst();
-        chatRoomController.requestCreateRoom(roomName);
+        controller.requestRoomList();
     }
 }

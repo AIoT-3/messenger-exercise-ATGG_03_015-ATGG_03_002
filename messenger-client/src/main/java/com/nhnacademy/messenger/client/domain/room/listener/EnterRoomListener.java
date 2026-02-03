@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 
 @Slf4j
 @AllArgsConstructor
-public class RoomEnterListener implements ActionListener {
+public class EnterRoomListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {

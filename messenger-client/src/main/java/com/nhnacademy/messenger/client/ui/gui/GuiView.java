@@ -32,6 +32,9 @@ public class GuiView implements View {
     @Override
     public void showSystemMessage(String message) {
         log.info("[System] {}", message);
+        SwingUtilities.invokeLater(() ->
+                JOptionPane.showMessageDialog(roomListPanel, message, "알림", JOptionPane.INFORMATION_MESSAGE)
+        );
     }
 
     @Override
@@ -45,21 +48,33 @@ public class GuiView implements View {
     public void showLoginSuccess(String userName) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
-            // TODO: 로그인 했을 때 로그인 창 삭제 후 채팅방 리스트 창 띄우기
-            // loginPanel.dispose();
+            loginPanel.setVisible(false);
+            roomListPanel.setVisible(true);
         });
     }
 
     @Override
-    public void showLoginFail() {
-        SwingUtilities.invokeLater(() -> 
-            JOptionPane.showMessageDialog(loginPanel, "Login Failed", "Error", JOptionPane.ERROR_MESSAGE)
-        );
-    }
-
-    @Override
     public void showRoomList(List<String> rooms) {
+        SwingUtilities.invokeLater(() -> {
+            roomListPanel.clearLists();
+            if (rooms != null) {
+                for (String roomString : rooms) {
+                    try {
+                        // Format: "[roomId] roomName (count명)"
+                        int idEnd = roomString.indexOf("]");
+                        long roomId = Long.parseLong(roomString.substring(1, idEnd));
 
+                        int nameEnd = roomString.lastIndexOf("(");
+                        String roomName = roomString.substring(idEnd + 2, nameEnd).trim();
+
+                        roomListPanel.addRoomItem(roomId, roomName);
+                    } catch (Exception e) {
+                        log.warn("방 정보 파싱 실패: {}", roomString);
+                        roomListPanel.addRoomItem(0, roomString);
+                    }
+                }
+            }
+        });
     }
 
     @Override

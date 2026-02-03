@@ -8,7 +8,11 @@ public class ChatRoomController {
 
     private final ChatRoomClientService chatRoomClientService;
 
-    public void createRoom(String roomName) {
+    public void requestCreateRoom(String roomName) {
         chatRoomClientService.createRoom(roomName);
+    }
+
+    public void requestRoomList() {
+        chatRoomClientService.getRoomList();
     }
 }

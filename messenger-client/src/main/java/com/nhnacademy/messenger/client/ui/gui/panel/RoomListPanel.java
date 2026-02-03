@@ -1,9 +1,10 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.listener.RefreshListener;
-import com.nhnacademy.messenger.client.domain.room.listener.RoomCreateListener;
-import com.nhnacademy.messenger.client.domain.room.listener.RoomEnterListener;
+import com.nhnacademy.messenger.client.domain.room.listener.CreateRoomListener;
+import com.nhnacademy.messenger.client.domain.room.listener.EnterRoomListener;
 import com.nhnacademy.messenger.client.domain.user.listener.LogoutListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,9 +41,12 @@ public class RoomListPanel extends JFrame {
     // UI Components
     private JPanel roomListContainer;
     private JPanel userListContainer;
+    
+    private final ChatRoomController chatRoomController;
 
-    public RoomListPanel() {
+    public RoomListPanel(ChatRoomController chatRoomController) {
         super(TITLE_TEXT);
+        this.chatRoomController = chatRoomController;
         initWindow();
         initUI();
     }
@@ -113,7 +117,7 @@ public class RoomListPanel extends JFrame {
 
         JButton refreshButton = new JButton(TEXT_REFRESH);
         refreshButton.setToolTipText(TOOLTIP_REFRESH);
-        refreshButton.addActionListener(new RefreshListener());
+        refreshButton.addActionListener(new RefreshListener(chatRoomController));
         panel.add(refreshButton, BorderLayout.EAST);
         
         return panel;
@@ -125,7 +129,7 @@ public class RoomListPanel extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(SPACING_MEDIUM, 0, 0, 0));
 
         JButton createBtn = new JButton(TEXT_CREATE_ROOM);
-        createBtn.addActionListener(new RoomCreateListener());
+        createBtn.addActionListener(new CreateRoomListener(chatRoomController));
         
         JButton logoutBtn = new JButton(TEXT_LOGOUT);
         logoutBtn.addActionListener(new LogoutListener());
@@ -169,7 +173,7 @@ public class RoomListPanel extends JFrame {
         roomButton.setPreferredSize(new Dimension(0, ROOM_BUTTON_HEIGHT));
 
         // CHAT-ROOM-ENTER 전송을 위한 리스너
-        roomButton.addActionListener(new RoomEnterListener());
+        roomButton.addActionListener(new EnterRoomListener());
 
         roomListContainer.add(roomButton);
         roomListContainer.add(Box.createRigidArea(new Dimension(0, SPACING_SMALL)));
