@@ -10,7 +10,6 @@ import com.nhnacademy.messenger.server.session.event.SessionDisconnectedEvent;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Objects;
 
 import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
 

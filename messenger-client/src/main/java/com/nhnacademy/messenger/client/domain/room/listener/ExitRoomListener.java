@@ -29,7 +29,6 @@ public class ExitRoomListener implements ActionListener {
         // '예(Yes)'를 눌렀을 때의 동작
         if (choice == JOptionPane.YES_OPTION) {
             log.info("채팅방을 나갑니다.");
-            ExitRoomRequest exitRoomRequest = new ExitRoomRequest(roomId);
         }
     }
 }

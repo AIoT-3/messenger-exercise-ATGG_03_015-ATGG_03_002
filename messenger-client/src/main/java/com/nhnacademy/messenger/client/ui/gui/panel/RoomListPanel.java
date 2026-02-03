@@ -7,10 +7,16 @@ import com.nhnacademy.messenger.client.domain.room.listener.CreateRoomListener;
 import com.nhnacademy.messenger.client.domain.room.listener.EnterRoomListener;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.listener.LogoutListener;
+import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class RoomListPanel extends JFrame {
@@ -31,7 +37,6 @@ public class RoomListPanel extends JFrame {
     private static final int MIN_WINDOW_HEIGHT = 400;
     
     private static final int USER_LIST_PANEL_WIDTH = 200;
-    private static final int ROOM_BUTTON_HEIGHT = 50;
     private static final int SPACING_SMALL = 10;
     private static final int SPACING_MEDIUM = 15;
     
@@ -45,6 +50,8 @@ public class RoomListPanel extends JFrame {
 
     private final ChatRoomController chatRoomController;
     private final UserController userController;
+
+    private final Map<Long, RoomListItem> roomListMap = new HashMap<>();
 
     public RoomListPanel(UserController userController, ChatRoomController chatRoomController) {
         super(TITLE_TEXT);
@@ -160,27 +167,33 @@ public class RoomListPanel extends JFrame {
 
     // ===== Public Methods =====
 
-    /**
-     * RoomListUI의 roomList에 room을 추가합니다.
-     * @param roomId 고유 방 번호
-     * @param roomName 표시 될 방 이름
-     */
-    public void addRoomItem(long roomId, String roomName) {
-        JButton roomButton = new JButton(roomName);
-        styleButton(roomButton);
+    public void updateRoomList(List<RoomInfo> rooms) {
+        if (rooms == null) return;
+
+        Set<Long> currentRoomIds = rooms.stream()
+                .map(RoomInfo::roomId)
+                .collect(Collectors.toSet());
+
+        roomListMap.keySet().removeIf(roomId -> !currentRoomIds.contains(roomId));
+
+        for (RoomInfo info : rooms) {
+            if (roomListMap.containsKey(info.roomId())) {
+                roomListMap.get(info.roomId()).updateInfo(info);
+            } else {
+                roomListMap.put(info.roomId(), new RoomListItem(info, chatRoomController));
+            }
+        }
+
+        roomListContainer.removeAll();
+        for (RoomInfo info : rooms) {
+            RoomListItem item = roomListMap.get(info.roomId());
+            if (item != null) {
+                roomListContainer.add(item);
+                roomListContainer.add(Box.createRigidArea(new Dimension(0, SPACING_SMALL)));
+            }
+        }
         
-        // Fixed Size Logic
-        Dimension size = new Dimension(Integer.MAX_VALUE, ROOM_BUTTON_HEIGHT);
-        roomButton.setMaximumSize(size);
-        roomButton.setMinimumSize(new Dimension(0, ROOM_BUTTON_HEIGHT));
-        roomButton.setPreferredSize(new Dimension(0, ROOM_BUTTON_HEIGHT));
-
-        // CHAT-ROOM-ENTER 전송을 위한 리스너
-        roomButton.addActionListener(new EnterRoomListener(chatRoomController, roomId));
-
-        roomListContainer.add(roomButton);
-        roomListContainer.add(Box.createRigidArea(new Dimension(0, SPACING_SMALL)));
-        refreshContainer(roomListContainer);
+        refresh();
     }
 
     /**
@@ -194,7 +207,6 @@ public class RoomListPanel extends JFrame {
         userLabel.setBorder(BorderFactory.createEmptyBorder(SPACING_SMALL, SPACING_SMALL, SPACING_SMALL, SPACING_SMALL));
         
         userListContainer.add(userLabel);
-        refreshContainer(userListContainer);
     }
 
     /**
@@ -202,35 +214,16 @@ public class RoomListPanel extends JFrame {
      */
     public void clearLists() {
         roomListContainer.removeAll();
+        roomListMap.clear();
+
         userListContainer.removeAll();
-        refreshContainer(roomListContainer);
-        refreshContainer(userListContainer);
-    }
-
-    private void styleButton(JButton button) {
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setOpaque(true);
-        button.setBorderPainted(false);
-        button.setBackground(AppConstant.PRIMARY_COLOR);
-        button.setForeground(AppConstant.TEXT_COLOR);
-        button.setFocusPainted(false);
-        button.setRolloverEnabled(true);
-
-        button.addChangeListener(e -> {
-            ButtonModel model = button.getModel();
-            if (model.isPressed()) {
-                button.setBackground(AppConstant.PRIMARY_COLOR.darker());
-            } else if (model.isRollover()) {
-                button.setBackground(AppConstant.PRIMARY_COLOR.brighter());
-            } else {
-                button.setBackground(AppConstant.PRIMARY_COLOR);
-            }
-        });
     }
     
-    private void refreshContainer(JPanel container) {
-        container.revalidate();
-        container.repaint();
+    public void refresh() {
+        roomListContainer.revalidate();
+        roomListContainer.repaint();
+
+        userListContainer.revalidate();
+        userListContainer.repaint();
     }
 }

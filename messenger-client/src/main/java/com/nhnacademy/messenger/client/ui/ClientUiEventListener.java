@@ -28,9 +28,7 @@ public class ClientUiEventListener {
     }
 
     @EventListener
-    public void onRoomListReceived(ListRoomSuccessEvent event) {
-        view.showRoomList(event.roomList());
-    }
+    public void onRoomListReceived(ListRoomSuccessEvent event) { view.showRoomList(event.roomList()); }
 
     @EventListener
     public void onRoomEnter(EnterRoomSuccessEvent event) {
