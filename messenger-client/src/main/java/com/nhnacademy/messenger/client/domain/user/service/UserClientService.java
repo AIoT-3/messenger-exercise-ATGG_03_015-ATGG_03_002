@@ -36,4 +36,16 @@ public class UserClientService {
         
         messageClient.send(message);
     }
+
+    public void logout() {
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+        if (sessionId == null) {
+            log.error("세션에 접속되지 않은 상태로 로그아웃을 시도하였습니다.");
+            return;
+        }
+        RequestHeader header = RequestHeader.of(MessageType.LOGOUT, sessionId);
+        Message message = new Message(header, null);
+        
+        messageClient.send(message);
+    }
 }
