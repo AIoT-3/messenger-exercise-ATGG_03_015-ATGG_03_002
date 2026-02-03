@@ -27,6 +27,7 @@ import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.CommandParser;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CLICommandDispatcher;
+import com.nhnacademy.messenger.client.ui.cli.handler.HelpCommandHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.nhnacademy.messenger.common.config.AppConstant.*;
@@ -62,12 +63,13 @@ public class ClientMain {
 
         // 4. CLI 명령어 디스패처 초기화
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
-        cliDispatcher.register(LoginCommandHandler.COMMAND, new LoginCommandHandler(userController));
-        cliDispatcher.register(LogoutCommandHandler.COMMAND, new LogoutCommandHandler(userController));
-        cliDispatcher.register(CreateRoomCommandHandler.COMMAND, new CreateRoomCommandHandler(chatRoomController));
-        cliDispatcher.register(ListRoomCommandHandler.COMMAND, new ListRoomCommandHandler(chatRoomController));
-        cliDispatcher.register(EnterRoomCommandHandler.COMMAND, new EnterRoomCommandHandler(chatRoomController));
-        cliDispatcher.register(ChatCommandHandler.COMMAND, new ChatCommandHandler(chatRoomController));
+        cliDispatcher.register(new LoginCommandHandler(userController));
+        cliDispatcher.register(new LogoutCommandHandler(userController));
+        cliDispatcher.register(new CreateRoomCommandHandler(chatRoomController));
+        cliDispatcher.register(new ListRoomCommandHandler(chatRoomController));
+        cliDispatcher.register(new EnterRoomCommandHandler(chatRoomController));
+        cliDispatcher.register(new ChatCommandHandler(chatRoomController));
+        cliDispatcher.register(new HelpCommandHandler(cliDispatcher));
 
         try {
             // 5. 서버 연결

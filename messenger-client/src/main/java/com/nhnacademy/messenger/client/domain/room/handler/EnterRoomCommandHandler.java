@@ -11,13 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class EnterRoomCommandHandler implements CommandExecutable {
 
-    public static final String COMMAND = "/enter";
+    private static final String COMMAND = "/enter";
+    private static final String DESCRIPTION = "/enter <roomId> - 채팅방에 입장합니다.";
     private final ChatRoomController controller;
 
     @Override
     public void execute(Command command, ConsoleView view) {
         if (command.args().isEmpty()) {
-            view.showSystemMessage("사용법: /enter <roomId>");
+            view.showSystemMessage("사용법: " + DESCRIPTION);
             return;
         }
 
@@ -27,5 +28,15 @@ public class EnterRoomCommandHandler implements CommandExecutable {
         } catch (NumberFormatException e) {
             view.showErrorMessage("방 ID는 숫자여야 합니다.");
         }
+    }
+
+    @Override
+    public String getCommand() {
+        return COMMAND;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
     }
 }

@@ -9,13 +9,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChatCommandHandler implements CommandExecutable {
 
-    public static final String COMMAND = "/chat";
+    private static final String COMMAND = "/chat";
+    private static final String DESCRIPTION = "/chat <roomId> <message> - 특정 방에 메시지를 전송합니다.";
     private final ChatRoomController controller;
 
     @Override
     public void execute(Command command, ConsoleView view) {
         if (command.args().size() < 2) {
-            view.showSystemMessage("사용법: /chat <roomId> <message>");
+            view.showSystemMessage("사용법: " + DESCRIPTION);
             return;
         }
 
@@ -27,5 +28,15 @@ public class ChatCommandHandler implements CommandExecutable {
         } catch (NumberFormatException e) {
             view.showErrorMessage("방 ID는 숫자여야 합니다.");
         }
+    }
+
+    @Override
+    public String getCommand() {
+        return COMMAND;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
     }
 }

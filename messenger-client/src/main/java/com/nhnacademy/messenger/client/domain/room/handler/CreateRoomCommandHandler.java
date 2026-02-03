@@ -9,16 +9,27 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreateRoomCommandHandler implements CommandExecutable {
 
-    public final static String COMMAND = "/create";
+    private static final String COMMAND = "/create";
+    private static final String DESCRIPTION = "/create <roomName> - 채팅방을 생성합니다.";
     private final ChatRoomController chatRoomController;
 
     @Override
     public void execute(Command command, ConsoleView view) {
         if (command.args().isEmpty()) {
-            view.showErrorMessage("사용법: /create [방이름]");
+            view.showErrorMessage("사용법: " + DESCRIPTION);
             return;
         }
         String roomName = command.args().getFirst();
         chatRoomController.requestCreateRoom(roomName);
+    }
+
+    @Override
+    public String getCommand() {
+        return COMMAND;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
     }
 }

@@ -42,7 +42,7 @@ public class ConsoleView implements View {
 
     @Override
     public void showLoginSuccess(String userName) {
-        printWithPrompt("환영합니다, " + userName + "님!");
+        printWithPrompt("환영합니다, " + userName + "님! (명령어 목록을 보려면 /help를 입력하세요)");
     }
 
     @Override
