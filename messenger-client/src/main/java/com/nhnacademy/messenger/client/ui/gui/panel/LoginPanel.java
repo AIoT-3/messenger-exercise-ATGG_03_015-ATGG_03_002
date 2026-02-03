@@ -35,6 +35,12 @@ public class LoginPanel extends JFrame {
         initUI();
     }
 
+    public void clearFields() {
+        idField.setText("");
+        passwordField.setText("");
+    }
+
+    // ==== UI ====
     private void initUI() {
         JPanel root = new JPanel();
         root.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
