@@ -3,6 +3,7 @@ package com.nhnacademy.messenger.client;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
+import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
@@ -20,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 
-import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_ADDRESS;
-import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_PORT;
+import static com.nhnacademy.messenger.common.config.AppConstant.*;
+import static com.nhnacademy.messenger.common.message.header.MessageType.*;
 
 @Slf4j
 public class GuiMain {
@@ -29,9 +30,11 @@ public class GuiMain {
     public static void main(String[] args) {
         // 1. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
-        networkDispatcher.register(MessageType.LOGIN_SUCCESS, new LoginResponseHandler());
-        networkDispatcher.register(MessageType.CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
-        networkDispatcher.register(MessageType.ERROR, new ErrorResponseHandler());
+        networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
+        networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
+        networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
+        networkDispatcher.register(ERROR, new ErrorResponseHandler());
+
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
 

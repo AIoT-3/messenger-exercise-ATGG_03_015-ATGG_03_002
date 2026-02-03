@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 
 @Slf4j
 @RequiredArgsConstructor
-public class RoomCreateListener implements ActionListener {
+public class CreateRoomListener implements ActionListener {
 
     private final ChatRoomController chatRoomController;
 
@@ -24,7 +24,7 @@ public class RoomCreateListener implements ActionListener {
         }
 
         try {
-            chatRoomController.createRoom(roomName.trim());
+            chatRoomController.requestCreateRoom(roomName.trim());
         } catch (Exception ex) {
             log.error("방 생성 요청 실패", ex);
             JOptionPane.showMessageDialog(null, "방 생성 요청 중 오류가 발생했습니다: " + ex.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);

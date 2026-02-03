@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 
 @Slf4j
 @AllArgsConstructor
-public class RoomExitListener implements ActionListener {
+public class ExitRoomListener implements ActionListener {
     private long roomId;
     private Container contentPane;
 

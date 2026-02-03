@@ -2,7 +2,7 @@ package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
 import com.nhnacademy.messenger.client.domain.chat.listener.ChatMessageListener;
-import com.nhnacademy.messenger.client.domain.room.listener.RoomExitListener;
+import com.nhnacademy.messenger.client.domain.room.listener.ExitRoomListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -78,7 +78,7 @@ public class RoomChatPanel extends JFrame {
         JButton exitButton = new JButton(TEXT_EXIT);
         exitButton.setBackground(AppConstant.TRANSPARENT_COLOR);
         exitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
-        exitButton.addActionListener(new RoomExitListener(roomId, getContentPane()));
+        exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane()));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         rightPanel.setOpaque(false);

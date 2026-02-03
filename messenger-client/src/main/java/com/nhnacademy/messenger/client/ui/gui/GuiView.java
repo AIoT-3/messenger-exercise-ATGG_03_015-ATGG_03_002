@@ -62,7 +62,26 @@ public class GuiView implements View {
 
     @Override
     public void showRoomList(List<String> rooms) {
+        SwingUtilities.invokeLater(() -> {
+            roomListPanel.clearLists();
+            if (rooms != null) {
+                for (String roomString : rooms) {
+                    try {
+                        // Format: "[roomId] roomName (count명)"
+                        int idEnd = roomString.indexOf("]");
+                        long roomId = Long.parseLong(roomString.substring(1, idEnd));
 
+                        int nameEnd = roomString.lastIndexOf("(");
+                        String roomName = roomString.substring(idEnd + 2, nameEnd).trim();
+
+                        roomListPanel.addRoomItem(roomId, roomName);
+                    } catch (Exception e) {
+                        log.warn("방 정보 파싱 실패: {}", roomString);
+                        roomListPanel.addRoomItem(0, roomString);
+                    }
+                }
+            }
+        });
     }
 
     @Override
