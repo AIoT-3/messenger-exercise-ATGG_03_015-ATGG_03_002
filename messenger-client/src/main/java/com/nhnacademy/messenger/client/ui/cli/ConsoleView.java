@@ -37,8 +37,8 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void showLoginFail() {
-        out.println("[로그인 실패] 아이디와 비밀번호를 확인해주세요.");
+    public void showLogoutSuccess() {
+        out.println("[로그아웃] 로그아웃 되었습니다. /login [ID] [PW] 로 로그인하세요");
     }
 
     @Override

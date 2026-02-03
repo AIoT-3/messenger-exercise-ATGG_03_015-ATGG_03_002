@@ -19,14 +19,20 @@ public class GuiView implements View {
     private final RoomChatPanel roomChatPanel;
 
     public void start() {
-        SwingUtilities.invokeLater(() -> {
-            loginPanel.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() ->
+            loginPanel.setVisible(true)
+        );
     }
 
-    // TODO: label view 전환
-    private void switchView() {
+    private void switchView(JFrame targetFrame) {
+        loginPanel.setVisible(false);
+        roomListPanel.setVisible(false);
+        roomChatPanel.setVisible(false);
 
+        if (targetFrame != null) {
+            targetFrame.setVisible(true);
+            targetFrame.toFront();
+        }
     }
 
     @Override
@@ -45,16 +51,17 @@ public class GuiView implements View {
     public void showLoginSuccess(String userName) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
-            // TODO: 로그인 했을 때 로그인 창 삭제 후 채팅방 리스트 창 띄우기
-            // loginPanel.dispose();
+            switchView(roomListPanel);
         });
     }
 
     @Override
-    public void showLoginFail() {
-        SwingUtilities.invokeLater(() -> 
-            JOptionPane.showMessageDialog(loginPanel, "Login Failed", "Error", JOptionPane.ERROR_MESSAGE)
-        );
+    public void showLogoutSuccess() {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null, "성공적으로 로그아웃 되었습니다.");
+            roomListPanel.clearLists(); // 로그아웃 시 목록 초기화
+            switchView(loginPanel);
+        });
     }
 
     @Override
@@ -64,7 +71,10 @@ public class GuiView implements View {
 
     @Override
     public void showRoomEnterSuccess(String roomName) {
-
+        SwingUtilities.invokeLater(() -> {
+            roomChatPanel.setRoomTitle(roomName);
+            switchView(roomChatPanel);
+        });
     }
 
     @Override

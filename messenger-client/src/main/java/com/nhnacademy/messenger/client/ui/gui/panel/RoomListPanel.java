@@ -4,6 +4,7 @@ import com.nhnacademy.messenger.client.config.AppConstant;
 import com.nhnacademy.messenger.client.domain.room.listener.RefreshListener;
 import com.nhnacademy.messenger.client.domain.room.listener.RoomCreateListener;
 import com.nhnacademy.messenger.client.domain.room.listener.RoomEnterListener;
+import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.listener.LogoutListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,9 +41,11 @@ public class RoomListPanel extends JFrame {
     // UI Components
     private JPanel roomListContainer;
     private JPanel userListContainer;
+    private final UserController userController;
 
-    public RoomListPanel() {
+    public RoomListPanel(UserController userController) {
         super(TITLE_TEXT);
+        this.userController = userController;
         initWindow();
         initUI();
     }
@@ -128,7 +131,7 @@ public class RoomListPanel extends JFrame {
         createBtn.addActionListener(new RoomCreateListener());
         
         JButton logoutBtn = new JButton(TEXT_LOGOUT);
-        logoutBtn.addActionListener(new LogoutListener());
+        logoutBtn.addActionListener(new LogoutListener(getContentPane(), userController));
 
         panel.add(createBtn);
         panel.add(logoutBtn);

@@ -3,6 +3,7 @@ package com.nhnacademy.messenger.client;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
+import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
@@ -27,6 +28,7 @@ public class GuiMain {
         // 1. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
         networkDispatcher.register(MessageType.LOGIN_SUCCESS, new LoginResponseHandler());
+        networkDispatcher.register(MessageType.LOGOUT_SUCCESS, new LogoutResponseHandler());
         networkDispatcher.register(MessageType.ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
@@ -37,9 +39,9 @@ public class GuiMain {
 
         // 3. GUI 초기화
         LoginPanel loginPanel = new LoginPanel(userController);
-        RoomListPanel roomListPanel = new RoomListPanel();
-        // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
-        //  ClientSession.isInChatRoom으로 방 진입 체크
+        RoomListPanel roomListPanel = new RoomListPanel(userController);
+
+
         RoomChatPanel roomChatPanel = new RoomChatPanel(0);
         GuiView view = new GuiView(loginPanel, roomListPanel, roomChatPanel);
 

@@ -11,4 +11,8 @@ public class UserController {
     public void login(String userId, String password) {
         userClientService.login(userId, password);
     }
+
+    public void logout() {
+        userClientService.logout();
+    }
 }

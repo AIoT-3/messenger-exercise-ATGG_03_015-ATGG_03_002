@@ -4,6 +4,7 @@ import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
+import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
@@ -32,6 +33,7 @@ public class ClientMain {
         // 2. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
         networkDispatcher.register(MessageType.LOGIN_SUCCESS, new LoginResponseHandler());
+        networkDispatcher.register(MessageType.LOGOUT_SUCCESS, new LogoutResponseHandler());
         networkDispatcher.register(MessageType.ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);

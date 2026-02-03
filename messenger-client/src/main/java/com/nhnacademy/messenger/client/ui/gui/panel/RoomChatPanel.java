@@ -131,6 +131,11 @@ public class RoomChatPanel extends JFrame {
         return inputPanel;
     }
 
+    /**
+     * 채팅에 새 메세지를 추가합니다.
+     * @param userId 유저 ID
+     * @param text 채팅 내용
+     */
     public void addMessage(String userId, String text) {
         JLabel label = new JLabel(userId + ": " + text);
         label.setFont(FONT_MESSAGE);
