@@ -8,6 +8,7 @@ import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandl
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
+import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
@@ -31,6 +32,7 @@ public class GuiMain {
         // 1. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
         networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
+        networkDispatcher.register(LOGOUT_SUCCESS, new LogoutResponseHandler());
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
