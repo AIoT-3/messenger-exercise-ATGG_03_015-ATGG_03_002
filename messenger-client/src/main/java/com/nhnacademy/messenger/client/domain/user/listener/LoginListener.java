@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.user.listener;
 
-import com.nhnacademy.messenger.client.domain.user.controller.UserController;
+import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import lombok.AllArgsConstructor;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 public class LoginListener implements ActionListener {
     private final JTextField idField;
     private final JPasswordField passwordField;
-    private final UserController userController;
+    private final UserClientService userClientService;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -22,6 +22,6 @@ public class LoginListener implements ActionListener {
         if (userId.isBlank() || password.isBlank()) {
             return;
         }
-        userController.login(userId, password);
+        userClientService.login(userId, password);
     }
 }

@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.user.listener;
 
-import com.nhnacademy.messenger.client.domain.user.controller.UserController;
+import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
 @AllArgsConstructor
 public class LogoutListener implements ActionListener {
     private final Container contentPane;
-    private final UserController userController;
+    private final UserClientService userClientService;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -29,7 +29,7 @@ public class LogoutListener implements ActionListener {
         // '예(Yes)'를 눌렀을 때의 동작
         if (choice == JOptionPane.YES_OPTION) {
             log.info("리스너가 로그아웃을 호출");
-            userController.logout();
+            userClientService.logout();
         }
     }
 }

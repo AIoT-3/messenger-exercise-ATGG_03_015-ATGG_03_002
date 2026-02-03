@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.room.handler;
 
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
@@ -11,7 +11,7 @@ public class CreateRoomCommandHandler implements CommandExecutable {
 
     private static final String COMMAND = "/create";
     private static final String DESCRIPTION = "/create <roomName> - 채팅방을 생성합니다.";
-    private final ChatRoomController chatRoomController;
+    private final ChatRoomClientService chatRoomClientService;
 
     @Override
     public void execute(Command command, ConsoleView view) {
@@ -20,7 +20,7 @@ public class CreateRoomCommandHandler implements CommandExecutable {
             return;
         }
         String roomName = command.args().getFirst();
-        chatRoomController.requestCreateRoom(roomName);
+        chatRoomClientService.createRoom(roomName);
     }
 
     @Override

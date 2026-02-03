@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.user.handler;
 
-import com.nhnacademy.messenger.client.domain.user.controller.UserController;
+import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoginCommandHandler implements CommandExecutable {
 
-    private final UserController userController;
+    private final UserClientService userClientService;
     private static final String COMMAND = "/login";
     private static final String DESCRIPTION = "/login <id> <pw> - 로그인합니다.";
 
@@ -21,7 +21,7 @@ public class LoginCommandHandler implements CommandExecutable {
         }
         String userId = command.args().get(0);
         String password = command.args().get(1);
-        userController.login(userId, password);
+        userClientService.login(userId, password);
     }
 
     @Override

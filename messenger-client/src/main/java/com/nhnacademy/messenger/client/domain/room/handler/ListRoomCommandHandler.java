@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.room.handler;
 
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
@@ -11,11 +11,11 @@ public class ListRoomCommandHandler implements CommandExecutable {
 
     private static final String COMMAND = "/list";
     private static final String DESCRIPTION = "/list - 채팅방 목록을 조회합니다.";
-    private final ChatRoomController controller;
+    private final ChatRoomClientService chatRoomClientService;
 
     @Override
     public void execute(Command command, ConsoleView view) {
-        controller.requestRoomList();
+        chatRoomClientService.getRoomList();
     }
 
     @Override

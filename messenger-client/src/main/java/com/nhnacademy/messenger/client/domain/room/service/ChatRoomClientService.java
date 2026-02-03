@@ -10,6 +10,9 @@ import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.RequestHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class ChatRoomClientService {
@@ -29,7 +32,6 @@ public class ChatRoomClientService {
     public void getRoomList() {
         String sessionId = ClientSession.INSTANCE.getSessionId();
 
-        // 요청 데이터는 없음
         RequestHeader header = RequestHeader.of(MessageType.CHAT_ROOM_LIST, sessionId);
         Message message = new Message(header, null);
 
@@ -47,6 +49,10 @@ public class ChatRoomClientService {
     }
 
     public void sendMessage(Long roomId, String content) {
+        if (Objects.isNull(roomId) || StringUtils.isBlank(content)) {
+            return;
+        }
+        
         String sessionId = ClientSession.INSTANCE.getSessionId();
 
         ChatRequest data = new ChatRequest(roomId, content);

@@ -1,11 +1,11 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.listener.RefreshListener;
 import com.nhnacademy.messenger.client.domain.room.listener.CreateRoomListener;
 import com.nhnacademy.messenger.client.domain.room.listener.EnterRoomListener;
-import com.nhnacademy.messenger.client.domain.user.controller.UserController;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
+import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.domain.user.listener.LogoutListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,13 +43,13 @@ public class RoomListPanel extends JFrame {
     private JPanel roomListContainer;
     private JPanel userListContainer;
 
-    private final ChatRoomController chatRoomController;
-    private final UserController userController;
+    private final ChatRoomClientService chatRoomClientService;
+    private final UserClientService userClientService;
 
-    public RoomListPanel(UserController userController, ChatRoomController chatRoomController) {
+    public RoomListPanel(UserClientService userClientService, ChatRoomClientService chatRoomClientService) {
         super(TITLE_TEXT);
-        this.chatRoomController = chatRoomController;
-        this.userController = userController;
+        this.chatRoomClientService = chatRoomClientService;
+        this.userClientService = userClientService;
         initWindow();
         initUI();
     }
@@ -120,7 +120,7 @@ public class RoomListPanel extends JFrame {
 
         JButton refreshButton = new JButton(TEXT_REFRESH);
         refreshButton.setToolTipText(TOOLTIP_REFRESH);
-        refreshButton.addActionListener(new RefreshListener(chatRoomController));
+        refreshButton.addActionListener(new RefreshListener(chatRoomClientService));
         panel.add(refreshButton, BorderLayout.EAST);
         
         return panel;
@@ -132,10 +132,10 @@ public class RoomListPanel extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(SPACING_MEDIUM, 0, 0, 0));
 
         JButton createBtn = new JButton(TEXT_CREATE_ROOM);
-        createBtn.addActionListener(new CreateRoomListener(chatRoomController));
+        createBtn.addActionListener(new CreateRoomListener(chatRoomClientService));
         
         JButton logoutBtn = new JButton(TEXT_LOGOUT);
-        logoutBtn.addActionListener(new LogoutListener(getContentPane(), userController));
+        logoutBtn.addActionListener(new LogoutListener(getContentPane(), userClientService));
 
         panel.add(createBtn);
         panel.add(logoutBtn);
@@ -176,7 +176,7 @@ public class RoomListPanel extends JFrame {
         roomButton.setPreferredSize(new Dimension(0, ROOM_BUTTON_HEIGHT));
 
         // CHAT-ROOM-ENTER 전송을 위한 리스너
-        roomButton.addActionListener(new EnterRoomListener(chatRoomController, roomId));
+        roomButton.addActionListener(new EnterRoomListener(chatRoomClientService, roomId));
 
         roomListContainer.add(roomButton);
         roomListContainer.add(Box.createRigidArea(new Dimension(0, SPACING_SMALL)));

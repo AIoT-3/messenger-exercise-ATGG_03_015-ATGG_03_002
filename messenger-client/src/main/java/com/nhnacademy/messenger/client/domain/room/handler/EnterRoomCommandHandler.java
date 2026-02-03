@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.room.handler;
 
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
@@ -13,7 +13,7 @@ public class EnterRoomCommandHandler implements CommandExecutable {
 
     private static final String COMMAND = "/enter";
     private static final String DESCRIPTION = "/enter <roomId> - 채팅방에 입장합니다.";
-    private final ChatRoomController controller;
+    private final ChatRoomClientService chatRoomClientService;
 
     @Override
     public void execute(Command command, ConsoleView view) {
@@ -24,7 +24,7 @@ public class EnterRoomCommandHandler implements CommandExecutable {
 
         try {
             long roomId = Long.parseLong(command.args().getFirst());
-            controller.requestEnterRoom(roomId);
+            chatRoomClientService.enterRoom(roomId);
         } catch (NumberFormatException e) {
             view.showErrorMessage("방 ID는 숫자여야 합니다.");
         }

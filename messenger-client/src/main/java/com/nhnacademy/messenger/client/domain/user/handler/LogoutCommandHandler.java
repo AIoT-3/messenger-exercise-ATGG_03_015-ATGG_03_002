@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.user.handler;
 
-import com.nhnacademy.messenger.client.domain.user.controller.UserController;
+import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LogoutCommandHandler implements CommandExecutable {
 
-    private final UserController userController;
+    private final UserClientService userClientService;
     private static final String COMMAND = "/logout";
     private static final String DESCRIPTION = "/logout - 로그아웃합니다.";
 
@@ -19,7 +19,7 @@ public class LogoutCommandHandler implements CommandExecutable {
             view.showErrorMessage("사용법: " + DESCRIPTION);
             return;
         }
-        userController.logout();
+        userClientService.logout();
     }
 
     @Override

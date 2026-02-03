@@ -3,12 +3,10 @@ package com.nhnacademy.messenger.client;
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
-import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
@@ -42,19 +40,18 @@ public class GuiMain {
         networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageListener());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
 
-
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
 
-        // 2. 도메인 컨트롤러 초기화
-        UserController userController = new UserController(new UserClientService(client));
-        ChatRoomController chatRoomController = new ChatRoomController(new ChatRoomClientService(client));
+        // 2. 서비스 초기화
+        UserClientService userClientService = new UserClientService(client);
+        ChatRoomClientService chatRoomClientService = new ChatRoomClientService(client);
 
         // 3. GUI 초기화
-        LoginPanel loginPanel = new LoginPanel(userController);
-        RoomListPanel roomListPanel = new RoomListPanel(userController, chatRoomController);
+        LoginPanel loginPanel = new LoginPanel(userClientService);
+        RoomListPanel roomListPanel = new RoomListPanel(userClientService, chatRoomClientService);
         // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
         //  ClientSession.isInChatRoom으로 방 진입 체크
-        RoomChatPanel roomChatPanel = new RoomChatPanel(chatRoomController);
+        RoomChatPanel roomChatPanel = new RoomChatPanel(chatRoomClientService);
         GuiView view = new GuiView(loginPanel, roomListPanel, roomChatPanel);
 
         // 4. UI 리스너 등록

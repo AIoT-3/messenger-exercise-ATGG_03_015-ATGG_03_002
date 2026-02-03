@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.chat.handler;
 
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
@@ -11,7 +11,7 @@ public class ChatCommandHandler implements CommandExecutable {
 
     private static final String COMMAND = "/chat";
     private static final String DESCRIPTION = "/chat <roomId> <message> - 특정 방에 메시지를 전송합니다.";
-    private final ChatRoomController controller;
+    private final ChatRoomClientService chatRoomClientService;
 
     @Override
     public void execute(Command command, ConsoleView view) {
@@ -24,7 +24,7 @@ public class ChatCommandHandler implements CommandExecutable {
             Long roomId = Long.parseLong(command.args().get(0));
             String message = String.join(" ", command.args().subList(1, command.args().size()));
             
-            controller.requestSendMessage(roomId, message);
+            chatRoomClientService.sendMessage(roomId, message);
         } catch (NumberFormatException e) {
             view.showErrorMessage("방 ID는 숫자여야 합니다.");
         }

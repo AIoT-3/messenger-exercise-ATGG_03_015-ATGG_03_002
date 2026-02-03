@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.room.listener;
 
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 @RequiredArgsConstructor
 public class CreateRoomListener implements ActionListener {
 
-    private final ChatRoomController chatRoomController;
+    private final ChatRoomClientService chatRoomClientService;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -24,7 +24,7 @@ public class CreateRoomListener implements ActionListener {
         }
 
         try {
-            chatRoomController.requestCreateRoom(roomName.trim());
+            chatRoomClientService.createRoom(roomName.trim());
         } catch (Exception ex) {
             log.error("방 생성 요청 실패", ex);
             JOptionPane.showMessageDialog(null, "방 생성 요청 중 오류가 발생했습니다: " + ex.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);

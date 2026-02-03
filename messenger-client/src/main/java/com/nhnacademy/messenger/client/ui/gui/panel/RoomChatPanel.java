@@ -1,8 +1,8 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.listener.ExitRoomListener;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -29,11 +29,11 @@ public class RoomChatPanel extends JFrame {
     private JLabel roomTitleLabel;
     private JButton sendButton;
     private long roomId;
-    private final ChatRoomController controller;
+    private final ChatRoomClientService chatRoomClientService;
 
-    public RoomChatPanel(ChatRoomController controller) {
+    public RoomChatPanel(ChatRoomClientService chatRoomClientService) {
         super(TITLE_TEXT);
-        this.controller = controller;
+        this.chatRoomClientService = chatRoomClientService;
         this.roomId = 0;
 
         initWindow();
@@ -94,7 +94,6 @@ public class RoomChatPanel extends JFrame {
         JButton exitButton = new JButton(TEXT_EXIT);
         exitButton.setBackground(AppConstant.TRANSPARENT_COLOR);
         exitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
-        // TODO: ExitRoomListener도 Controller 사용하도록 변경 필요
         exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane()));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -155,7 +154,7 @@ public class RoomChatPanel extends JFrame {
         String content = chatInputField.getText();
         if (content == null || content.trim().isEmpty()) return;
         
-        controller.requestSendMessage(this.roomId, content);
+        chatRoomClientService.sendMessage(this.roomId, content);
         chatInputField.setText("");
     }
 

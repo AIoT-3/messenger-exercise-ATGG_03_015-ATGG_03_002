@@ -4,7 +4,6 @@ import com.nhnacademy.messenger.client.domain.chat.handler.ChatCommandHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomCommandHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomCommandHandler;
@@ -12,7 +11,6 @@ import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHand
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomCommandHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
-import com.nhnacademy.messenger.client.domain.user.controller.UserController;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutCommandHandler;
@@ -41,7 +39,7 @@ public class ClientMain {
         // 1. 이벤트 버스 및 UI 리스너 초기화
         ConsoleView view = new ConsoleView();
         ClientUiEventListener uiListener = new ClientUiEventListener(view);
-        EventBus.INSTANCE.register(uiListener); // View가 이벤트를 구독
+        EventBus.INSTANCE.register(uiListener);
 
         // 2. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
@@ -57,18 +55,18 @@ public class ClientMain {
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
         CommandParser parser = new CommandParser();
 
-        // 3. 도메인 컨트롤러 초기화
-        UserController userController = new UserController(new UserClientService(client));
-        ChatRoomController chatRoomController = new ChatRoomController(new ChatRoomClientService(client));
+        // 3. 서비스 초기화
+        UserClientService userClientService = new UserClientService(client);
+        ChatRoomClientService chatRoomClientService = new ChatRoomClientService(client);
 
         // 4. CLI 명령어 디스패처 초기화
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
-        cliDispatcher.register(new LoginCommandHandler(userController));
-        cliDispatcher.register(new LogoutCommandHandler(userController));
-        cliDispatcher.register(new CreateRoomCommandHandler(chatRoomController));
-        cliDispatcher.register(new ListRoomCommandHandler(chatRoomController));
-        cliDispatcher.register(new EnterRoomCommandHandler(chatRoomController));
-        cliDispatcher.register(new ChatCommandHandler(chatRoomController));
+        cliDispatcher.register(new LoginCommandHandler(userClientService));
+        cliDispatcher.register(new LogoutCommandHandler(userClientService));
+        cliDispatcher.register(new CreateRoomCommandHandler(chatRoomClientService));
+        cliDispatcher.register(new ListRoomCommandHandler(chatRoomClientService));
+        cliDispatcher.register(new EnterRoomCommandHandler(chatRoomClientService));
+        cliDispatcher.register(new ChatCommandHandler(chatRoomClientService));
         cliDispatcher.register(new HelpCommandHandler(cliDispatcher));
 
         try {
@@ -86,7 +84,7 @@ public class ClientMain {
                 if (!input.startsWith("/")) {
                     Long currentRoomId = ClientSession.INSTANCE.getCurrentRoomId();
                     if (currentRoomId != null) {
-                        chatRoomController.requestSendMessage(currentRoomId, input);
+                        chatRoomClientService.sendMessage(currentRoomId, input);
                     } else {
                         view.showErrorMessage("활성화된 채팅방이 없습니다. /enter <roomId> 로 입장하거나 /chat 명령어를 사용하세요.");
                     }
@@ -98,7 +96,6 @@ public class ClientMain {
                 if (command.is("/exit") || command.is("/quit")) {
                     running = false;
                 } else {
-                    // 모든 명령어 처리를 디스패처에게 위임
                     cliDispatcher.dispatch(command);
                 }
             }
