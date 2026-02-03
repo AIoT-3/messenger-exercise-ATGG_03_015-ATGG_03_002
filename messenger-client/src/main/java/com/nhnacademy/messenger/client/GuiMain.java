@@ -30,7 +30,7 @@ public class GuiMain {
         // 1. 네트워크 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
         networkDispatcher.register(MessageType.LOGIN_SUCCESS, new LoginResponseHandler());
-        networkDispatcher.register(MessageType.CHAT_ROOM_CREATE, new CreateRoomResponseHandler());
+        networkDispatcher.register(MessageType.CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(MessageType.ERROR, new ErrorResponseHandler());
 
         MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
@@ -41,7 +41,7 @@ public class GuiMain {
 
         // 3. GUI 초기화
         LoginPanel loginPanel = new LoginPanel(userController);
-        RoomListPanel roomListPanel = new RoomListPanel();
+        RoomListPanel roomListPanel = new RoomListPanel(chatRoomController);
         // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
         //  ClientSession.isInChatRoom으로 방 진입 체크
         RoomChatPanel roomChatPanel = new RoomChatPanel(0);

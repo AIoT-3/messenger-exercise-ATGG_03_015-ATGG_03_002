@@ -32,6 +32,9 @@ public class GuiView implements View {
     @Override
     public void showSystemMessage(String message) {
         log.info("[System] {}", message);
+        SwingUtilities.invokeLater(() ->
+                JOptionPane.showMessageDialog(roomListPanel, message, "알림", JOptionPane.INFORMATION_MESSAGE)
+        );
     }
 
     @Override
@@ -45,8 +48,8 @@ public class GuiView implements View {
     public void showLoginSuccess(String userName) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
-            // TODO: 로그인 했을 때 로그인 창 삭제 후 채팅방 리스트 창 띄우기
-            // loginPanel.dispose();
+            loginPanel.setVisible(false);
+            roomListPanel.setVisible(true);
         });
     }
 

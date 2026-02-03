@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
+import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.listener.RefreshListener;
 import com.nhnacademy.messenger.client.domain.room.listener.RoomCreateListener;
 import com.nhnacademy.messenger.client.domain.room.listener.RoomEnterListener;
@@ -40,9 +41,12 @@ public class RoomListPanel extends JFrame {
     // UI Components
     private JPanel roomListContainer;
     private JPanel userListContainer;
+    
+    private final ChatRoomController chatRoomController;
 
-    public RoomListPanel() {
+    public RoomListPanel(ChatRoomController chatRoomController) {
         super(TITLE_TEXT);
+        this.chatRoomController = chatRoomController;
         initWindow();
         initUI();
     }
@@ -125,7 +129,7 @@ public class RoomListPanel extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(SPACING_MEDIUM, 0, 0, 0));
 
         JButton createBtn = new JButton(TEXT_CREATE_ROOM);
-        createBtn.addActionListener(new RoomCreateListener());
+        createBtn.addActionListener(new RoomCreateListener(chatRoomController));
         
         JButton logoutBtn = new JButton(TEXT_LOGOUT);
         logoutBtn.addActionListener(new LogoutListener());
