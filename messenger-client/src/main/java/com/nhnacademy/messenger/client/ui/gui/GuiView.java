@@ -20,14 +20,20 @@ public class GuiView implements View {
     private final RoomChatPanel roomChatPanel;
 
     public void start() {
-        SwingUtilities.invokeLater(() -> {
-            loginPanel.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() ->
+            loginPanel.setVisible(true)
+        );
     }
 
-    // TODO: label view 전환
-    private void switchView() {
+    private void switchView(JFrame targetFrame) {
+        loginPanel.setVisible(false);
+        roomListPanel.setVisible(false);
+        roomChatPanel.setVisible(false);
 
+        if (targetFrame != null) {
+            targetFrame.setVisible(true);
+            targetFrame.toFront();
+        }
     }
 
     @Override
@@ -49,8 +55,16 @@ public class GuiView implements View {
     public void showLoginSuccess(String userName) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
-            loginPanel.setVisible(false);
-            roomListPanel.setVisible(true);
+            switchView(roomListPanel);
+        });
+    }
+
+    @Override
+    public void showLogoutSuccess() {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null, "성공적으로 로그아웃 되었습니다.");
+            roomListPanel.clearLists(); // 로그아웃 시 목록 초기화
+            switchView(loginPanel);
         });
     }
 
@@ -71,8 +85,7 @@ public class GuiView implements View {
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
         SwingUtilities.invokeLater(() -> {
             roomChatPanel.updateRoomInfo(roomId);
-            roomListPanel.setVisible(false);
-            roomChatPanel.setVisible(true);
+            switchView(roomChatPanel);
         });
     }
 

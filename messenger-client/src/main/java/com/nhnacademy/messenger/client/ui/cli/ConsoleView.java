@@ -38,6 +38,11 @@ public class ConsoleView implements View {
     }
 
     @Override
+    public void showLogoutSuccess() {
+        out.println("[로그아웃] 로그아웃 되었습니다. /login [ID] [PW] 로 로그인하세요");
+    }
+
+    @Override
     public void showRoomList(List<RoomInfo> rooms) {
         out.println("============== 채팅방 목록 ==============");
         if (rooms == null || rooms.isEmpty()) {
