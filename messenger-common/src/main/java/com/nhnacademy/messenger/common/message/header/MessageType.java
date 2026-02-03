@@ -26,6 +26,7 @@ import lombok.Getter;
 @Getter
 public enum MessageType {
     // api 스펙에서는 -로 구분하지만, 중요하진 않은 것 같아 _ 그대로 사용함
+    // 꼭!!! -을 지켜야 한다면!!!!! JsonProperty 쓰면 됨
 
     // auth
     LOGIN(LoginRequest.class),

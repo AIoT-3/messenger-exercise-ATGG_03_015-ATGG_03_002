@@ -78,8 +78,12 @@ public class GuiView implements View {
     }
 
     @Override
-    public void showRoomEnterSuccess(String roomName) {
-
+    public void showRoomEnterSuccess(Long roomId, List<String> users) {
+        SwingUtilities.invokeLater(() -> {
+            roomChatPanel.updateRoomInfo(roomId);
+            roomListPanel.setVisible(false);
+            roomChatPanel.setVisible(true);
+        });
     }
 
     @Override
