@@ -181,7 +181,7 @@ public class RoomListPanel extends JFrame {
             if (roomListMap.containsKey(info.roomId())) {
                 roomListMap.get(info.roomId()).updateInfo(info);
             } else {
-                roomListMap.put(info.roomId(), new RoomListItem(info, chatRoomController));
+                roomListMap.put(info.roomId(), new RoomListItem(info, chatRoomClientService));
             }
         }
 

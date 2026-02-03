@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.ui.gui.manager;
 
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class RoomChatManager {
     private final Map<Long, RoomChatPanel> chatRooms = new ConcurrentHashMap<>();
-    private final ChatRoomController chatRoomController;
+    private final ChatRoomClientService chatRoomClientService;
 
     public void openRoom(long roomId) {
         if (chatRooms.containsKey(roomId)) {
@@ -25,7 +25,7 @@ public class RoomChatManager {
             }
             panel.toFront();
         } else {
-            RoomChatPanel panel = new RoomChatPanel(roomId, chatRoomController);
+            RoomChatPanel panel = new RoomChatPanel(roomId, chatRoomClientService);
             panel.setRoomTitle("채팅방 " + roomId);
             panel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

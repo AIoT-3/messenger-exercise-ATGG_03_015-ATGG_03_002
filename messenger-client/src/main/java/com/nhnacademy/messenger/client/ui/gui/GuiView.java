@@ -94,9 +94,9 @@ public class GuiView implements View {
     }
 
     @Override
-    public void appendMessage(String sender, String content) {
+    public void appendMessage(Long roomId, String sender, String content) {
         SwingUtilities.invokeLater(() -> {
-            roomChatPanel.addMessage(sender, content);
+            roomChatManager.appendMessage(roomId, sender, content);
         });
     }
 }

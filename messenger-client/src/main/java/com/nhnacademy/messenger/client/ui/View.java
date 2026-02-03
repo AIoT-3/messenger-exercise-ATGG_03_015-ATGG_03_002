@@ -21,5 +21,5 @@ public interface View {
     void showRoomExitSuccess(Long roomId);
     
     // 메시지 출력
-    void appendMessage(String sender, String content);
+    void appendMessage(Long roomId, String sender, String content);
 }

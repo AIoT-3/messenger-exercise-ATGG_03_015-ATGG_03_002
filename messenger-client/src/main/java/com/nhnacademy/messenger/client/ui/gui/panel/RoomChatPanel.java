@@ -2,7 +2,6 @@ package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.config.AppConstant;
 import com.nhnacademy.messenger.client.domain.chat.listener.ChatMessageListener;
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.listener.ExitRoomListener;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +33,10 @@ public class RoomChatPanel extends JFrame {
 
     private final ChatRoomClientService chatRoomClientService;
 
-    public RoomChatPanel(ChatRoomClientService chatRoomClientService) {
+    public RoomChatPanel(long roomId, ChatRoomClientService chatRoomClientService) {
         super(TITLE_TEXT);
         this.chatRoomClientService = chatRoomClientService;
-        this.roomId = 0;
+        this.roomId = roomId;
 
         initWindow();
         initUI();

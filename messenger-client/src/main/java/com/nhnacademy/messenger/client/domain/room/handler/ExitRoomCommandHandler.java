@@ -1,6 +1,6 @@
 package com.nhnacademy.messenger.client.domain.room.handler;
 
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.ui.cli.Command;
 import com.nhnacademy.messenger.client.ui.cli.ConsoleView;
 import com.nhnacademy.messenger.client.ui.cli.dispatcher.CommandExecutable;
@@ -11,8 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ExitRoomCommandHandler implements CommandExecutable {
 
-    public static final String COMMAND = "/exit";
-    private final ChatRoomController controller;
+    private static final String COMMAND = "/exit";
+    private static final String DESCRIPTION = "/exit <roomId> - 종료합니다.";
+    private final ChatRoomClientService service;
 
     @Override
     public void execute(Command command, ConsoleView view) {
@@ -23,9 +24,19 @@ public class ExitRoomCommandHandler implements CommandExecutable {
 
         try {
             long roomId = Long.parseLong(command.args().getFirst());
-            controller.requestExitRoom(roomId);
+            service.exitRoom(roomId);
         } catch (NumberFormatException e) {
             view.showErrorMessage("방 ID는 숫자여야 합니다.");
         }
+    }
+
+    @Override
+    public String getCommand() {
+        return COMMAND;
+    }
+
+    @Override
+    public String getDescription() {
+        return DESCRIPTION;
     }
 }

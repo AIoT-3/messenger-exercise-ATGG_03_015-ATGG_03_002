@@ -78,7 +78,8 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void appendMessage(String sender, String content) {
+    public void appendMessage(Long roomId, String sender, String content) {
+        // TODO: 여러 채팅방에 속한 경우 어떻게 메세지를 출력할지 고민
         printWithPrompt("[" + sender + "]: " + content);
     }
 
