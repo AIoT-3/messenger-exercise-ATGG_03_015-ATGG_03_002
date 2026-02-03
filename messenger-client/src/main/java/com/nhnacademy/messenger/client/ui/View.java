@@ -1,5 +1,6 @@
 package com.nhnacademy.messenger.client.ui;
 
+import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public interface View {
     void showLoginSuccess(String userName);
 
     // 채팅방 관련
-    void showRoomList(List<String> rooms); // 임시로 String 리스트, 추후 DTO로 변경
+    void showRoomList(List<RoomInfo> rooms);
     void showRoomEnterSuccess(Long roomId, List<String> users);
     
     // 메시지 출력
