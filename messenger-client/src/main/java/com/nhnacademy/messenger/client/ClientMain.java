@@ -14,7 +14,6 @@ import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutCommandHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
-import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
@@ -58,6 +57,7 @@ public class ClientMain {
         // 4. CLI 명령어 디스패처 초기화
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
         cliDispatcher.register(LoginCommandHandler.COMMAND, new LoginCommandHandler(userController));
+        cliDispatcher.register(LogoutCommandHandler.COMMAND, new LogoutCommandHandler(userController));
         cliDispatcher.register(CreateRoomCommandHandler.COMMAND, new CreateRoomCommandHandler(chatRoomController));
         cliDispatcher.register(ListRoomCommandHandler.COMMAND, new ListRoomCommandHandler(chatRoomController));
         cliDispatcher.register(EnterRoomCommandHandler.COMMAND, new EnterRoomCommandHandler(chatRoomController));

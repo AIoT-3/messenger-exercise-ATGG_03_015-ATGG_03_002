@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class LogoutCommandHandler implements CommandExecutable {
+
     private final UserController userController;
+    public final static String COMMAND = "/logout";
 
     @Override
     public void execute(Command command, ConsoleView view) {
