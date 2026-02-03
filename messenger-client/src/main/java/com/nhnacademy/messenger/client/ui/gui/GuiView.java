@@ -4,6 +4,7 @@ import com.nhnacademy.messenger.client.ui.View;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
+import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,24 +55,13 @@ public class GuiView implements View {
     }
 
     @Override
-    public void showRoomList(List<String> rooms) {
+    public void showRoomList(List<RoomInfo> rooms) {
         SwingUtilities.invokeLater(() -> {
             roomListPanel.clearLists();
             if (rooms != null) {
-                for (String roomString : rooms) {
-                    try {
-                        // Format: "[roomId] roomName (count명)"
-                        int idEnd = roomString.indexOf("]");
-                        long roomId = Long.parseLong(roomString.substring(1, idEnd));
-
-                        int nameEnd = roomString.lastIndexOf("(");
-                        String roomName = roomString.substring(idEnd + 2, nameEnd).trim();
-
-                        roomListPanel.addRoomItem(roomId, roomName);
-                    } catch (Exception e) {
-                        log.warn("방 정보 파싱 실패: {}", roomString);
-                        roomListPanel.addRoomItem(0, roomString);
-                    }
+                for (RoomInfo info : rooms) {
+                    String displayName = String.format("%s (%d명)", info.roomName(), info.userCount());
+                    roomListPanel.addRoomItem(info.roomId(), displayName);
                 }
             }
         });
