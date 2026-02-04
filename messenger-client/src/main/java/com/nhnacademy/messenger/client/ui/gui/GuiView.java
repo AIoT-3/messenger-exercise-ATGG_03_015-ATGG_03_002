@@ -80,8 +80,7 @@ public class GuiView implements View {
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
         SwingUtilities.invokeLater(() -> {
-            // Note: Room name is not provided in response. 
-            // Ideally we should get it. For now, we can rely on default title or update it if we have info.
+            // TODO: api 스펙에서는 roomId만 전달돼서 roomName을 표시 못하는 중
             roomChatManager.openRoom(roomId);
         });
     }
