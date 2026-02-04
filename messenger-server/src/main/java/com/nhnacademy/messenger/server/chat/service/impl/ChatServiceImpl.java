@@ -11,13 +11,9 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
-    private final AtomicLong messageIdCounter = new AtomicLong(System.currentTimeMillis());
 
     @Override
     public Chat saveTextMessage(Long roomId, String senderId, String content) {
-        long messageId = messageIdCounter.incrementAndGet();
-        Chat chat = Chat.text(messageId, roomId, senderId, content);
-        chatRepository.save(chat);
-        return chat;
+        return chatRepository.save(Chat.text(roomId, senderId, content));
     }
 }
