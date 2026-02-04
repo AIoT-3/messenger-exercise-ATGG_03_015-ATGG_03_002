@@ -22,4 +22,31 @@ public class InMemoryChatRepository implements ChatRepository {
                 .add(chat);
         return chat;
     }
+
+    @Override
+    public List<Chat> findByRoomIdBeforeMessageId(Long roomId, int limit, Long beforeMessageId) {
+        List<Chat> chats = chatStore.getOrDefault(roomId, Collections.emptyList());
+        if (chats.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Chat> result = new ArrayList<>();
+
+        synchronized (chats) {
+            int index = chats.size() - 1;
+
+            if (beforeMessageId != null) {
+                while (index >= 0 && chats.get(index).getMessageId() >= beforeMessageId) {
+                    index--;
+                }
+            }
+
+            while (index >= 0 && result.size() < limit) {
+                result.add(chats.get(index));
+                index--;
+            }
+        }
+
+        return result;
+    }
 }

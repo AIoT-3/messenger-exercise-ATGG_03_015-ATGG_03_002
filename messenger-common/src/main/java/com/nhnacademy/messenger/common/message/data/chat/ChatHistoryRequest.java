@@ -6,4 +6,10 @@ public record ChatHistoryRequest(
         Integer limit,
         Long beforeMessageId
 ) implements MessageData {
+    public static final int DEFAULT_LIMIT = 50;
+    public static final int MAX_LIMIT = 100;
+
+    public int getLimitOrDefault() {
+        return (limit == null) ? DEFAULT_LIMIT : limit;
+    }
 }

@@ -4,9 +4,9 @@ import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.repository.UserRepository;
 import com.nhnacademy.messenger.server.user.service.UserService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
 
 import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
 
@@ -27,6 +27,11 @@ public class UserServiceImpl implements UserService {
     public User getUserById(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new MessengerException(USER_NOT_FOUND, "사용자를 찾을 수 없습니다: " + userId));
+    }
+
+    @Override
+    public Optional<User> findById(String userId) {
+        return userRepository.findById(userId);
     }
 
     @Override
