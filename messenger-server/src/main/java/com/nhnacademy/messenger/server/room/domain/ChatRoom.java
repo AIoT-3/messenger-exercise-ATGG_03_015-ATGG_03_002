@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class ChatRoom {
     private Long roomId;
     private String roomName;
-    @Builder.Default
+    @Builder.Default //Builder가 null로 초기화하는 것을 방지
     private final Set<Session> sessions = new CopyOnWriteArraySet<>();
 
     public void addSession(Session session) {
