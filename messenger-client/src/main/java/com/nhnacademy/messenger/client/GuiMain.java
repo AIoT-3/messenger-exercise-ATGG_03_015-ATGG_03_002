@@ -1,5 +1,6 @@
 package com.nhnacademy.messenger.client;
 
+import com.nhnacademy.messenger.client.domain.chat.handler.ChatHistoryResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
@@ -31,23 +32,23 @@ import static com.nhnacademy.messenger.common.message.header.MessageType.*;
 public class GuiMain {
 
     public static void main(String[] args) {
-        // 1. 네트워크 초기화
+        // 1. 네트워크 및 서비스 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
+        MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
+        UserClientService userClientService = new UserClientService(client);
+        ChatRoomClientService chatRoomClientService = new ChatRoomClientService(client);
+
+        // 2. 네트워크 핸들러 등록
         networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
         networkDispatcher.register(LOGOUT_SUCCESS, new LogoutResponseHandler());
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
-        networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
+        networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler(chatRoomClientService));
         networkDispatcher.register(CHAT_ROOM_EXIT_SUCCESS, new ExitRoomResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
+        networkDispatcher.register(CHAT_MESSAGE_HISTORY_SUCCESS, new ChatHistoryResponseHandler());
         networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageListener());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
-
-        MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
-
-        // 2. 서비스 초기화
-        UserClientService userClientService = new UserClientService(client);
-        ChatRoomClientService chatRoomClientService = new ChatRoomClientService(client);
 
         // 3. GUI 초기화
         LoginPanel loginPanel = new LoginPanel(userClientService);

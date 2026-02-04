@@ -3,7 +3,7 @@ package com.nhnacademy.messenger.server.chat.handler;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryRequest;
 import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryResponse;
-import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryResponse.MessageInfo;
+import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
 import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
@@ -16,6 +16,8 @@ import com.nhnacademy.messenger.server.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -51,7 +53,7 @@ public class ChatHistoryRequestHandler implements RequestHandler {
         }
 
         // 5. 응답 DTO 변환
-        List<MessageInfo> messageInfos = chats.stream()
+        List<MessageInfo> messageInfos = new ArrayList<>(chats.stream()
                 .map(chat -> {
                     String senderName = userService.findById(chat.getSenderId())
                             .map(User::getUserName)
@@ -65,9 +67,12 @@ public class ChatHistoryRequestHandler implements RequestHandler {
                             chat.getContent()
                     );
                 })
-                .toList();
+                .toList());
 
-        // 6. 응답 전송
+        // 6. 과거 -> 최신 순으로 정렬 뒤집기
+        Collections.reverse(messageInfos);
+
+        // 7. 응답 전송
         ChatHistoryResponse responseData = new ChatHistoryResponse(
                 requestData.roomId(),
                 messageInfos,

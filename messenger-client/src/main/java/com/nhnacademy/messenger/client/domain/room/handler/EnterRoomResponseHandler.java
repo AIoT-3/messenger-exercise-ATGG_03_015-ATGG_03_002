@@ -2,16 +2,21 @@ package com.nhnacademy.messenger.client.domain.room.handler;
 
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.room.event.EnterRoomSuccessEvent;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomResponse;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 public class EnterRoomResponseHandler implements ResponseHandler {
+
+    private final ChatRoomClientService chatRoomClientService;
 
     @Override
     public void handle(Message message) {
@@ -23,6 +28,9 @@ public class EnterRoomResponseHandler implements ResponseHandler {
 
             ClientSession.INSTANCE.setCurrentRoomId(response.roomId());
             EventBus.INSTANCE.publish(new EnterRoomSuccessEvent(response.roomId(), response.users()));
+
+            // 입장 성공 시 자동으로 최근 채팅 내역 조회 (기본값 사용)
+            chatRoomClientService.getChatHistory(response.roomId(), null, null);
 
         } catch (Exception e) {
             log.error("채팅방 입장 처리 중 오류", e);

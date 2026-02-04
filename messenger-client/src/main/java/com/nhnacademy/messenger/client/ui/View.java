@@ -1,5 +1,6 @@
 package com.nhnacademy.messenger.client.ui;
 
+import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import java.util.List;
 
@@ -21,5 +22,6 @@ public interface View {
     void showRoomExitSuccess(Long roomId);
     
     // 메시지 출력
-    void appendMessage(Long roomId, String sender, String content);
+    void appendMessage(Long roomId, Long messageId, String sender, String content);
+    void showChatHistory(Long roomId, List<MessageInfo> messages, boolean hasMore);
 }
