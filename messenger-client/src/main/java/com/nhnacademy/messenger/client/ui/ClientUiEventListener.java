@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.client.ui;
 
 import com.nhnacademy.messenger.client.domain.chat.event.ReceiveMessageEvent;
+import com.nhnacademy.messenger.client.domain.chat.event.ReceivePrivateMessageEvent;
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.room.event.CreateRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.room.event.EnterRoomSuccessEvent;
@@ -53,6 +54,11 @@ public class ClientUiEventListener {
     @EventListener
     public void onRoomExit(ExitRoomSuccessEvent event) {
         view.showRoomExitSuccess(event.roomId());
+    }
+
+    @EventListener
+    public void onPrivateMessageReceived(ReceivePrivateMessageEvent event) {
+        view.appendPrivateMessage(event.senderId(), event.content());
     }
 
     @EventListener

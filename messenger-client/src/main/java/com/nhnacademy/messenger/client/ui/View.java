@@ -26,4 +26,5 @@ public interface View {
     
     // 메시지 출력
     void appendMessage(Long roomId, String sender, String content);
+    void appendPrivateMessage(String senderId, String content);
 }

@@ -5,6 +5,7 @@ import com.nhnacademy.messenger.client.domain.room.listener.CreateRoomListener;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.domain.user.listener.LogoutListener;
+import com.nhnacademy.messenger.client.ui.gui.manager.PrivateChatManager;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -49,13 +50,16 @@ public class RoomListPanel extends JFrame {
 
     private final ChatRoomClientService chatRoomClientService;
     private final UserClientService userClientService;
+    private final PrivateChatManager privateChatManager;
 
     private final Map<Long, RoomListItem> roomListMap = new HashMap<>();
+    private final Map<String, UserListItem> userListMap = new HashMap<>();
 
-    public RoomListPanel(UserClientService userClientService, ChatRoomClientService chatRoomClientService) {
+    public RoomListPanel(UserClientService userClientService, ChatRoomClientService chatRoomClientService, PrivateChatManager privateChatManager) {
         super(TITLE_TEXT);
         this.chatRoomClientService = chatRoomClientService;
         this.userClientService = userClientService;
+        this.privateChatManager = privateChatManager;
         initWindow();
         initUI();
     }
@@ -198,16 +202,37 @@ public class RoomListPanel extends JFrame {
     public void updateUserList(List<UserInfo> users) {
         if (users == null) return;
 
+        Set<String> currentIds = users.stream().map(UserInfo::id).collect(Collectors.toSet());
+        userListMap.keySet().removeIf(id -> !currentIds.contains(id));
+
+        for (UserInfo info : users) {
+            if (userListMap.containsKey(info.id())) {
+                userListMap.get(info.id()).updateStatus(info.online());
+            } else {
+                UserListItem item = new UserListItem(info);
+                item.addActionListener(e -> {
+                    if (privateChatManager != null) {
+                        privateChatManager.openChat(info.id());
+                        item.setNotification(false); // 창 열면 알림 제거
+                    }
+                });
+                userListMap.put(info.id(), item);
+            }
+        }
+
         userListContainer.removeAll();
-        for (UserInfo user : users) {
-            String status = user.online() ? "🟢  " : "🔴  ";
-            JLabel userLabel = new JLabel(status + user.id() + " (" + user.name() + ")");
-            userLabel.setForeground(TEXT_COLOR);
-            userLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            userLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            userListContainer.add(userLabel);
+        for (UserInfo info : users) {
+            userListContainer.add(userListMap.get(info.id()));
+            userListContainer.add(Box.createRigidArea(new Dimension(0, 5)));
         }
         refresh();
+    }
+
+    public void setUserNotification(String userId, boolean hasNew) {
+        UserListItem item = userListMap.get(userId);
+        if (item != null) {
+            item.setNotification(hasNew);
+        }
     }
 
     /**

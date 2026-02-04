@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.client.ui.gui;
 
 import com.nhnacademy.messenger.client.ui.View;
+import com.nhnacademy.messenger.client.ui.gui.manager.PrivateChatManager;
 import com.nhnacademy.messenger.client.ui.gui.manager.RoomChatManager;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
@@ -19,6 +20,7 @@ public class GuiView implements View {
     private final LoginPanel loginPanel;
     private final RoomListPanel roomListPanel;
     private final RoomChatManager roomChatManager;
+    private final PrivateChatManager privateChatManager;
 
     public void start() {
         SwingUtilities.invokeLater(() ->
@@ -67,9 +69,21 @@ public class GuiView implements View {
             JOptionPane.showMessageDialog(null, "성공적으로 로그아웃 되었습니다.");
             roomListPanel.clearLists(); // 로그아웃 시 목록 초기화
             roomChatManager.closeAll();
+            privateChatManager.closeAll();
             switchView(loginPanel);
         });
     }
+
+    public void appendPrivateMessage(String senderId, String content) {
+        SwingUtilities.invokeLater(() -> {
+            boolean isChatVisible = privateChatManager.receiveMessage(senderId, content);
+            
+            if (!isChatVisible) {
+                roomListPanel.setUserNotification(senderId, true);
+            }
+        });
+    }
+
 
     @Override
     public void showUserList(List<UserInfo> users) {

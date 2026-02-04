@@ -1,9 +1,9 @@
 package com.nhnacademy.messenger.client.domain.room.service;
 
 import com.nhnacademy.messenger.client.network.MessageClient;
+import com.nhnacademy.messenger.client.network.MessageFactory;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.message.Message;
-import com.nhnacademy.messenger.common.message.data.chat.ChatRequest;
 import com.nhnacademy.messenger.common.message.data.room.CreateRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
@@ -66,11 +66,16 @@ public class ChatRoomClientService {
         }
 
         String sessionId = ClientSession.INSTANCE.getSessionId();
+        messageClient.send(MessageFactory.chat(sessionId, roomId, content));
+    }
 
-        ChatRequest data = new ChatRequest(roomId, content);
-        RequestHeader header = RequestHeader.of(MessageType.CHAT_MESSAGE, sessionId);
-        Message message = new Message(header, MessageConverter.toJsonNode(data));
+    public void sendPrivateMessage(String receiverId, String content) {
+        if (StringUtils.isBlank(receiverId) || StringUtils.isBlank(content)) {
+            return;
+        }
 
-        messageClient.send(message);
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+        String senderId = ClientSession.INSTANCE.getUserId();
+        messageClient.send(MessageFactory.privateChat(sessionId, senderId, receiverId, content));
     }
 }

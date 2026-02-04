@@ -16,6 +16,7 @@ import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
 import com.nhnacademy.messenger.client.ui.ClientUiEventListener;
 import com.nhnacademy.messenger.client.ui.gui.GuiView;
+import com.nhnacademy.messenger.client.ui.gui.manager.PrivateChatManager;
 import com.nhnacademy.messenger.client.ui.gui.manager.RoomChatManager;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
@@ -50,13 +51,15 @@ public class GuiMain {
         UserClientService userClientService = new UserClientService(client);
         ChatRoomClientService chatRoomClientService = new ChatRoomClientService(client);
 
-        // 3. GUI 초기화
-        LoginPanel loginPanel = new LoginPanel(userClientService);
-        RoomListPanel roomListPanel = new RoomListPanel(userClientService, chatRoomClientService);
         // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
         //  ClientSession.isInChatRoom으로 방 진입 체크
         RoomChatManager roomChatManager = new RoomChatManager(chatRoomClientService);
-        GuiView view = new GuiView(loginPanel, roomListPanel, roomChatManager);
+        PrivateChatManager privateChatManager = new PrivateChatManager(chatRoomClientService);
+        // 3. GUI 초기화
+        LoginPanel loginPanel = new LoginPanel(userClientService);
+        RoomListPanel roomListPanel = new RoomListPanel(userClientService, chatRoomClientService, privateChatManager);
+
+        GuiView view = new GuiView(loginPanel, roomListPanel, roomChatManager, privateChatManager);
 
         // 4. UI 리스너 등록
         ClientUiEventListener uiListener = new ClientUiEventListener(view);

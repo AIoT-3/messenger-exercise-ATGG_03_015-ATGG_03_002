@@ -103,6 +103,11 @@ public class ConsoleView implements View {
         printWithPrompt("[" + sender + "]: " + content);
     }
 
+    @Override
+    public void appendPrivateMessage(String senderId, String content) {
+        printWithPrompt("[귓속말] " + senderId + ": " + content);
+    }
+
     // --- CLI 전용 기능 ---
 
     public String readInput() {

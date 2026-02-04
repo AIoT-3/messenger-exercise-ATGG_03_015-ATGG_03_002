@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatCommandHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
+import com.nhnacademy.messenger.client.domain.chat.handler.PrivateChatCommandHandler;
 import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomCommandHandler;
@@ -74,6 +75,7 @@ public class ClientMain {
         cliDispatcher.register(new EnterRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ExitRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ChatCommandHandler(chatRoomClientService));
+        cliDispatcher.register(new PrivateChatCommandHandler(chatRoomClientService));
         cliDispatcher.register(new HelpCommandHandler(cliDispatcher));
 
         try {
