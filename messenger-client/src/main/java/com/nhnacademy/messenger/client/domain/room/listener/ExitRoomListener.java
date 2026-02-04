@@ -1,7 +1,6 @@
 package com.nhnacademy.messenger.client.domain.room.listener;
 
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
-import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
+import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,13 +14,7 @@ import java.awt.event.ActionListener;
 public class ExitRoomListener implements ActionListener {
     private long roomId;
     private Container contentPane;
-    private ChatRoomController chatRoomController; // Add Controller
-
-    // Keep existing constructor for compatibility or update usage
-    public ExitRoomListener(long roomId, Container contentPane) {
-        this.roomId = roomId;
-        this.contentPane = contentPane;
-    }
+    private final ChatRoomClientService chatRoomClientService;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -36,8 +29,8 @@ public class ExitRoomListener implements ActionListener {
         // '예(Yes)'를 눌렀을 때의 동작
         if (choice == JOptionPane.YES_OPTION) {
             log.info("채팅방을 나갑니다: {}", roomId);
-            if (chatRoomController != null) {
-                chatRoomController.requestExitRoom(roomId);
+            if (chatRoomClientService != null) {
+                chatRoomClientService.exitRoom(roomId);
             } else {
                 log.error("ChatRoomController is null!");
             }

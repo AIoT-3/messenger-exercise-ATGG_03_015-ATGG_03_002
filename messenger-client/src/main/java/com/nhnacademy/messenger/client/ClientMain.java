@@ -10,7 +10,6 @@ import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomCommandHandl
 import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomCommandHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
-import com.nhnacademy.messenger.client.domain.room.controller.ChatRoomController;
 import com.nhnacademy.messenger.client.domain.room.handler.*;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;

@@ -102,7 +102,7 @@ public class RoomChatPanel extends JFrame {
         JButton exitButton = new JButton(TEXT_EXIT);
         exitButton.setBackground(AppConstant.TRANSPARENT_COLOR);
         exitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
-        exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane()));
+        exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane(), chatRoomClientService));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         rightPanel.setOpaque(false);
