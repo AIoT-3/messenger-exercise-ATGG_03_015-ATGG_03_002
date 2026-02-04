@@ -57,6 +57,7 @@ public class GuiView implements View {
             JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
             loginPanel.clearFields();
             switchView(roomListPanel);
+            roomListPanel.requestInitialData();
         });
     }
 
@@ -73,7 +74,7 @@ public class GuiView implements View {
     @Override
     public void showUserList(List<UserInfo> users) {
         SwingUtilities.invokeLater(() -> {
-            // TODO: 유저 리스트 UI 구현
+            roomListPanel.updateUserList(users);
         });
     }
 
@@ -87,7 +88,8 @@ public class GuiView implements View {
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
         SwingUtilities.invokeLater(() -> {
-            roomChatManager.openRoom(roomId);
+            String roomName = roomListPanel.getRoomName(roomId);
+            roomChatManager.openRoom(roomId, roomName);
         });
     }
 

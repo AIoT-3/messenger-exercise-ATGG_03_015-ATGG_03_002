@@ -17,7 +17,7 @@ public class RoomChatManager {
     private final Map<Long, RoomChatPanel> chatRooms = new ConcurrentHashMap<>();
     private final ChatRoomClientService chatRoomClientService;
 
-    public void openRoom(long roomId) {
+    public void openRoom(long roomId, String roomName) {
         if (chatRooms.containsKey(roomId)) {
             RoomChatPanel panel = chatRooms.get(roomId);
             if (!panel.isVisible()) {
@@ -26,7 +26,7 @@ public class RoomChatManager {
             panel.toFront();
         } else {
             RoomChatPanel panel = new RoomChatPanel(roomId, chatRoomClientService);
-            panel.setRoomTitle("채팅방 " + roomId);
+            panel.setRoomTitle(roomName);
             panel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             // Remove from map when closed

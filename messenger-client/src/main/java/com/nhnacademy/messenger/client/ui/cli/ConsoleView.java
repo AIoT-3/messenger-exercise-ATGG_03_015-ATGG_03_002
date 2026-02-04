@@ -15,6 +15,7 @@ public class ConsoleView implements View {
 
     private final Scanner scanner;
     private final PrintStream out;
+    private final java.util.Map<Long, String> roomNameMap = new java.util.HashMap<>();
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
@@ -59,8 +60,8 @@ public class ConsoleView implements View {
             sb.append("(사용자가 없습니다)\n");
         } else {
             for (UserInfo user : users) {
-                String status = user.online() ? "[온라인]" : "[오프라인]";
-                sb.append(String.format("- %s (%s) %s%n", user.id(), user.name(), status));
+                String status = user.online() ? "[+]" : "[ ]";
+                sb.append(String.format("- %s %s (%s)%n", status, user.name(), user.id()));
             }
         }
         sb.append("=======================================");
@@ -75,6 +76,7 @@ public class ConsoleView implements View {
             sb.append("(채팅방이 없습니다)\n");
         } else {
             for (RoomInfo info : rooms) {
+                roomNameMap.put(info.roomId(), info.roomName());
                 sb.append(String.format("- [%d] %s (인원: %d명)%n",
                         info.roomId(), info.roomName(), info.userCount()));
             }
@@ -85,7 +87,8 @@ public class ConsoleView implements View {
 
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
-        String msg = ">> [" + roomId + "] 번 방에 입장했습니다.\n참여자: " + String.join(", ", users);
+        String roomName = roomNameMap.getOrDefault(roomId, String.valueOf(roomId));
+        String msg = ">> [" + roomName + "] 방에 입장했습니다.\n참여자: " + String.join(", ", users);
         printWithPrompt(msg);
     }
 
