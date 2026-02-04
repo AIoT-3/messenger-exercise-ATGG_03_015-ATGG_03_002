@@ -5,6 +5,7 @@ import com.nhnacademy.messenger.client.ui.gui.manager.PrivateChatManager;
 import com.nhnacademy.messenger.client.ui.gui.manager.RoomChatManager;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
+import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import lombok.RequiredArgsConstructor;
@@ -116,9 +117,18 @@ public class GuiView implements View {
     }
 
     @Override
-    public void appendMessage(Long roomId, String sender, String content) {
+    public void appendMessage(Long roomId, Long messageId, String sender, String content) {
         SwingUtilities.invokeLater(() -> {
             roomChatManager.appendMessage(roomId, sender, content);
+        });
+    }
+
+    @Override
+    public void showChatHistory(Long roomId, List<MessageInfo> messages, boolean hasMore) {
+        SwingUtilities.invokeLater(() -> {
+            for (MessageInfo msg : messages) {
+                roomChatManager.appendMessage(roomId, msg.senderName(), msg.content());
+            }
         });
     }
 }

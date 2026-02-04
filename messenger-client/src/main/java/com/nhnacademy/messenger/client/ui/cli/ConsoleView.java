@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.client.ui.cli;
 
 import com.nhnacademy.messenger.client.ui.View;
+import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -98,9 +99,22 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void appendMessage(Long roomId, String sender, String content) {
-        // TODO: 여러 채팅방에 속한 경우 어떻게 메세지를 출력할지 고민
-        printWithPrompt("[" + sender + "]: " + content);
+    public void appendMessage(Long roomId, Long messageId, String sender, String content) {
+        printWithPrompt(String.format("[%d번 방] [msg: %d] [%s]: %s", roomId, messageId, sender, content));
+    }
+
+    @Override
+    public void showChatHistory(Long roomId, List<MessageInfo> messages, boolean hasMore) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n----------- 과거 채팅 기록 -----------").append("\n");
+        for (MessageInfo msg : messages) {
+            sb.append(String.format("[msg: %d] [%s]: %s", msg.messageId(), msg.senderName(), msg.content())).append("\n");
+        }
+        if (hasMore) {
+            sb.append("(이전 기록이 더 존재합니다. /history <roomId> <limit> <beforeMessageId> 명령어로 더 볼 수 있습니다.)").append("\n");
+        }
+        sb.append("------------------------------------");
+        printWithPrompt(sb.toString());
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.server.network;
 
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.header.MessageType;
+import com.nhnacademy.messenger.server.chat.handler.ChatHistoryRequestHandler;
 import com.nhnacademy.messenger.server.chat.handler.ChatRequestHandler;
 import com.nhnacademy.messenger.server.chat.handler.PrivateChatRequestHandler;
 import com.nhnacademy.messenger.server.chat.repository.ChatRepository;
@@ -71,6 +72,7 @@ public class MessageServer implements Runnable {
         this.messageDispatcher.register(MessageType.CHAT_ROOM_EXIT, new ExitRoomRequestHandler(chatRoomService));
         this.messageDispatcher.register(MessageType.CHAT_MESSAGE, new ChatRequestHandler(chatService, chatRoomService));
         this.messageDispatcher.register(MessageType.PRIVATE_MESSAGE, new PrivateChatRequestHandler(sessionManager));
+        this.messageDispatcher.register(MessageType.CHAT_MESSAGE_HISTORY, new ChatHistoryRequestHandler(userService, chatService));
 
         try {
             this.serverSocket = new ServerSocket(port);

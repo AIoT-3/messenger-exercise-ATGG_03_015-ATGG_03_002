@@ -1,24 +1,11 @@
 package com.nhnacademy.messenger.client;
 
-import com.nhnacademy.messenger.client.domain.chat.handler.ChatCommandHandler;
-import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
-import com.nhnacademy.messenger.client.domain.chat.handler.PrivateChatCommandHandler;
+import com.nhnacademy.messenger.client.domain.chat.handler.*;
 import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
-import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomCommandHandler;
-import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
-import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomCommandHandler;
-import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHandler;
-import com.nhnacademy.messenger.client.domain.room.handler.ListRoomCommandHandler;
-import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.*;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
-import com.nhnacademy.messenger.client.domain.user.handler.LoginCommandHandler;
-import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
-import com.nhnacademy.messenger.client.domain.user.handler.LogoutCommandHandler;
-import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
-import com.nhnacademy.messenger.client.domain.user.handler.UserListCommandHandler;
-import com.nhnacademy.messenger.client.domain.user.handler.UserListResponseHandler;
+import com.nhnacademy.messenger.client.domain.user.handler.*;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.event.EventBus;
@@ -45,25 +32,25 @@ public class ClientMain {
         ClientUiEventListener uiListener = new ClientUiEventListener(view);
         EventBus.INSTANCE.register(uiListener);
 
-        // 2. 네트워크 초기화
+        // 2. 네트워크 및 서비스 초기화
         ClientMessageDispatcher networkDispatcher = new ClientMessageDispatcher();
+        MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
+        UserClientService userClientService = new UserClientService(client);
+        ChatRoomClientService chatRoomClientService = new ChatRoomClientService(client);
+        CommandParser parser = new CommandParser();
+
+        // 3. 네트워크 핸들러 등록
         networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
         networkDispatcher.register(LOGOUT_SUCCESS, new LogoutResponseHandler());
         networkDispatcher.register(USER_LIST_SUCCESS, new UserListResponseHandler());
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
-        networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler());
+        networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler(chatRoomClientService));
         networkDispatcher.register(CHAT_ROOM_EXIT_SUCCESS, new ExitRoomResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
+        networkDispatcher.register(CHAT_MESSAGE_HISTORY_SUCCESS, new ChatHistoryResponseHandler());
         networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageListener());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
-
-        MessageClient client = new MessageClient(DEFAULT_SERVER_ADDRESS, DEFAULT_SERVER_PORT, networkDispatcher);
-        CommandParser parser = new CommandParser();
-
-        // 3. 서비스 초기화
-        UserClientService userClientService = new UserClientService(client);
-        ChatRoomClientService chatRoomClientService = new ChatRoomClientService(client);
 
         // 4. CLI 명령어 디스패처 초기화
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
@@ -76,6 +63,7 @@ public class ClientMain {
         cliDispatcher.register(new ExitRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ChatCommandHandler(chatRoomClientService));
         cliDispatcher.register(new PrivateChatCommandHandler(chatRoomClientService));
+        cliDispatcher.register(new ChatHistoryCommandHandler(chatRoomClientService));
         cliDispatcher.register(new HelpCommandHandler(cliDispatcher));
 
         try {

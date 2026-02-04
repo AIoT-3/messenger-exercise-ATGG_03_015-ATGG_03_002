@@ -4,6 +4,8 @@ import com.nhnacademy.messenger.client.network.MessageClient;
 import com.nhnacademy.messenger.client.network.MessageFactory;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryRequest;
+import com.nhnacademy.messenger.common.message.data.chat.ChatRequest;
 import com.nhnacademy.messenger.common.message.data.room.CreateRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
@@ -77,5 +79,15 @@ public class ChatRoomClientService {
         String sessionId = ClientSession.INSTANCE.getSessionId();
         String senderId = ClientSession.INSTANCE.getUserId();
         messageClient.send(MessageFactory.privateChat(sessionId, senderId, receiverId, content));
+    }
+
+    public void getChatHistory(Long roomId, Integer limit, Long beforeMessageId) {
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+
+        ChatHistoryRequest data = new ChatHistoryRequest(roomId, limit, beforeMessageId);
+        RequestHeader header = RequestHeader.of(MessageType.CHAT_MESSAGE_HISTORY, sessionId);
+        Message message = new Message(header, MessageConverter.toJsonNode(data));
+
+        messageClient.send(message);
     }
 }

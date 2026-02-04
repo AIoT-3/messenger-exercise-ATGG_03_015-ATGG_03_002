@@ -2,7 +2,7 @@ package com.nhnacademy.messenger.server.room.domain;
 
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.server.session.domain.Session;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,10 +11,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 @Slf4j
 @Getter
-@AllArgsConstructor
+@Builder
 public class ChatRoom {
     private Long roomId;
     private String roomName;
+    @Builder.Default //Builder가 null로 초기화하는 것을 방지
     private final Set<Session> sessions = new CopyOnWriteArraySet<>();
 
     public void addSession(Session session) {

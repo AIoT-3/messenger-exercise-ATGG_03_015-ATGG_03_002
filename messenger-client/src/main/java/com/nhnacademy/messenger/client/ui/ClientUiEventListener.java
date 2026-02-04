@@ -1,15 +1,9 @@
 package com.nhnacademy.messenger.client.ui;
 
-import com.nhnacademy.messenger.client.domain.chat.event.ReceiveMessageEvent;
-import com.nhnacademy.messenger.client.domain.chat.event.ReceivePrivateMessageEvent;
+import com.nhnacademy.messenger.client.domain.chat.event.*;
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
-import com.nhnacademy.messenger.client.domain.room.event.CreateRoomSuccessEvent;
-import com.nhnacademy.messenger.client.domain.room.event.EnterRoomSuccessEvent;
-import com.nhnacademy.messenger.client.domain.room.event.ExitRoomSuccessEvent;
-import com.nhnacademy.messenger.client.domain.room.event.ListRoomSuccessEvent;
-import com.nhnacademy.messenger.client.domain.user.event.LoginSuccessEvent;
-import com.nhnacademy.messenger.client.domain.user.event.LogoutSuccessEvent;
-import com.nhnacademy.messenger.client.domain.user.event.UserListSuccessEvent;
+import com.nhnacademy.messenger.client.domain.room.event.*;
+import com.nhnacademy.messenger.client.domain.user.event.*;
 import com.nhnacademy.messenger.common.event.EventListener;
 import lombok.RequiredArgsConstructor;
 
@@ -47,8 +41,13 @@ public class ClientUiEventListener {
     }
 
     @EventListener
+    public void onChatHistoryReceived(ChatHistoryResponseEvent event) {
+        view.showChatHistory(event.roomId(), event.messages(), event.hasMore());
+    }
+
+    @EventListener
     public void onMessageReceived(ReceiveMessageEvent event) {
-        view.appendMessage(event.roomId(), event.senderId(), event.content());
+        view.appendMessage(event.roomId(), event.messageId(), event.senderId(), event.content());
     }
 
     @EventListener

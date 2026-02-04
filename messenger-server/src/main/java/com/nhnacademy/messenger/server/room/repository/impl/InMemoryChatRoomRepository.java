@@ -9,8 +9,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class InMemoryChatRoomRepository implements ChatRoomRepository {
 
-    private final AtomicLong roomIdGenerator = new AtomicLong(0);
+    // Key: roomId, Value: ChatRoom
     private final Map<Long, ChatRoom> chatRoomMap = new ConcurrentHashMap<>();
+    private final AtomicLong roomIdGenerator = new AtomicLong(0);
 
     @Override
     public ChatRoom save(ChatRoom chatRoom) {
