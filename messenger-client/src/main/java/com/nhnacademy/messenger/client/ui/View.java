@@ -27,5 +27,6 @@ public interface View {
     
     // 메시지 출력
     void appendMessage(Long roomId, Long messageId, String sender, String content);
+    void appendPrivateMessage(String senderId, String content);
     void showChatHistory(Long roomId, List<MessageInfo> messages, boolean hasMore);
 }

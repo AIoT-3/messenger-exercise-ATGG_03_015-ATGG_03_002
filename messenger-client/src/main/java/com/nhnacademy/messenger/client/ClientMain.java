@@ -62,6 +62,7 @@ public class ClientMain {
         cliDispatcher.register(new EnterRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ExitRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ChatCommandHandler(chatRoomClientService));
+        cliDispatcher.register(new PrivateChatCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ChatHistoryCommandHandler(chatRoomClientService));
         cliDispatcher.register(new HelpCommandHandler(cliDispatcher));
 

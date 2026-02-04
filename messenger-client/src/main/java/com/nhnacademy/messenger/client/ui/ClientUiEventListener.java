@@ -56,6 +56,11 @@ public class ClientUiEventListener {
     }
 
     @EventListener
+    public void onPrivateMessageReceived(ReceivePrivateMessageEvent event) {
+        view.appendPrivateMessage(event.senderId(), event.content());
+    }
+
+    @EventListener
     public void onError(ErrorEvent event) {
         view.showErrorMessage(event.message());
     }
