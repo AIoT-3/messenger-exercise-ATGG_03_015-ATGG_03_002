@@ -8,6 +8,7 @@ import com.nhnacademy.messenger.client.domain.room.event.ExitRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.room.event.ListRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.user.event.LoginSuccessEvent;
 import com.nhnacademy.messenger.client.domain.user.event.LogoutSuccessEvent;
+import com.nhnacademy.messenger.client.domain.user.event.UserListSuccessEvent;
 import com.nhnacademy.messenger.common.event.EventListener;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,11 @@ public class ClientUiEventListener {
 
     @EventListener
     public void onLogoutSuccess(LogoutSuccessEvent event) { view.showLogoutSuccess(); }
+
+    @EventListener
+    public void onUserListReceived(UserListSuccessEvent event) {
+        view.showUserList(event.userList());
+    }
 
     @EventListener
     public void onRoomCreated(CreateRoomSuccessEvent event) {

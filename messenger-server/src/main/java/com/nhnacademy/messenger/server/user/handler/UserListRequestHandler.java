@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.server.user.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import com.nhnacademy.messenger.common.message.data.user.UserListResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.ResponseHeader;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,13 +31,13 @@ public class UserListRequestHandler implements RequestHandler {
         
         List<User> allUsers = userService.getAllUsers();
         
-        List<UserListResponse.UserInfo> userInfos = allUsers.stream()
-                .map(user -> new UserListResponse.UserInfo(
+        List<UserInfo> userInfos = allUsers.stream()
+                .map(user -> new UserInfo(
                         user.getUserId(),
                         user.getUserName(),
                         sessionManager.getSessionByUserId(user.getUserId()).isPresent()
                 ))
-                .toList();
+                .collect(Collectors.toList());
 
         UserListResponse responseData = new UserListResponse(userInfos);
         

@@ -5,6 +5,7 @@ import com.nhnacademy.messenger.client.ui.gui.manager.RoomChatManager;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
+import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,6 +71,13 @@ public class GuiView implements View {
     }
 
     @Override
+    public void showUserList(List<UserInfo> users) {
+        SwingUtilities.invokeLater(() -> {
+            // TODO: 유저 리스트 UI 구현
+        });
+    }
+
+    @Override
     public void showRoomList(List<RoomInfo> rooms) {
         SwingUtilities.invokeLater(() -> {
             roomListPanel.updateRoomList(rooms);
@@ -79,8 +87,6 @@ public class GuiView implements View {
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
         SwingUtilities.invokeLater(() -> {
-            // Note: Room name is not provided in response. 
-            // Ideally we should get it. For now, we can rely on default title or update it if we have info.
             roomChatManager.openRoom(roomId);
         });
     }

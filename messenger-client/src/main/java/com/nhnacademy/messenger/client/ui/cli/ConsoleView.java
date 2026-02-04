@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.client.ui.cli;
 
 import com.nhnacademy.messenger.client.ui.View;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
+import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,6 +49,22 @@ public class ConsoleView implements View {
     @Override
     public void showLogoutSuccess() {
         printWithPrompt("[로그아웃] 로그아웃 되었습니다. /login [ID] [PW] 로 로그인하세요");
+    }
+
+    @Override
+    public void showUserList(List<UserInfo> users) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("============== 사용자 목록 ==============\n");
+        if (users == null || users.isEmpty()) {
+            sb.append("(사용자가 없습니다)\n");
+        } else {
+            for (UserInfo user : users) {
+                String status = user.online() ? "[온라인]" : "[오프라인]";
+                sb.append(String.format("- %s (%s) %s%n", user.id(), user.name(), status));
+            }
+        }
+        sb.append("=======================================");
+        printWithPrompt(sb.toString());
     }
 
     @Override
