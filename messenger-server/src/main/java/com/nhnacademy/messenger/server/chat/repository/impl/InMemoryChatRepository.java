@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryChatRepository implements ChatRepository {
+
     // Key: roomId, Value: List<Chat>
     private final Map<Long, List<Chat>> chatStore = new ConcurrentHashMap<>();
 
