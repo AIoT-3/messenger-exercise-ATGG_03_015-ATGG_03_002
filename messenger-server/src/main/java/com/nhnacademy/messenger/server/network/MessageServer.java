@@ -18,6 +18,7 @@ import com.nhnacademy.messenger.server.session.domain.Session;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.handler.LoginRequestHandler;
 import com.nhnacademy.messenger.server.user.handler.LogoutRequestHandler;
+import com.nhnacademy.messenger.server.user.handler.UserListRequestHandler;
 import com.nhnacademy.messenger.server.user.repository.impl.InMemoryUserRepository;
 import com.nhnacademy.messenger.server.user.service.UserService;
 import com.nhnacademy.messenger.server.user.service.impl.UserServiceImpl;
@@ -62,6 +63,7 @@ public class MessageServer implements Runnable {
         this.messageDispatcher = new MessageDispatcher();
         this.messageDispatcher.register(MessageType.LOGIN, new LoginRequestHandler(userService, sessionManager));
         this.messageDispatcher.register(MessageType.LOGOUT, new LogoutRequestHandler());
+        this.messageDispatcher.register(MessageType.USER_LIST, new UserListRequestHandler(userService, sessionManager));
         this.messageDispatcher.register(MessageType.CHAT_ROOM_CREATE, new CreateRoomRequestHandler(chatRoomService));
         this.messageDispatcher.register(MessageType.CHAT_ROOM_LIST, new ListRoomRequestHandler(chatRoomService));
         this.messageDispatcher.register(MessageType.CHAT_ROOM_ENTER, new EnterRoomRequestHandler(chatRoomService));

@@ -4,7 +4,6 @@ import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.server.user.domain.User;
 import com.nhnacademy.messenger.server.user.repository.UserRepository;
 import com.nhnacademy.messenger.server.user.service.UserService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 
@@ -38,5 +37,10 @@ public class UserServiceImpl implements UserService {
             throw new MessengerException(AUTH_INVALID_CREDENTIALS, "존재하지 않는 사용자이거나 잘못된 비밀번호입니다.");
         }
         return user;
+    }
+
+    @Override
+    public java.util.List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

@@ -12,4 +12,6 @@ public interface UserRepository {
     boolean existsById(String userId);
 
     void deleteById(String userId);
+
+    java.util.List<User> findAll();
 }
