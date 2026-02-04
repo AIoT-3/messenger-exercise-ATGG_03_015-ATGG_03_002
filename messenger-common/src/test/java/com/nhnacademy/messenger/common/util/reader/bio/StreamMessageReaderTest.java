@@ -19,7 +19,7 @@ class StreamMessageReaderTest {
     @DisplayName("정상 읽기: 올바른 헤더와 바디가 주어졌을 때 Message 객체 반환")
     void read_Message_Success() throws IOException {
         // Given
-        String jsonBody = "{\"header\":{\"type\":\"LOGIN\",\"timestamp\":\"2024-01-01T12:00:00\"},\"data\":{\"userId\":\"test\",\"password\":\"1234\"}}";
+        String jsonBody = "{\"header\":{\"type\":\"LOGIN\",\"timestamp\":\"2024-01-01T12:00:00Z\"},\"data\":{\"userId\":\"test\",\"password\":\"1234\"}}";
         byte[] bodyBytes = jsonBody.getBytes(StandardCharsets.UTF_8);
         String packetString = "message-length: " + bodyBytes.length + "\n" + jsonBody;
 

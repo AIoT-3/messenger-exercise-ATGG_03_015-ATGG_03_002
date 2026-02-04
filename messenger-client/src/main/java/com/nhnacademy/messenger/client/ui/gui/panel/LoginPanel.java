@@ -1,11 +1,12 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
-import com.nhnacademy.messenger.client.config.AppConstant;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.domain.user.listener.LoginListener;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static com.nhnacademy.messenger.client.config.AppConstant.*;
 
 public class LoginPanel extends JFrame {
     private static final String TITLE_TEXT = "로그인";
@@ -18,8 +19,6 @@ public class LoginPanel extends JFrame {
     private static final int LABEL_SIZE_WIDTH = 60;
     private static final int LABEL_SIZE_HEIGHT = 25;
     private static final int FIELD_COLUMNS = 15;
-    private static final int SPACING_SMALL = 10;
-    private static final int SPACING_MEDIUM = 15;
     private static final int PADDING = 40;
 
     private JTextField idField;
@@ -45,7 +44,7 @@ public class LoginPanel extends JFrame {
         JPanel root = new JPanel();
         root.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
         root.setLayout(new BoxLayout(root, BoxLayout.Y_AXIS));
-        root.setBackground(AppConstant.PRIMARY_COLOR);
+        root.setBackground(PRIMARY_COLOR);
 
         idField = new JTextField(FIELD_COLUMNS);
         passwordField = new JPasswordField(FIELD_COLUMNS);
@@ -66,7 +65,7 @@ public class LoginPanel extends JFrame {
     private JLabel createTitleLabel() {
         JLabel title = new JLabel(TITLE_LABEL_TEXT);
         title.setFont(title.getFont().deriveFont(Font.BOLD, TITLE_FONT_SIZE));
-        title.setForeground(AppConstant.TEXT_COLOR);
+        title.setForeground(TEXT_COLOR);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         return title;
     }
@@ -77,7 +76,7 @@ public class LoginPanel extends JFrame {
         row.setOpaque(false);
 
         JLabel label = new JLabel(labelText);
-        label.setForeground(AppConstant.TEXT_COLOR);
+        label.setForeground(TEXT_COLOR);
         Dimension labelSize = new Dimension(LABEL_SIZE_WIDTH, LABEL_SIZE_HEIGHT);
         label.setPreferredSize(labelSize);
         label.setMinimumSize(labelSize);

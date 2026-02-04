@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.client.domain.room.listener;
 
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
+import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,6 +15,7 @@ import java.awt.event.ActionListener;
 public class RefreshListener implements ActionListener {
 
     private final ChatRoomClientService chatRoomClientService;
+    private final UserClientService userClientService;
     private static final int COOLDOWN_MS = 3000;
 
     @Override
@@ -31,7 +33,7 @@ public class RefreshListener implements ActionListener {
         log.info("새로고침 요청");
         try {
             chatRoomClientService.getRoomList();
-            // TODO: 유저 리스트 같이 리퀘스트
+            userClientService.getUserList();
         } catch (Exception ex) {
             log.error("새로고침 실패", ex);
         }

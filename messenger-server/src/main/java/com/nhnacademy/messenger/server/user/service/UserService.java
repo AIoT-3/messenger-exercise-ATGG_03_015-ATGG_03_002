@@ -8,4 +8,6 @@ public interface UserService {
     User getUserById(String userId);
 
     User doLogin(String userId, String password);
+
+    java.util.List<User> getAllUsers();
 }
