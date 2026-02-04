@@ -11,6 +11,7 @@ import com.nhnacademy.messenger.client.domain.room.handler.ListRoomResponseHandl
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
+import com.nhnacademy.messenger.client.domain.user.handler.UserListResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
@@ -18,7 +19,6 @@ import com.nhnacademy.messenger.client.ui.ClientUiEventListener;
 import com.nhnacademy.messenger.client.ui.gui.GuiView;
 import com.nhnacademy.messenger.client.ui.gui.manager.RoomChatManager;
 import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
-import com.nhnacademy.messenger.client.ui.gui.panel.RoomChatPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
 import com.nhnacademy.messenger.common.event.EventBus;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +41,7 @@ public class GuiMain {
         // 2. 네트워크 핸들러 등록
         networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
         networkDispatcher.register(LOGOUT_SUCCESS, new LogoutResponseHandler());
+        networkDispatcher.register(USER_LIST_SUCCESS, new UserListResponseHandler());
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler(chatRoomClientService));

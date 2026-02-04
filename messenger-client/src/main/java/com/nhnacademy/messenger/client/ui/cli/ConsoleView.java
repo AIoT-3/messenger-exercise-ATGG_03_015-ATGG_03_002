@@ -3,6 +3,7 @@ package com.nhnacademy.messenger.client.ui.cli;
 import com.nhnacademy.messenger.client.ui.View;
 import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
+import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,6 +16,7 @@ public class ConsoleView implements View {
 
     private final Scanner scanner;
     private final PrintStream out;
+    private final java.util.Map<Long, String> roomNameMap = new java.util.HashMap<>();
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
@@ -52,6 +54,22 @@ public class ConsoleView implements View {
     }
 
     @Override
+    public void showUserList(List<UserInfo> users) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("============== 사용자 목록 ==============\n");
+        if (users == null || users.isEmpty()) {
+            sb.append("(사용자가 없습니다)\n");
+        } else {
+            for (UserInfo user : users) {
+                String status = user.online() ? "[+]" : "[ ]";
+                sb.append(String.format("- %s %s (%s)%n", status, user.name(), user.id()));
+            }
+        }
+        sb.append("=======================================");
+        printWithPrompt(sb.toString());
+    }
+
+    @Override
     public void showRoomList(List<RoomInfo> rooms) {
         StringBuilder sb = new StringBuilder();
         sb.append("============== 채팅방 목록 ==============\n");
@@ -59,6 +77,7 @@ public class ConsoleView implements View {
             sb.append("(채팅방이 없습니다)\n");
         } else {
             for (RoomInfo info : rooms) {
+                roomNameMap.put(info.roomId(), info.roomName());
                 sb.append(String.format("- [%d] %s (인원: %d명)%n",
                         info.roomId(), info.roomName(), info.userCount()));
             }
@@ -69,7 +88,8 @@ public class ConsoleView implements View {
 
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
-        String msg = ">> [" + roomId + "] 번 방에 입장했습니다.\n참여자: " + String.join(", ", users);
+        String roomName = roomNameMap.getOrDefault(roomId, String.valueOf(roomId));
+        String msg = ">> [" + roomName + "] 방에 입장했습니다.\n참여자: " + String.join(", ", users);
         printWithPrompt(msg);
     }
 

@@ -36,4 +36,15 @@ public class UserClientService {
 
         messageClient.send(message);
     }
+
+    public void getUserList() {
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+        if (sessionId == null) {
+            log.error("세션에 접속되지 않은 상태로 사용자 목록 조회를 시도하였습니다.");
+            return;
+        }
+        RequestHeader header = RequestHeader.of(MessageType.USER_LIST, sessionId);
+        Message message = new Message(header, null);
+        messageClient.send(message);
+    }
 }

@@ -1,6 +1,5 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
-import com.nhnacademy.messenger.client.config.AppConstant;
 import com.nhnacademy.messenger.client.domain.chat.listener.ChatMessageListener;
 import com.nhnacademy.messenger.client.domain.room.listener.ExitRoomListener;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
@@ -9,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+
+import static com.nhnacademy.messenger.client.config.AppConstant.*;
 
 @Slf4j
 public class RoomChatPanel extends JFrame {
@@ -22,7 +23,6 @@ public class RoomChatPanel extends JFrame {
     private static final int TOP_HEIGHT = 40;
     private static final int INPUT_HEIGHT = 50;
     private static final int BUTTON_WIDTH = 80;
-    private static final int SPACING = 10;
     private static final Font FONT_MESSAGE = new Font("Dialog", Font.PLAIN, 14);
 
     private JPanel messagePanel;
@@ -51,7 +51,7 @@ public class RoomChatPanel extends JFrame {
     private void initUI() {
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.setBackground(AppConstant.SECONDARY_COLOR);
+        contentPane.setBackground(SECONDARY_COLOR);
 
         contentPane.add(createTopPanel(), BorderLayout.NORTH);
         contentPane.add(createCenterPanel(), BorderLayout.CENTER);
@@ -59,9 +59,9 @@ public class RoomChatPanel extends JFrame {
     }
     
     // 방 정보 업데이트 및 리셋
-    public void updateRoomInfo(long roomId) {
+    public void updateRoomInfo(long roomId, String roomName) {
         this.roomId = roomId;
-        setRoomTitle("채팅방 " + roomId);
+        setRoomTitle(roomName);
         
         // 메시지 영역 초기화
         if (messagePanel != null) {
@@ -83,11 +83,12 @@ public class RoomChatPanel extends JFrame {
         if (roomTitleLabel != null) {
             roomTitleLabel.setText(title);
         }
+        setTitle(title);
     }
 
     private JPanel createTopPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(AppConstant.PRIMARY_COLOR);
+        panel.setBackground(PRIMARY_COLOR);
 
         JPanel leftSpacer = new JPanel();
         leftSpacer.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
@@ -96,11 +97,11 @@ public class RoomChatPanel extends JFrame {
 
         roomTitleLabel = new JLabel(TITLE_TEXT, SwingConstants.CENTER);
         roomTitleLabel.setFont(new Font("Dialog", Font.BOLD, 18));
-        roomTitleLabel.setForeground(AppConstant.TEXT_COLOR);
+        roomTitleLabel.setForeground(TEXT_COLOR);
         panel.add(roomTitleLabel, BorderLayout.CENTER);
 
         JButton exitButton = new JButton(TEXT_EXIT);
-        exitButton.setBackground(AppConstant.TRANSPARENT_COLOR);
+        exitButton.setBackground(TRANSPARENT_COLOR);
         exitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
         exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane(), chatRoomClientService));
 
@@ -114,17 +115,17 @@ public class RoomChatPanel extends JFrame {
 
     private JPanel createCenterPanel() {
         JPanel chatPanel = new JPanel(new BorderLayout());
-        chatPanel.setBackground(AppConstant.TRANSPARENT_COLOR);
+        chatPanel.setBackground(TRANSPARENT_COLOR);
         chatPanel.setOpaque(false);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
-        messagePanel.setBackground(AppConstant.TRANSPARENT_COLOR);
+        messagePanel.setBackground(TRANSPARENT_COLOR);
         messagePanel.setOpaque(false);
 
         JScrollPane scrollPane = new JScrollPane(messagePanel);
         scrollPane.setBorder(null);
-        scrollPane.getViewport().setBackground(AppConstant.SECONDARY_COLOR);
+        scrollPane.getViewport().setBackground(SECONDARY_COLOR);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
 
@@ -134,12 +135,12 @@ public class RoomChatPanel extends JFrame {
 
     private JPanel createBottomPanel() {
         JPanel inputPanel = new JPanel(new BorderLayout());
-        inputPanel.setBackground(AppConstant.SECONDARY_COLOR);
+        inputPanel.setBackground(SECONDARY_COLOR);
         inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         chatInputField = new JTextField();
-        chatInputField.setBackground(AppConstant.PRIMARY_COLOR);
-        chatInputField.setForeground(AppConstant.TEXT_COLOR);
+        chatInputField.setBackground(PRIMARY_COLOR);
+        chatInputField.setForeground(TEXT_COLOR);
         chatInputField.setPreferredSize(new Dimension(0, INPUT_HEIGHT));
         chatInputField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -147,8 +148,8 @@ public class RoomChatPanel extends JFrame {
         chatInputField.addActionListener(e -> sendMessage());
 
         sendButton = new JButton(TEXT_SEND);
-        sendButton.setBackground(AppConstant.TRANSPARENT_COLOR);
-        sendButton.setForeground(AppConstant.SECONDARY_COLOR);
+        sendButton.setBackground(TRANSPARENT_COLOR);
+        sendButton.setForeground(SECONDARY_COLOR);
         sendButton.setPreferredSize(new Dimension(BUTTON_WIDTH, INPUT_HEIGHT));
         sendButton.addActionListener(e -> sendMessage());
 
@@ -169,7 +170,7 @@ public class RoomChatPanel extends JFrame {
     public void addMessage(String userId, String text) {
         JLabel label = new JLabel(userId + ": " + text);
         label.setFont(FONT_MESSAGE);
-        label.setForeground(AppConstant.TEXT_COLOR);
+        label.setForeground(TEXT_COLOR);
         label.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
         
         messagePanel.add(label);

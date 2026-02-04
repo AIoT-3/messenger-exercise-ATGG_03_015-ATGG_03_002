@@ -21,6 +21,11 @@ public class ClientUiEventListener {
     public void onLogoutSuccess(LogoutSuccessEvent event) { view.showLogoutSuccess(); }
 
     @EventListener
+    public void onUserListReceived(UserListSuccessEvent event) {
+        view.showUserList(event.userList());
+    }
+
+    @EventListener
     public void onRoomCreated(CreateRoomSuccessEvent event) {
         view.showSystemMessage("채팅방이 생성되었습니다: " + event.roomName() + " (ID: " + event.roomId() + ")");
     }

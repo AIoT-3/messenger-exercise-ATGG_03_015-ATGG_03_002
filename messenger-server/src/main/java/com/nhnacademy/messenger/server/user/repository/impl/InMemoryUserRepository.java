@@ -37,4 +37,9 @@ public class InMemoryUserRepository implements UserRepository {
     public void deleteById(String userId) {
         userMap.remove(userId);
     }
+
+    @Override
+    public java.util.List<User> findAll() {
+        return new java.util.ArrayList<>(userMap.values());
+    }
 }

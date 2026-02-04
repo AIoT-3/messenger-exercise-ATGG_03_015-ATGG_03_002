@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.client.ui;
 
 import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
+import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import java.util.List;
 
 /**
@@ -15,6 +16,9 @@ public interface View {
     // 로그인 관련
     void showLoginSuccess(String userName);
     void showLogoutSuccess();
+
+    // 사용자 관련
+    void showUserList(List<UserInfo> users);
 
     // 채팅방 관련
     void showRoomList(List<RoomInfo> rooms);

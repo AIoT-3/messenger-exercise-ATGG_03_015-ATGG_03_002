@@ -42,6 +42,7 @@ public class ClientMain {
         // 3. 네트워크 핸들러 등록
         networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
         networkDispatcher.register(LOGOUT_SUCCESS, new LogoutResponseHandler());
+        networkDispatcher.register(USER_LIST_SUCCESS, new UserListResponseHandler());
         networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
         networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler(chatRoomClientService));
@@ -55,6 +56,7 @@ public class ClientMain {
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
         cliDispatcher.register(new LoginCommandHandler(userClientService));
         cliDispatcher.register(new LogoutCommandHandler(userClientService));
+        cliDispatcher.register(new UserListCommandHandler(userClientService));
         cliDispatcher.register(new CreateRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new ListRoomCommandHandler(chatRoomClientService));
         cliDispatcher.register(new EnterRoomCommandHandler(chatRoomClientService));

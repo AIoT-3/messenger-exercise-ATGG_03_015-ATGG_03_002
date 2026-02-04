@@ -6,6 +6,7 @@ import com.nhnacademy.messenger.client.ui.gui.panel.LoginPanel;
 import com.nhnacademy.messenger.client.ui.gui.panel.RoomListPanel;
 import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
+import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,6 +58,7 @@ public class GuiView implements View {
             JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
             loginPanel.clearFields();
             switchView(roomListPanel);
+            roomListPanel.requestInitialData();
         });
     }
 
@@ -71,6 +73,13 @@ public class GuiView implements View {
     }
 
     @Override
+    public void showUserList(List<UserInfo> users) {
+        SwingUtilities.invokeLater(() -> {
+            roomListPanel.updateUserList(users);
+        });
+    }
+
+    @Override
     public void showRoomList(List<RoomInfo> rooms) {
         SwingUtilities.invokeLater(() -> {
             roomListPanel.updateRoomList(rooms);
@@ -80,8 +89,8 @@ public class GuiView implements View {
     @Override
     public void showRoomEnterSuccess(Long roomId, List<String> users) {
         SwingUtilities.invokeLater(() -> {
-            // TODO: api 스펙에서는 roomId만 전달돼서 roomName을 표시 못하는 중
-            roomChatManager.openRoom(roomId);
+            String roomName = roomListPanel.getRoomName(roomId);
+            roomChatManager.openRoom(roomId, roomName);
         });
     }
 
