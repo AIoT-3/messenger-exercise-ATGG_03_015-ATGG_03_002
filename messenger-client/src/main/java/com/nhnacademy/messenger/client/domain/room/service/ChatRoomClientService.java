@@ -3,6 +3,7 @@ package com.nhnacademy.messenger.client.domain.room.service;
 import com.nhnacademy.messenger.client.network.MessageClient;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryRequest;
 import com.nhnacademy.messenger.common.message.data.chat.ChatRequest;
 import com.nhnacademy.messenger.common.message.data.room.CreateRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomRequest;
@@ -69,6 +70,16 @@ public class ChatRoomClientService {
 
         ChatRequest data = new ChatRequest(roomId, content);
         RequestHeader header = RequestHeader.of(MessageType.CHAT_MESSAGE, sessionId);
+        Message message = new Message(header, MessageConverter.toJsonNode(data));
+
+        messageClient.send(message);
+    }
+
+    public void getChatHistory(Long roomId, Integer limit, Long beforeMessageId) {
+        String sessionId = ClientSession.INSTANCE.getSessionId();
+
+        ChatHistoryRequest data = new ChatHistoryRequest(roomId, limit, beforeMessageId);
+        RequestHeader header = RequestHeader.of(MessageType.CHAT_MESSAGE_HISTORY, sessionId);
         Message message = new Message(header, MessageConverter.toJsonNode(data));
 
         messageClient.send(message);

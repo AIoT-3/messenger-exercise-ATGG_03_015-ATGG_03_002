@@ -9,10 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryUserRepository implements UserRepository {
 
-    private final Map<String, User> userMap;
+    private final Map<String, User> userMap = new ConcurrentHashMap<>();
 
     public InMemoryUserRepository() {
-        this.userMap = new ConcurrentHashMap<>();
         userMap.put("marco", new User("marco", "마르코", "nhnacademy123"));
         userMap.put("d", new User("d", "d", "d"));
         userMap.put("f", new User("f", "f", "f"));

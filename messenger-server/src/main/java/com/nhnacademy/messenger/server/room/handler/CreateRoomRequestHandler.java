@@ -27,8 +27,9 @@ public class CreateRoomRequestHandler implements RequestHandler {
         log.debug("채팅방 생성 요청 수신: roomName={}, session={}", requestData.roomName(), session.getId());
 
         // 2. 방 생성
-        ChatRoom newRoom = new ChatRoom(null, requestData.roomName());
-        ChatRoom savedRoom = chatRoomService.createChatRoom(newRoom);
+        ChatRoom savedRoom = chatRoomService.createChatRoom(ChatRoom.builder()
+                .roomName(requestData.roomName())
+                .build());
 
         // 3. 성공 응답 구성
         ResponseHeader header = ResponseHeader.success(MessageType.CHAT_ROOM_CREATE_SUCCESS);
