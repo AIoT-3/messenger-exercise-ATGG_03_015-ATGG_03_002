@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
 
@@ -46,6 +47,8 @@ public class Session implements Runnable {
     private User user; // 로그인 전에는 null
     @Getter
     private final Set<Long> joinedRoomIds = ConcurrentHashMap.newKeySet();
+
+    private final AtomicBoolean closed = new AtomicBoolean(false);
 
     private final Socket socket;
     private final StreamMessageReader reader;
@@ -212,6 +215,9 @@ public class Session implements Runnable {
 
     // 세션 종료 처리
     public void disconnect() {
+        if (closed.getAndSet(true)) {
+            return;
+        }
         if (Objects.nonNull(this.id)) {
             sessionManager.removeSession(this.id);
         }
