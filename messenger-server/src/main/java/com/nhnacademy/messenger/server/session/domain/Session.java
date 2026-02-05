@@ -30,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
 
+// TODO: 역할이 좀 많은 것 같아서 분리 고려
+
 /**
  * Session
  * 역할
