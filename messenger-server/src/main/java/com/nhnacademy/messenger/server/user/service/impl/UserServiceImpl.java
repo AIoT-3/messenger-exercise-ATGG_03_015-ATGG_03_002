@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     public User doLogin(String userId, String password) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new MessengerException(AUTH_INVALID_CREDENTIALS, "존재하지 않는 사용자이거나 잘못된 비밀번호입니다."));
-        //TODO: 나중에 암호화된 비밀번호 비교로 변경 필요
+        // 일단 단순 문자열 비교로 비밀번호 검증
         if (!user.getPassword().equals(password)) {
             throw new MessengerException(AUTH_INVALID_CREDENTIALS, "존재하지 않는 사용자이거나 잘못된 비밀번호입니다.");
         }

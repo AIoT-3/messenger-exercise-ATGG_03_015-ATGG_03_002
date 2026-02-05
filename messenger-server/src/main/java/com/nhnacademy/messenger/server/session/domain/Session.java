@@ -113,7 +113,7 @@ public class Session implements Runnable {
     // 세션에 사용자 등록
     public void registerUser(User user, String sessionId) {
         if (Objects.nonNull(this.user)) {
-            throw new IllegalStateException("이미 로그인된 세션입니다.");
+            throw new MessengerException(REQUEST_INVALID_MESSAGE, "이미 로그인된 세션입니다.");
         }
         this.user = user;
         this.id = sessionId;
