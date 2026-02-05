@@ -9,6 +9,7 @@ import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.MessageData;
 import lombok.experimental.UtilityClass;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -48,7 +49,7 @@ public class MessageConverter {
             // 1. byte[] -> Message 객체 변환
             return objectMapper.readValue(jsonBytes, Message.class);
 
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             throw new MessageConvertException("역직렬화 실패", e);
         }
     }
