@@ -1,10 +1,12 @@
 package com.nhnacademy.messenger.client.network;
 
+import com.nhnacademy.messenger.common.exception.MessageConvertException;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.util.reader.bio.StreamMessageReader;
 import com.nhnacademy.messenger.common.util.writer.bio.StreamMessageWriter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -33,6 +35,7 @@ public class MessageClient {
 
         try {
             this.socket = new Socket(host, port);
+            this.reader = new StreamMessageReader(socket.getInputStream());
             this.writer = new StreamMessageWriter(socket.getOutputStream());
             this.active = true;
             
@@ -70,13 +73,19 @@ public class MessageClient {
 
     private void receiveLoop() {
         try {
-            reader = new StreamMessageReader(socket.getInputStream());
-            
             while (active && !Thread.currentThread().isInterrupted()) {
                 try {
                     Message message = reader.readMessage();
-                    
                     dispatcher.dispatch(message);
+
+                } catch (MessageConvertException e) {
+                    log.warn("메시지 변환 오류: {}", e.getMessage());
+                    // 연결을 유지하면서 다음 메시지 수신 시도
+
+                } catch (EOFException e) {
+                    log.debug("서버와의 연결이 종료되었습니다.");
+                    disconnect();
+                    break;
                     
                 } catch (Exception e) {
                     if (active) {
@@ -86,8 +95,8 @@ public class MessageClient {
                     break;
                 }
             }
-        } catch (IOException e) {
-            log.error("입력 스트림 초기화 오류", e);
+        } catch (Exception e) {
+            log.error("수신 스레드 비정상 종료", e);
         } finally {
             disconnect();
         }

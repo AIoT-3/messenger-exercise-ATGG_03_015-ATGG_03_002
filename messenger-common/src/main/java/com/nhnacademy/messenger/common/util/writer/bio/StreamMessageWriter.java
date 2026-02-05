@@ -5,18 +5,18 @@ import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.common.util.writer.MessageWriter;
 
-import java.io.DataOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class StreamMessageWriter implements MessageWriter {
 
-    private final DataOutputStream out;
+    private final OutputStream out;
     private final ReentrantLock lock = new ReentrantLock();
 
     public StreamMessageWriter(OutputStream outputStream) {
-        this.out = new DataOutputStream(outputStream);
+        this.out = new BufferedOutputStream(outputStream);
     }
 
     @Override
