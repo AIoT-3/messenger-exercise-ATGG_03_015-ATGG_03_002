@@ -2,6 +2,12 @@ package com.nhnacademy.messenger.server.room.service.impl;
 
 import com.nhnacademy.messenger.common.event.EventListener;
 import com.nhnacademy.messenger.common.exception.MessengerException;
+import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.data.push.PushRoomEnter;
+import com.nhnacademy.messenger.common.message.data.push.PushRoomExit;
+import com.nhnacademy.messenger.common.message.header.MessageType;
+import com.nhnacademy.messenger.common.message.header.ResponseHeader;
+import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.room.domain.ChatRoom;
 import com.nhnacademy.messenger.server.room.repository.ChatRoomRepository;
 import com.nhnacademy.messenger.server.room.service.ChatRoomService;
@@ -45,6 +51,18 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom chatRoom = getChatRoomById(roomId);
         chatRoom.addSession(session);
         session.joinRoom(roomId);
+
+        // 입장 알림 브로드캐스트
+        PushRoomEnter pushData = new PushRoomEnter(
+                roomId,
+                session.getUser().getUserId(),
+                session.getUser().getUserName()
+        );
+        Message pushMessage = new Message(
+                ResponseHeader.success(MessageType.PUSH_ROOM_ENTER),
+                MessageConverter.toJsonNode(pushData)
+        );
+        chatRoom.broadcast(pushMessage);
     }
 
     @Override
@@ -52,6 +70,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         session.validateLoggedIn();
 
         ChatRoom chatRoom = getChatRoomById(roomId);
+
+        // 퇴장 알림 브로드캐스트
+        PushRoomExit pushData = new PushRoomExit(roomId, session.getUser().getUserId());
+        Message pushMessage = new Message(
+                ResponseHeader.success(MessageType.PUSH_ROOM_EXIT),
+                MessageConverter.toJsonNode(pushData)
+        );
+        chatRoom.broadcast(pushMessage);
+
         chatRoom.removeSession(session);
         session.leaveRoom(roomId);
         if (chatRoom.getSessions().isEmpty()) {
@@ -65,7 +92,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         Session session = event.session();
         // 복사본 순회: leaveChatRoom 호출 시 session의 joinedRoomIds가 변경될 수 있으므로
         List<Long> joinedRooms = new ArrayList<>(session.getJoinedRoomIds());
-        
+
         for (Long roomId : joinedRooms) {
             try {
                 leaveChatRoom(roomId, session);
