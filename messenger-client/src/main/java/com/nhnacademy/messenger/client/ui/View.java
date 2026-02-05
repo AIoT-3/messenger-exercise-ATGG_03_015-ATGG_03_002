@@ -24,6 +24,10 @@ public interface View {
     void showRoomList(List<RoomInfo> rooms);
     void showRoomEnterSuccess(Long roomId, List<String> users);
     void showRoomExitSuccess(Long roomId);
+
+    // 실시간 알림 (Push)
+    void showPushRoomEnter(Long roomId, String userId, String userName);
+    void showPushRoomExit(Long roomId, String userId);
     
     // 메시지 출력
     void appendMessage(Long roomId, Long messageId, String sender, String content);

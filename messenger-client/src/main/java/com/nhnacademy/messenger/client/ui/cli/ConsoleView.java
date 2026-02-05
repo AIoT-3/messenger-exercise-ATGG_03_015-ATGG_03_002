@@ -99,6 +99,18 @@ public class ConsoleView implements View {
     }
 
     @Override
+    public void showPushRoomEnter(Long roomId, String userId, String userName) {
+        String roomName = roomNameMap.getOrDefault(roomId, String.valueOf(roomId));
+        printWithPrompt(">> [" + roomName + "] 방에 " + userName + "(" + userId + ") 님이 입장했습니다.");
+    }
+
+    @Override
+    public void showPushRoomExit(Long roomId, String userId) {
+        String roomName = roomNameMap.getOrDefault(roomId, String.valueOf(roomId));
+        printWithPrompt(">> [" + roomName + "] 방에서 " + userId + " 님이 퇴장했습니다.");
+    }
+
+    @Override
     public void appendMessage(Long roomId, Long messageId, String sender, String content) {
         printWithPrompt(String.format("[%d번 방] [msg: %d] [%s]: %s", roomId, messageId, sender, content));
     }
@@ -113,7 +125,7 @@ public class ConsoleView implements View {
         if (hasMore) {
             sb.append("(이전 기록이 더 존재합니다. /history <roomId> <limit> <beforeMessageId> 명령어로 더 볼 수 있습니다.)").append("\n");
         }
-        sb.append("------------------------------------");
+        sb.append("-----------------------------------");
         printWithPrompt(sb.toString());
     }
 

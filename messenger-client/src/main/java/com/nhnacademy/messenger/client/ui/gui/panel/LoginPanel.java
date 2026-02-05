@@ -64,6 +64,8 @@ public class LoginPanel extends JFrame {
 
     private JLabel createTitleLabel() {
         JLabel title = new JLabel(TITLE_LABEL_TEXT);
+
+        // 폰트 수정하기
         title.setFont(title.getFont().deriveFont(Font.BOLD, TITLE_FONT_SIZE));
         title.setForeground(TEXT_COLOR);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
