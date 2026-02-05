@@ -45,7 +45,15 @@ public class RoomChatPanel extends JFrame {
     private void initWindow() {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                new ExitRoomListener(roomId, getContentPane(), chatRoomClientService)
+                        .actionPerformed(null);
+            }
+        });
     }
 
     private void initUI() {

@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatHistoryResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
+import com.nhnacademy.messenger.client.domain.chat.handler.PrivateChatResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.PushMessageHandler;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.*;
@@ -46,6 +47,7 @@ public class GuiMain {
         networkDispatcher.register(CHAT_ROOM_EXIT_SUCCESS, new ExitRoomResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_HISTORY_SUCCESS, new ChatHistoryResponseHandler());
+        networkDispatcher.register(PRIVATE_MESSAGE_SUCCESS, new PrivateChatResponseHandler());
         networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageHandler());
         networkDispatcher.register(PUSH_ROOM_ENTER, new PushRoomEnterHandler());
         networkDispatcher.register(PUSH_ROOM_EXIT, new PushRoomExitHandler());

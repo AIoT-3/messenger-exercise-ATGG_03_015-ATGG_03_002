@@ -48,10 +48,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         session.validateLoggedIn();
 
         ChatRoom chatRoom = getChatRoomById(roomId);
-        chatRoom.addSession(session);
-        session.joinRoom(roomId);
 
-        // 입장 알림 브로드캐스트
+        // 입장 알림 브로드캐스트 (세션 추가 전에 수행하여 본인 제외)
         PushRoomEnter pushData = new PushRoomEnter(
                 roomId,
                 session.getUser().getUserId(),
@@ -62,11 +60,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 MessageConverter.toJsonNode(pushData)
         );
         chatRoom.broadcast(pushMessage);
+
+        chatRoom.addSession(session);
+        session.joinRoom(roomId);
     }
 
     @Override
     public void leaveChatRoom(Long roomId, Session session) {
-        session.validateLoggedIn();
+        // 유저 정보가 있을 때만 퇴장 알림 전송 (onSessionDisconnected 등에서 안전하게 호출하기 위함)
+        String userId = (session.getUser() != null) ? session.getUser().getUserId() : null;
 
         ChatRoom chatRoom = getChatRoomById(roomId);
 
@@ -74,12 +76,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         session.leaveRoom(roomId);
 
         // 퇴장 알림 브로드캐스트 (나간 사람 제외하고 남은 사람들에게만 전송)
-        PushRoomExit pushData = new PushRoomExit(roomId, session.getUser().getUserId());
-        Message pushMessage = new Message(
-                ResponseHeader.success(MessageType.PUSH_ROOM_EXIT),
-                MessageConverter.toJsonNode(pushData)
-        );
-        chatRoom.broadcast(pushMessage);
+        if (userId != null) {
+            PushRoomExit pushData = new PushRoomExit(roomId, userId);
+            Message pushMessage = new Message(
+                    ResponseHeader.success(MessageType.PUSH_ROOM_EXIT),
+                    MessageConverter.toJsonNode(pushData)
+            );
+            chatRoom.broadcast(pushMessage);
+        }
 
         if (chatRoom.getSessions().isEmpty()) {
             chatRoomRepository.deleteById(roomId);
@@ -89,22 +93,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @EventListener
     public void onSessionDisconnected(SessionDisconnectedEvent event) {
         Session session = event.session();
-        session.getJoinedRoomIds().forEach(roomId -> {
-            chatRoomRepository.findById(roomId).ifPresent(chatRoom -> {
-                chatRoom.removeSession(session);
-
-                // 연결 끊김 시에도 퇴장 알림 브로드캐스트 (남은 사람들에게만)
-                PushRoomExit pushData = new PushRoomExit(roomId, session.getUser().getUserId());
-                Message pushMessage = new Message(
-                        ResponseHeader.success(MessageType.PUSH_ROOM_EXIT),
-                        MessageConverter.toJsonNode(pushData)
-                );
-                chatRoom.broadcast(pushMessage);
-
-                if (chatRoom.getSessions().isEmpty()) {
-                    chatRoomRepository.deleteById(roomId);
-                }
-            });
+        // ConcurrentModificationException 방지를 위해 복사본 순회
+        new java.util.ArrayList<>(session.getJoinedRoomIds()).forEach(roomId -> {
+            try {
+                leaveChatRoom(roomId, session);
+            } catch (Exception e) {
+                // 방이 이미 삭제되었거나 다른 이유로 실패한 경우 무시
+            }
         });
     }
 }
