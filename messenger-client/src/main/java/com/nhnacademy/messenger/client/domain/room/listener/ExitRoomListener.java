@@ -32,7 +32,7 @@ public class ExitRoomListener implements ActionListener {
             if (chatRoomClientService != null) {
                 chatRoomClientService.exitRoom(roomId);
             } else {
-                log.error("ChatRoomController is null!");
+                log.error("ChatRoomController가 null입니다!");
             }
         }
     }

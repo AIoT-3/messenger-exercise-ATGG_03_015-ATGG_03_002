@@ -2,7 +2,7 @@ package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatHistoryResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
-import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
+import com.nhnacademy.messenger.client.domain.chat.handler.PushMessageHandler;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.CreateRoomResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.EnterRoomResponseHandler;
@@ -49,11 +49,9 @@ public class GuiMain {
         networkDispatcher.register(CHAT_ROOM_EXIT_SUCCESS, new ExitRoomResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_HISTORY_SUCCESS, new ChatHistoryResponseHandler());
-        networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageListener());
+        networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageHandler());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
 
-        // TODO : ClientSession.currentRoomId로 방 번호 업데이트 및
-        //  ClientSession.isInChatRoom으로 방 진입 체크
         RoomChatManager roomChatManager = new RoomChatManager(chatRoomClientService);
         PrivateChatManager privateChatManager = new PrivateChatManager(chatRoomClientService);
         // 3. GUI 초기화

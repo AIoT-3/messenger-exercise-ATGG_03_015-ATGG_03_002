@@ -10,6 +10,8 @@ public interface ChatRoomRepository {
 
     Optional<ChatRoom> findById(Long roomId);
 
+    Optional<ChatRoom> findByName(String roomName);
+
     List<ChatRoom> findAll();
 
     boolean existsById(Long roomId);

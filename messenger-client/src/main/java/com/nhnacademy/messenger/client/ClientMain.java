@@ -1,7 +1,7 @@
 package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.chat.handler.*;
-import com.nhnacademy.messenger.client.domain.chat.listener.PushMessageListener;
+import com.nhnacademy.messenger.client.domain.chat.handler.PushMessageHandler;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.*;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
@@ -49,7 +49,7 @@ public class ClientMain {
         networkDispatcher.register(CHAT_ROOM_EXIT_SUCCESS, new ExitRoomResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_HISTORY_SUCCESS, new ChatHistoryResponseHandler());
-        networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageListener());
+        networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageHandler());
         networkDispatcher.register(ERROR, new ErrorResponseHandler());
 
         // 4. CLI 명령어 디스패처 초기화

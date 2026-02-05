@@ -43,21 +43,22 @@ public class GuiView implements View {
     public void showSystemMessage(String message) {
         log.info("[System] {}", message);
         SwingUtilities.invokeLater(() ->
-                JOptionPane.showMessageDialog(roomListPanel, message, "알림", JOptionPane.INFORMATION_MESSAGE)
+                JOptionPane.showMessageDialog(roomListPanel, message, "시스템", JOptionPane.INFORMATION_MESSAGE)
         );
     }
 
     @Override
     public void showErrorMessage(String message) {
+        log.info("[Error] {}", message);
         SwingUtilities.invokeLater(() -> 
-            JOptionPane.showMessageDialog(loginPanel, message, "Error", JOptionPane.ERROR_MESSAGE)
+            JOptionPane.showMessageDialog(loginPanel, message, "오류", JOptionPane.ERROR_MESSAGE)
         );
     }
 
     @Override
     public void showLoginSuccess(String userName) {
         SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
             loginPanel.clearFields();
             switchView(roomListPanel);
             roomListPanel.requestInitialData();

@@ -28,6 +28,13 @@ public class InMemoryChatRoomRepository implements ChatRoomRepository {
     }
 
     @Override
+    public Optional<ChatRoom> findByName(String roomName) {
+        return chatRoomMap.values().stream()
+                .filter(room -> room.getRoomName().equals(roomName))
+                .findFirst();
+    }
+
+    @Override
     public List<ChatRoom> findAll() {
         return new ArrayList<>(chatRoomMap.values());
     }

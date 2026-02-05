@@ -20,6 +20,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public ChatRoom createChatRoom(ChatRoom chatRoom) {
+        if (chatRoomRepository.findByName(chatRoom.getRoomName()).isPresent()) {
+            throw new MessengerException(ROOM_ALREADY_EXISTS, "이미 존재하는 채팅방입니다.");
+        }
         return chatRoomRepository.save(chatRoom);
     }
 

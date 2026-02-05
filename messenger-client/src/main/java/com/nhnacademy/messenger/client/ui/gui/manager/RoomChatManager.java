@@ -35,7 +35,7 @@ public class RoomChatManager {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     chatRooms.remove(roomId);
-                    log.info("Chat room {} closed and removed from manager.", roomId);
+                    log.info("채팅방 {}이(가) 닫혔으며 관리자에서 제거되었습니다.", roomId);
                 }
             });
 
@@ -56,7 +56,7 @@ public class RoomChatManager {
         if (panel != null) {
             panel.addMessage(sender, content);
         } else {
-            log.debug("Received message for closed or non-existent room: {}", roomId);
+            log.debug("닫혔거나 존재하지 않는 방에 대한 메시지를 수신했습니다: {}", roomId);
         }
     }
     

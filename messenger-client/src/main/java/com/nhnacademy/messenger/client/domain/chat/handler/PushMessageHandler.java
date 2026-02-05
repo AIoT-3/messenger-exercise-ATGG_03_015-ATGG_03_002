@@ -1,4 +1,4 @@
-package com.nhnacademy.messenger.client.domain.chat.listener;
+package com.nhnacademy.messenger.client.domain.chat.handler;
 
 import com.nhnacademy.messenger.client.domain.chat.event.ReceiveMessageEvent;
 import com.nhnacademy.messenger.client.domain.chat.event.ReceivePrivateMessageEvent;
@@ -10,8 +10,7 @@ import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PushMessageListener implements ResponseHandler {
-    // TODO: 리스너와 액션 리스너의 이름 관계가 모호해서 추후에 다른 리스너들 이름 리펙터하기
+public class PushMessageHandler implements ResponseHandler {
     @Override
     public void handle(Message message) {
         try {

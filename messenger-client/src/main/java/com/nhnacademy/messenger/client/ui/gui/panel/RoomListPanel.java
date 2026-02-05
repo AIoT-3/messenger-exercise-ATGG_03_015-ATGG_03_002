@@ -31,6 +31,7 @@ public class RoomListPanel extends JFrame {
     private static final String TOOLTIP_REFRESH = "새로고침";
     private static final String TEXT_CREATE_ROOM = "방 생성";
     private static final String TEXT_LOGOUT = "로그아웃";
+    private static final String TEXT_UNKNOWN_ROOM = "알 수 없는 방";
 
     // Constants for Dimensions & Layout
     private static final int WINDOW_WIDTH = 500;
@@ -255,7 +256,7 @@ public class RoomListPanel extends JFrame {
 
     public String getRoomName(long roomId) {
         RoomListItem item = roomListMap.get(roomId);
-        return (item != null) ? item.getRoomName() : "Unknown Room";
+        return (item != null) ? item.getRoomName() : TEXT_UNKNOWN_ROOM;
     }
 
     public void requestInitialData() {

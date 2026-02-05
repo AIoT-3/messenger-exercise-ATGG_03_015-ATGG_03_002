@@ -37,10 +37,11 @@ public class MessageServer implements Runnable {
 
     private final ServerSocket serverSocket;
     private final SessionManager sessionManager;
+    private final MessageDispatcher messageDispatcher;
+
     private final UserService userService;
     private final ChatRoomService chatRoomService;
     private final ChatService chatService;
-    private final MessageDispatcher messageDispatcher;
 
     public MessageServer() {
         this(DEFAULT_SERVER_PORT);
@@ -72,7 +73,7 @@ public class MessageServer implements Runnable {
         this.messageDispatcher.register(MessageType.CHAT_ROOM_EXIT, new ExitRoomRequestHandler(chatRoomService));
         this.messageDispatcher.register(MessageType.CHAT_MESSAGE, new ChatRequestHandler(chatService, chatRoomService));
         this.messageDispatcher.register(MessageType.PRIVATE_MESSAGE, new PrivateChatRequestHandler(sessionManager));
-        this.messageDispatcher.register(MessageType.CHAT_MESSAGE_HISTORY, new ChatHistoryRequestHandler(userService, chatService));
+        this.messageDispatcher.register(MessageType.CHAT_MESSAGE_HISTORY, new ChatHistoryRequestHandler(userService, chatService, chatRoomService));
 
         try {
             this.serverSocket = new ServerSocket(port);
