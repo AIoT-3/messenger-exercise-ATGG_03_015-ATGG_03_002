@@ -215,9 +215,11 @@ public class Session implements Runnable {
 
     // 세션 종료 처리
     public void disconnect() {
+        // TODO: 나중에 로직 체크 필요함
         if (closed.getAndSet(true)) {
             return;
         }
+
         if (Objects.nonNull(this.id)) {
             sessionManager.removeSession(this.id);
         }

@@ -40,10 +40,6 @@ public class RoomListPanel extends JFrame {
     private static final int MIN_WINDOW_HEIGHT = 400;
     
     private static final int USER_LIST_PANEL_WIDTH = 200;
-    
-    // Fonts
-    private static final Font FONT_TITLE = new Font("Dialog", Font.BOLD, 18);
-    private static final Font FONT_SUBTITLE = new Font("Dialog", Font.BOLD, 14);
 
     // UI Components
     private JPanel roomListContainer;
