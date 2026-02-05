@@ -15,7 +15,6 @@ import com.nhnacademy.messenger.server.session.domain.Session;
 import com.nhnacademy.messenger.server.session.event.SessionDisconnectedEvent;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
@@ -87,19 +86,25 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         }
     }
 
-    // TODO: 별도의 handler로 분리 고려
     @EventListener
     public void onSessionDisconnected(SessionDisconnectedEvent event) {
         Session session = event.session();
-        // 복사본 순회: leaveChatRoom 호출 시 session의 joinedRoomIds가 변경될 수 있으므로
-        List<Long> joinedRooms = new ArrayList<>(session.getJoinedRoomIds());
+        session.getJoinedRoomIds().forEach(roomId -> {
+            chatRoomRepository.findById(roomId).ifPresent(chatRoom -> {
+                chatRoom.removeSession(session);
 
-        for (Long roomId : joinedRooms) {
-            try {
-                leaveChatRoom(roomId, session);
-            } catch (Exception e) {
-                // 이미 방이 삭제되었거나 다른 세션에 의해 처리된 경우 등 예외 무시
-            }
-        }
+                // 연결 끊김 시에도 퇴장 알림 브로드캐스트 (남은 사람들에게만)
+                PushRoomExit pushData = new PushRoomExit(roomId, session.getUser().getUserId());
+                Message pushMessage = new Message(
+                        ResponseHeader.success(MessageType.PUSH_ROOM_EXIT),
+                        MessageConverter.toJsonNode(pushData)
+                );
+                chatRoom.broadcast(pushMessage);
+
+                if (chatRoom.getSessions().isEmpty()) {
+                    chatRoomRepository.deleteById(roomId);
+                }
+            });
+        });
     }
 }
