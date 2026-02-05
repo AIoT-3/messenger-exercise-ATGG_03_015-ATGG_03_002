@@ -93,6 +93,7 @@ public class ClientMain {
 
                 Command command = parser.parse(input);
 
+                // TODO: 이것도 command handler로 만들 수 있음
                 if (command.is("/exit") || command.is("/quit")) {
                     running = false;
                 } else {

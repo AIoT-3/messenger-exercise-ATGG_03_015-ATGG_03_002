@@ -7,6 +7,14 @@ import com.nhnacademy.messenger.client.domain.user.event.*;
 import com.nhnacademy.messenger.common.event.EventListener;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * TODO: View 인터페이스랑 같이 메서드가 계속 확장됨
+ * 뭔가 중간에 하나 이걸 통해서 넘어가는 게 추가된 느낌?
+ * 뭔가 이벤트가 넘어갈 때 공통적으로 처리하는 게 있는 게 아니라 그냥 추가만 하는 느낌?
+ * 그럼 그냥 차라리 전형적인 observer 패턴으로 바꾸는 게 낫지 않나?
+ * 어떤 뭐 Object라던가 Map을 쓴다던가 타입 파라메터로 해서 변환 시켜도 될 것 같고.
+ * 복잡도를 줄여 보는 게 좋을 것 같다.
+ */
 @RequiredArgsConstructor
 public class ClientUiEventListener {
 
