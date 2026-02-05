@@ -56,9 +56,7 @@ public class MessageServer implements Runnable {
         this.sessionManager = new SessionManager();
         this.userService = new UserServiceImpl(new InMemoryUserRepository());
         this.chatRoomService = new ChatRoomServiceImpl(new InMemoryChatRoomRepository());
-        
-        ChatRepository chatRepository = new InMemoryChatRepository();
-        this.chatService = new ChatServiceImpl(chatRepository);
+        this.chatService = new ChatServiceImpl(new InMemoryChatRepository());
         
         EventBus.INSTANCE.register(this.chatRoomService);
 
