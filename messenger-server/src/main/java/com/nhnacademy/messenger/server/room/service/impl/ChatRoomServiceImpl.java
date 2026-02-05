@@ -2,6 +2,12 @@ package com.nhnacademy.messenger.server.room.service.impl;
 
 import com.nhnacademy.messenger.common.event.EventListener;
 import com.nhnacademy.messenger.common.exception.MessengerException;
+import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.data.push.PushRoomEnter;
+import com.nhnacademy.messenger.common.message.data.push.PushRoomExit;
+import com.nhnacademy.messenger.common.message.header.MessageType;
+import com.nhnacademy.messenger.common.message.header.ResponseHeader;
+import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.room.domain.ChatRoom;
 import com.nhnacademy.messenger.server.room.repository.ChatRoomRepository;
 import com.nhnacademy.messenger.server.room.service.ChatRoomService;
@@ -9,7 +15,6 @@ import com.nhnacademy.messenger.server.session.domain.Session;
 import com.nhnacademy.messenger.server.session.event.SessionDisconnectedEvent;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
@@ -43,35 +48,58 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         session.validateLoggedIn();
 
         ChatRoom chatRoom = getChatRoomById(roomId);
+
+        // 입장 알림 브로드캐스트 (세션 추가 전에 수행하여 본인 제외)
+        PushRoomEnter pushData = new PushRoomEnter(
+                roomId,
+                session.getUser().getUserId(),
+                session.getUser().getUserName()
+        );
+        Message pushMessage = new Message(
+                ResponseHeader.success(MessageType.PUSH_ROOM_ENTER),
+                MessageConverter.toJsonNode(pushData)
+        );
+        chatRoom.broadcast(pushMessage);
+
         chatRoom.addSession(session);
         session.joinRoom(roomId);
     }
 
     @Override
     public void leaveChatRoom(Long roomId, Session session) {
-        session.validateLoggedIn();
+        // 유저 정보가 있을 때만 퇴장 알림 전송 (onSessionDisconnected 등에서 안전하게 호출하기 위함)
+        String userId = (session.getUser() != null) ? session.getUser().getUserId() : null;
 
         ChatRoom chatRoom = getChatRoomById(roomId);
+
         chatRoom.removeSession(session);
         session.leaveRoom(roomId);
+
+        // 퇴장 알림 브로드캐스트 (나간 사람 제외하고 남은 사람들에게만 전송)
+        if (userId != null) {
+            PushRoomExit pushData = new PushRoomExit(roomId, userId);
+            Message pushMessage = new Message(
+                    ResponseHeader.success(MessageType.PUSH_ROOM_EXIT),
+                    MessageConverter.toJsonNode(pushData)
+            );
+            chatRoom.broadcast(pushMessage);
+        }
+
         if (chatRoom.getSessions().isEmpty()) {
             chatRoomRepository.deleteById(roomId);
         }
     }
 
-    // TODO: 별도의 handler로 분리 고려
     @EventListener
     public void onSessionDisconnected(SessionDisconnectedEvent event) {
         Session session = event.session();
-        // 복사본 순회: leaveChatRoom 호출 시 session의 joinedRoomIds가 변경될 수 있으므로
-        List<Long> joinedRooms = new ArrayList<>(session.getJoinedRoomIds());
-        
-        for (Long roomId : joinedRooms) {
+        // ConcurrentModificationException 방지를 위해 복사본 순회
+        new java.util.ArrayList<>(session.getJoinedRoomIds()).forEach(roomId -> {
             try {
                 leaveChatRoom(roomId, session);
             } catch (Exception e) {
-                // 이미 방이 삭제되었거나 다른 세션에 의해 처리된 경우 등 예외 무시
+                // 방이 이미 삭제되었거나 다른 이유로 실패한 경우 무시
             }
-        }
+        });
     }
 }

@@ -14,4 +14,8 @@ public class AppConstant {
 
     public static final int SPACING_SMALL = 10;
     public static final int SPACING_MEDIUM = 15;
+
+    public static final Font FONT_TITLE = new Font("Dialog", Font.BOLD, 18);
+    public static final Font FONT_SUBTITLE = new Font("Dialog", Font.BOLD, 14);
+    public static final Font FONT_MESSAGE = new Font("Dialog", Font.PLAIN, 14);
 }

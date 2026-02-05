@@ -11,14 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ExitRoomCommandHandler implements CommandExecutable {
 
-    private static final String COMMAND = "/exit";
-    private static final String DESCRIPTION = "/exit <roomId> - 종료합니다.";
+    private static final String COMMAND = "/leave";
+    private static final String DESCRIPTION = "/leave <roomId> - 채팅방을 나갑니다.";
     private final ChatRoomClientService service;
 
     @Override
     public void execute(Command command, ConsoleView view) {
         if (command.args().isEmpty()) {
-            view.showSystemMessage("사용법: /exit <roomId>");
+            view.showSystemMessage("사용법: /leave <roomId>");
             return;
         }
 

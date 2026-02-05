@@ -17,7 +17,6 @@ public class PrivateChatPanel extends JFrame {
     private static final int WINDOW_HEIGHT = 500;
     private static final int INPUT_HEIGHT = 50;
     private static final int BUTTON_WIDTH = 80;
-    private static final Font FONT_MESSAGE = new Font("Dialog", Font.PLAIN, 14);
 
     private JPanel messagePanel;
     private JTextField chatInputField;

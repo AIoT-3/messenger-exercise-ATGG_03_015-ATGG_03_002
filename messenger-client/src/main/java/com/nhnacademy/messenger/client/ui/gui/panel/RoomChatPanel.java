@@ -45,7 +45,15 @@ public class RoomChatPanel extends JFrame {
     private void initWindow() {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                new ExitRoomListener(roomId, getContentPane(), chatRoomClientService)
+                        .actionPerformed(null);
+            }
+        });
     }
 
     private void initUI() {
@@ -96,7 +104,7 @@ public class RoomChatPanel extends JFrame {
         panel.add(leftSpacer, BorderLayout.WEST);
 
         roomTitleLabel = new JLabel(TITLE_TEXT, SwingConstants.CENTER);
-        roomTitleLabel.setFont(new Font("Dialog", Font.BOLD, 18));
+        roomTitleLabel.setFont(FONT_TITLE);
         roomTitleLabel.setForeground(TEXT_COLOR);
         panel.add(roomTitleLabel, BorderLayout.CENTER);
 
@@ -168,9 +176,16 @@ public class RoomChatPanel extends JFrame {
     }
 
     public void addMessage(String userId, String text) {
-        JLabel label = new JLabel(userId + ": " + text);
+        JLabel label;
+        if ("시스템".equals(userId)) {
+            label = new JLabel(text, SwingConstants.CENTER);
+            label.setForeground(new Color(255, 255, 255, 180));
+        } else {
+            label = new JLabel(userId + ": " + text);
+            label.setForeground(TEXT_COLOR);
+            label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        }
         label.setFont(FONT_MESSAGE);
-        label.setForeground(TEXT_COLOR);
         label.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
         
         messagePanel.add(label);

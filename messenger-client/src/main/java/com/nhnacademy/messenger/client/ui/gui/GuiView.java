@@ -118,6 +118,20 @@ public class GuiView implements View {
     }
 
     @Override
+    public void showPushRoomEnter(Long roomId, String userId, String userName) {
+        SwingUtilities.invokeLater(() -> {
+            roomChatManager.appendMessage(roomId, "시스템", userName + "(" + userId + ") 님이 입장했습니다.");
+        });
+    }
+
+    @Override
+    public void showPushRoomExit(Long roomId, String userId) {
+        SwingUtilities.invokeLater(() -> {
+            roomChatManager.appendMessage(roomId, "시스템", userId + " 님이 퇴장했습니다.");
+        });
+    }
+
+    @Override
     public void appendMessage(Long roomId, Long messageId, String sender, String content) {
         SwingUtilities.invokeLater(() -> {
             roomChatManager.appendMessage(roomId, sender, content);

@@ -56,6 +56,16 @@ public class ClientUiEventListener {
     }
 
     @EventListener
+    public void onPushRoomEnter(PushRoomEnterEvent event) {
+        view.showPushRoomEnter(event.roomId(), event.userId(), event.userName());
+    }
+
+    @EventListener
+    public void onPushRoomExit(PushRoomExitEvent event) {
+        view.showPushRoomExit(event.roomId(), event.userId());
+    }
+
+    @EventListener
     public void onPrivateMessageReceived(ReceivePrivateMessageEvent event) {
         view.appendPrivateMessage(event.senderId(), event.content());
     }
