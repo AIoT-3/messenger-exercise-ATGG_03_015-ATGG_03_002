@@ -8,6 +8,8 @@ import com.nhnacademy.messenger.common.message.header.RequestHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.experimental.UtilityClass;
 
+// TODO: common으로 옮겨서 request와 response 메시지를 만드는 팩토리로 분리 고려
+
 @UtilityClass
 public class MessageFactory {
 
