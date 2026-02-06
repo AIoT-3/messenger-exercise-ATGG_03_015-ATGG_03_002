@@ -4,16 +4,19 @@ import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.room.event.EnterRoomSuccessEvent;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
+import com.nhnacademy.messenger.client.network.MessageHandler;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomResponse;
+import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
+@MessageHandler(MessageType.CHAT_ROOM_ENTER_SUCCESS)
 public class EnterRoomResponseHandler implements ResponseHandler {
 
     private final ChatRoomClientService chatRoomClientService;

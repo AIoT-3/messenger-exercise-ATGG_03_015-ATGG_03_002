@@ -3,13 +3,16 @@ package com.nhnacademy.messenger.client.domain.user.handler;
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.user.event.UserListSuccessEvent;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
+import com.nhnacademy.messenger.client.network.MessageHandler;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.user.UserListResponse;
+import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@MessageHandler(MessageType.USER_LIST_SUCCESS)
 public class UserListResponseHandler implements ResponseHandler {
 
     @Override

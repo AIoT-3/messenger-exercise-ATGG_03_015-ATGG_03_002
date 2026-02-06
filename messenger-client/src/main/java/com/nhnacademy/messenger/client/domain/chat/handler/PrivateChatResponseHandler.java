@@ -1,12 +1,15 @@
 package com.nhnacademy.messenger.client.domain.chat.handler;
 
+import com.nhnacademy.messenger.client.network.MessageHandler;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.chat.PrivateChatResponse;
+import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@MessageHandler(MessageType.PRIVATE_MESSAGE_SUCCESS)
 public class PrivateChatResponseHandler implements ResponseHandler {
     @Override
     public void handle(Message message) {

@@ -3,14 +3,17 @@ package com.nhnacademy.messenger.client.domain.user.handler;
 import com.nhnacademy.messenger.client.domain.error.event.ErrorEvent;
 import com.nhnacademy.messenger.client.domain.user.event.LoginSuccessEvent;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
+import com.nhnacademy.messenger.client.network.MessageHandler;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.auth.LoginResponse;
+import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@MessageHandler(MessageType.LOGIN_SUCCESS)
 public class LoginResponseHandler implements ResponseHandler {
 
     @Override

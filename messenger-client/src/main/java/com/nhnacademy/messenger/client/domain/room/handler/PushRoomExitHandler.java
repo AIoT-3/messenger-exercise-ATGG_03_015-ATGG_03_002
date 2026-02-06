@@ -2,13 +2,16 @@ package com.nhnacademy.messenger.client.domain.room.handler;
 
 import com.nhnacademy.messenger.client.domain.room.event.PushRoomExitEvent;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
+import com.nhnacademy.messenger.client.network.MessageHandler;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.push.PushRoomExit;
+import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@MessageHandler(MessageType.PUSH_ROOM_EXIT)
 public class PushRoomExitHandler implements ResponseHandler {
     @Override
     public void handle(Message message) {

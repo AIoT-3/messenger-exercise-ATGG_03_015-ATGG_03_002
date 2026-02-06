@@ -1,12 +1,11 @@
 package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.chat.handler.*;
-import com.nhnacademy.messenger.client.domain.chat.handler.PushMessageHandler;
-import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
 import com.nhnacademy.messenger.client.domain.room.handler.*;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.handler.*;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
+import com.nhnacademy.messenger.client.network.ResponseHandlerFactory;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
@@ -20,7 +19,6 @@ import com.nhnacademy.messenger.client.ui.cli.handler.HelpCommandHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.nhnacademy.messenger.common.config.AppConstant.*;
-import static com.nhnacademy.messenger.common.message.header.MessageType.*;
 
 @Slf4j
 public class ClientMain {
@@ -40,20 +38,12 @@ public class ClientMain {
         CommandParser parser = new CommandParser();
 
         // 3. 네트워크 핸들러 등록
-        networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler());
-        networkDispatcher.register(LOGOUT_SUCCESS, new LogoutResponseHandler());
-        networkDispatcher.register(USER_LIST_SUCCESS, new UserListResponseHandler());
-        networkDispatcher.register(CHAT_ROOM_CREATE_SUCCESS, new CreateRoomResponseHandler());
-        networkDispatcher.register(CHAT_ROOM_LIST_SUCCESS, new ListRoomResponseHandler());
-        networkDispatcher.register(CHAT_ROOM_ENTER_SUCCESS, new EnterRoomResponseHandler(chatRoomClientService));
-        networkDispatcher.register(CHAT_ROOM_EXIT_SUCCESS, new ExitRoomResponseHandler());
-        networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
-        networkDispatcher.register(CHAT_MESSAGE_HISTORY_SUCCESS, new ChatHistoryResponseHandler());
-        networkDispatcher.register(PRIVATE_MESSAGE_SUCCESS, new PrivateChatResponseHandler());
-        networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageHandler());
-        networkDispatcher.register(PUSH_ROOM_ENTER, new PushRoomEnterHandler());
-        networkDispatcher.register(PUSH_ROOM_EXIT, new PushRoomExitHandler());
-        networkDispatcher.register(ERROR, new ErrorResponseHandler());
+        // ResponseHandlerFactory 내부에서 Reflection을 사용하여 ResponseHandler들을 MessageType에 맞춰 dispatch
+        new ResponseHandlerFactory(chatRoomClientService).registerAll(networkDispatcher);
+
+        // networkDispatcher.register(LOGIN_SUCCESS, new LoginResponseHandler())
+        // networkDispatcher.register(LOGOUT_SUCCESS, new LogoutResponseHandler())
+        // ...
 
         // 4. CLI 명령어 디스패처 초기화
         CLICommandDispatcher cliDispatcher = new CLICommandDispatcher(view);
