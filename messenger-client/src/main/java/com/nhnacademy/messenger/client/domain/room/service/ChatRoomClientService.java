@@ -2,6 +2,7 @@ package com.nhnacademy.messenger.client.domain.room.service;
 
 import com.nhnacademy.messenger.client.network.MessageClient;
 import com.nhnacademy.messenger.client.session.ClientSession;
+import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryRequest;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import com.nhnacademy.messenger.common.message.data.file.FileTransferRequest;
+import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -110,12 +112,12 @@ public class ChatRoomClientService {
     public void sendFile(Long roomId, String filePath) {
         File file = new File(filePath);
         if (!file.exists() || !file.isFile()) {
-            throw new IllegalArgumentException("파일을 찾을 수 없습니다: " + filePath);
+            throw new MessengerException(ErrorCode.INTERNAL_SERVER_ERROR, "파일을 찾을 수 없습니다: " + filePath);
         }
 
         long fileSize = file.length();
         if (fileSize > 10 * 1024 * 1024) { // 10MB
-            throw new IllegalArgumentException("파일 크기는 10MB를 초과할 수 없습니다.");
+            throw new MessengerException(ErrorCode.FILE_SIZE_EXCEEDED, "파일 크기는 10MB를 초과할 수 없습니다.");
         }
 
         try {
@@ -131,7 +133,7 @@ public class ChatRoomClientService {
             messageClient.send(message);
 
         } catch (IOException e) {
-            throw new RuntimeException("파일 읽기 실패: " + e.getMessage(), e);
+            throw new MessengerException(ErrorCode.INTERNAL_SERVER_ERROR, "파일 읽기 실패: " + e.getMessage());
         }
     }
 }
