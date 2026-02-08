@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
 import java.util.Set;
@@ -68,6 +70,11 @@ public class NioSession implements Session {
         this.writer = new NioMessageWriter(channel);
     }
 
+    //자신을 특정 Selector에 읽기 이벤트로 등록
+    public void register(Selector selector) throws IOException {
+        channel.register(selector, SelectionKey.OP_READ, this);
+    }
+
     public Message readMessage() throws IOException {
         lock.lock();
         try {
@@ -91,7 +98,7 @@ public class NioSession implements Session {
         } catch (MessengerException e) {
             sendError(e.getErrorCode(), e.getMessage());
 
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error("NIO 메시지 처리 중 예기치 못한 오류", e);
             sendError(INTERNAL_SERVER_ERROR, "서버 처리 중 오류가 발생했습니다.");
         }
