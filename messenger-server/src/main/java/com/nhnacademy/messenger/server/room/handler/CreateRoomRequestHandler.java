@@ -1,11 +1,10 @@
 package com.nhnacademy.messenger.server.room.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.room.CreateRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.CreateRoomResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.room.domain.ChatRoom;
@@ -32,12 +31,13 @@ public class CreateRoomRequestHandler implements RequestHandler {
                 .build());
 
         // 3. 성공 응답 구성
-        ResponseHeader header = ResponseHeader.success(MessageType.CHAT_ROOM_CREATE_SUCCESS);
         CreateRoomResponse responseData = new CreateRoomResponse(savedRoom.getRoomId(), savedRoom.getRoomName());
-        JsonNode data = MessageConverter.objectMapper.valueToTree(responseData);
 
         // 4. 메시지 전송
-        session.sendMessage(new Message(header, data));
+        session.sendMessage(MessageBuilder.with(MessageType.CHAT_ROOM_CREATE_SUCCESS)
+                .success(true)
+                .data(responseData)
+                .build());
         log.debug("채팅방 생성 완료: roomId={}, roomName={}", savedRoom.getRoomId(), savedRoom.getRoomName());
     }
 }

@@ -1,11 +1,11 @@
 package com.nhnacademy.messenger.server.chat.handler;
 
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryRequest;
 import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryResponse;
 import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.chat.domain.Chat;
 import com.nhnacademy.messenger.server.chat.service.ChatService;
@@ -84,9 +84,9 @@ public class ChatHistoryRequestHandler implements RequestHandler {
                 hasMore
         );
 
-        session.sendMessage(new Message(
-                ResponseHeader.success(MessageType.CHAT_MESSAGE_HISTORY_SUCCESS),
-                MessageConverter.toJsonNode(responseData)
-        ));
+        session.sendMessage(MessageBuilder.with(MessageType.CHAT_MESSAGE_HISTORY_SUCCESS)
+                .success(true)
+                .data(responseData)
+                .build());
     }
 }

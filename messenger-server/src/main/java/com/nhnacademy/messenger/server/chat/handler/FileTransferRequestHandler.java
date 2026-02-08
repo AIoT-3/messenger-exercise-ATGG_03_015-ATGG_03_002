@@ -1,10 +1,10 @@
 package com.nhnacademy.messenger.server.chat.handler;
 
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.file.FileTransferRequest;
 import com.nhnacademy.messenger.common.message.data.file.FileTransferResponse;
 import com.nhnacademy.messenger.common.message.data.push.PushNewMessage;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.chat.domain.Chat;
 import com.nhnacademy.messenger.server.chat.service.ChatService;
@@ -50,10 +50,10 @@ public class FileTransferRequestHandler implements RequestHandler {
                 chat.getFileSize()
         );
 
-        Message pushMessage = new Message(
-                ResponseHeader.success(PUSH_NEW_MESSAGE),
-                MessageConverter.toJsonNode(pushData)
-        );
+        Message pushMessage = MessageBuilder.with(PUSH_NEW_MESSAGE)
+                .success(true)
+                .data(pushData)
+                .build();
 
         room.broadcast(pushMessage);
 
@@ -64,10 +64,10 @@ public class FileTransferRequestHandler implements RequestHandler {
                 chat.getFileName()
         );
 
-        session.sendMessage(new Message(
-                ResponseHeader.success(FILE_TRANSFER_SUCCESS),
-                MessageConverter.toJsonNode(responseData)
-        ));
+        session.sendMessage(MessageBuilder.with(FILE_TRANSFER_SUCCESS)
+                .success(true)
+                .data(responseData)
+                .build());
         
         log.info("파일 전송 완료: roomId={}, messageId={}", roomId, chat.getMessageId());
     }

@@ -1,12 +1,10 @@
 package com.nhnacademy.messenger.server.room.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.message.Message;
-import com.nhnacademy.messenger.common.message.data.room.EnterRoomRequest;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.ExitRoomResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.room.service.ChatRoomService;
@@ -29,10 +27,12 @@ public class ExitRoomRequestHandler implements RequestHandler {
 
         chatRoomService.leaveChatRoom(roomId, session);
 
-        ResponseHeader header = ResponseHeader.success(MessageType.CHAT_ROOM_EXIT_SUCCESS);
         ExitRoomResponse responseData = new ExitRoomResponse(roomId, "채팅방에서 나갔습니다.");
 
-        session.sendMessage(new Message(header, MessageConverter.toJsonNode(responseData)));
+        session.sendMessage(MessageBuilder.with(MessageType.CHAT_ROOM_EXIT_SUCCESS)
+                .success(true)
+                .data(responseData)
+                .build());
         log.debug("채팅방 퇴장 성공 응답 전송: session={}, roomId={}", session.getId(), roomId);
     }
 }

@@ -1,16 +1,14 @@
 package com.nhnacademy.messenger.server.session.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.exception.MessageConvertException;
 import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import com.nhnacademy.messenger.common.message.data.error.ErrorResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.message.header.RequestHeader;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
-import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.common.util.reader.bio.StreamMessageReader;
 import com.nhnacademy.messenger.common.util.writer.MessageWriter;
 import com.nhnacademy.messenger.common.util.writer.bio.StreamMessageWriter;
@@ -129,9 +127,11 @@ public class Session implements Runnable {
 
     // 에러 응답 전송
     public void sendError(ErrorCode code, String message) {
-        ResponseHeader header = ResponseHeader.fail(MessageType.ERROR);
-        JsonNode data = MessageConverter.objectMapper.valueToTree(new ErrorResponse(code, message));
-        sendMessage(new Message(header, data));
+        Message errorMessage = MessageBuilder.with(MessageType.ERROR)
+                .success(false)
+                .data(new ErrorResponse(code, message))
+                .build();
+        sendMessage(errorMessage);
     }
 
     // 에러 응답과 함께 세션 종료

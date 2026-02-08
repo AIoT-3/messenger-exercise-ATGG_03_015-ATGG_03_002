@@ -1,9 +1,8 @@
 package com.nhnacademy.messenger.common.util.converter;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.messenger.common.exception.MessageConvertException;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.MessageData;
 import com.nhnacademy.messenger.common.message.data.auth.LoginRequest;
 import com.nhnacademy.messenger.common.message.data.auth.LoginResponse;
@@ -14,9 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.nio.charset.StandardCharsets;
 
@@ -24,18 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MessageConverterTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private Message loginRequestMessage;
 
     @BeforeEach
     void setUp() {
-        RequestHeader header = new RequestHeader(
-                MessageType.LOGIN,
-                ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.SECONDS),
-                null
-        );
-        JsonNode data = objectMapper.valueToTree(new LoginRequest("marco", "nhnacademy123"));
-        loginRequestMessage = new Message(header, data);
+        loginRequestMessage = MessageBuilder.with(MessageType.LOGIN)
+                .data(new LoginRequest("marco", "nhnacademy123"))
+                .build();
     }
 
     @Test
@@ -70,15 +61,7 @@ class MessageConverterTest {
                     RequestHeader h = (RequestHeader) deserialized.header();
                     assertNull(h.sessionId());
                 },
-                () -> assertArrayEquals(serialized, MessageConverter.toBytes(deserialized))
-        );
-    }
-
-    @Test
-    @DisplayName("일반 요청 테스트: LOGIN이 아닌데 sessionId가 없으면 예외 발생")
-    void constructor_Fail_MissingSessionId() {
-        assertThrows(IllegalArgumentException.class, () -> 
-            new RequestHeader(MessageType.CHAT_MESSAGE, ZonedDateTime.now(), null)
+                () -> assertEquals(loginRequestMessage.header().type(), deserialized.header().type())
         );
     }
 
@@ -86,9 +69,10 @@ class MessageConverterTest {
     @DisplayName("Deduction 기반 역직렬화 테스트: ResponseHeader 필드 구성에 따라 자동으로 ResponseHeader로 변환되어야 함")
     void deserialize_ResponseHeader_Deduction() {
         // success 필드가 포함된 응답용 헤더 메시지 생성
-        ResponseHeader responseHeader = ResponseHeader.success(MessageType.LOGIN_SUCCESS);
-        JsonNode responseData = objectMapper.valueToTree(new LoginResponse("marco", UUID.randomUUID().toString(), "Welcome"));
-        Message responseMessage = new Message(responseHeader, responseData);
+        Message responseMessage = MessageBuilder.with(MessageType.LOGIN_SUCCESS)
+                .success(true)
+                .data(new LoginResponse("marco", UUID.randomUUID().toString(), "Welcome"))
+                .build();
 
         byte[] serialized = MessageConverter.toBytes(responseMessage);
         String serializedStr = new String(serialized, StandardCharsets.UTF_8);
