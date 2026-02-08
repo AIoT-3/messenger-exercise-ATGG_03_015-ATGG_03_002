@@ -1,14 +1,10 @@
 package com.nhnacademy.messenger.client.ui.cli;
 
 import com.nhnacademy.messenger.client.ui.View;
-import com.nhnacademy.messenger.common.message.data.chat.MessageInfo;
-import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
-import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintStream;
-import java.util.List;
 import java.util.Scanner;
 
 @Slf4j
@@ -16,22 +12,20 @@ public class ConsoleView implements View {
 
     private final Scanner scanner;
     private final PrintStream out;
-    private final java.util.Map<Long, String> roomNameMap = new java.util.HashMap<>();
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
         this.out = System.out;
     }
 
-    // --- Helpers ---
+    public void println(String message) {
+        printWithPrompt(message);
+    }
 
     private void printWithPrompt(String message) {
-        // 현재 줄의 프롬프트를 덮어쓰기 위해 \r 사용
         out.print("\r" + message + "\n> ");
         out.flush();
     }
-
-    // --- View 인터페이스 구현 ---
 
     @Override
     public void showSystemMessage(String message) {
@@ -44,98 +38,6 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void showLoginSuccess(String userName) {
-        printWithPrompt("환영합니다, " + userName + "님! (명령어 목록을 보려면 /help를 입력하세요)");
-    }
-
-    @Override
-    public void showLogoutSuccess() {
-        printWithPrompt("[로그아웃] 로그아웃 되었습니다. /login [ID] [PW] 로 로그인하세요");
-    }
-
-    @Override
-    public void showUserList(List<UserInfo> users) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("============== 사용자 목록 ==============\n");
-        if (users == null || users.isEmpty()) {
-            sb.append("(사용자가 없습니다)\n");
-        } else {
-            for (UserInfo user : users) {
-                String status = user.online() ? "[+]" : "[ ]";
-                sb.append(String.format("- %s %s (%s)%n", status, user.name(), user.id()));
-            }
-        }
-        sb.append("=======================================");
-        printWithPrompt(sb.toString());
-    }
-
-    @Override
-    public void showRoomList(List<RoomInfo> rooms) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("============== 채팅방 목록 ==============\n");
-        if (rooms == null || rooms.isEmpty()) {
-            sb.append("(채팅방이 없습니다)\n");
-        } else {
-            for (RoomInfo info : rooms) {
-                roomNameMap.put(info.roomId(), info.roomName());
-                sb.append(String.format("- [%d] %s (인원: %d명)%n",
-                        info.roomId(), info.roomName(), info.userCount()));
-            }
-        }
-        sb.append("=======================================");
-        printWithPrompt(sb.toString());
-    }
-
-    @Override
-    public void showRoomEnterSuccess(Long roomId, List<String> users) {
-        String roomName = roomNameMap.getOrDefault(roomId, String.valueOf(roomId));
-        String msg = ">> [" + roomName + "] 방에 입장했습니다.\n참여자: " + String.join(", ", users);
-        printWithPrompt(msg);
-    }
-
-    @Override
-    public void showRoomExitSuccess(Long roomId) {
-        out.println(">> [" + roomId + "] 번 방에서 퇴장했습니다.");
-    }
-
-    @Override
-    public void showPushRoomEnter(Long roomId, String userId, String userName) {
-        String roomName = roomNameMap.getOrDefault(roomId, String.valueOf(roomId));
-        printWithPrompt(">> [" + roomName + "] 방에 " + userName + "(" + userId + ") 님이 입장했습니다.");
-    }
-
-    @Override
-    public void showPushRoomExit(Long roomId, String userId) {
-        String roomName = roomNameMap.getOrDefault(roomId, String.valueOf(roomId));
-        printWithPrompt(">> [" + roomName + "] 방에서 " + userId + " 님이 퇴장했습니다.");
-    }
-
-    @Override
-    public void appendMessage(Long roomId, Long messageId, String sender, String content) {
-        printWithPrompt(String.format("[%d번 방] [msg: %d] [%s]: %s", roomId, messageId, sender, content));
-    }
-
-    @Override
-    public void showChatHistory(Long roomId, List<MessageInfo> messages, boolean hasMore) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n----------- 과거 채팅 기록 -----------").append("\n");
-        for (MessageInfo msg : messages) {
-            sb.append(String.format("[msg: %d] [%s]: %s", msg.messageId(), msg.senderName(), msg.content())).append("\n");
-        }
-        if (hasMore) {
-            sb.append("(이전 기록이 더 존재합니다. /history <roomId> <limit> <beforeMessageId> 명령어로 더 볼 수 있습니다.)").append("\n");
-        }
-        sb.append("-----------------------------------");
-        printWithPrompt(sb.toString());
-    }
-
-    @Override
-    public void appendPrivateMessage(String senderId, String content) {
-        printWithPrompt("[귓속말] " + senderId + ": " + content);
-    }
-
-    // --- CLI 전용 기능 ---
-
     public String readInput() {
         out.print("\r> ");
         out.flush();

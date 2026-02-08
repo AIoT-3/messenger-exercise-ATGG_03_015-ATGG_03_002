@@ -2,18 +2,22 @@ package com.nhnacademy.messenger.client;
 
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatHistoryResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.ChatResponseHandler;
+import com.nhnacademy.messenger.client.domain.chat.handler.FileTransferResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.PrivateChatResponseHandler;
 import com.nhnacademy.messenger.client.domain.chat.handler.PushMessageHandler;
+import com.nhnacademy.messenger.client.domain.chat.ui.gui.ChatGuiListener;
 import com.nhnacademy.messenger.client.domain.error.handler.ErrorResponseHandler;
+import com.nhnacademy.messenger.client.domain.error.ui.gui.SystemGuiListener;
 import com.nhnacademy.messenger.client.domain.room.handler.*;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
+import com.nhnacademy.messenger.client.domain.room.ui.gui.RoomGuiListener;
 import com.nhnacademy.messenger.client.domain.user.handler.LoginResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.LogoutResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.handler.UserListResponseHandler;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
+import com.nhnacademy.messenger.client.domain.user.ui.gui.UserGuiListener;
 import com.nhnacademy.messenger.client.network.ClientMessageDispatcher;
 import com.nhnacademy.messenger.client.network.MessageClient;
-import com.nhnacademy.messenger.client.ui.ClientUiEventListener;
 import com.nhnacademy.messenger.client.ui.gui.GuiView;
 import com.nhnacademy.messenger.client.ui.gui.manager.PrivateChatManager;
 import com.nhnacademy.messenger.client.ui.gui.manager.RoomChatManager;
@@ -24,7 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 
-import static com.nhnacademy.messenger.common.config.AppConstant.*;
+import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_ADDRESS;
+import static com.nhnacademy.messenger.common.config.AppConstant.DEFAULT_SERVER_PORT;
 import static com.nhnacademy.messenger.common.message.header.MessageType.*;
 
 @Slf4j
@@ -48,6 +53,7 @@ public class GuiMain {
         networkDispatcher.register(CHAT_MESSAGE_SUCCESS, new ChatResponseHandler());
         networkDispatcher.register(CHAT_MESSAGE_HISTORY_SUCCESS, new ChatHistoryResponseHandler());
         networkDispatcher.register(PRIVATE_MESSAGE_SUCCESS, new PrivateChatResponseHandler());
+        networkDispatcher.register(FILE_TRANSFER_SUCCESS, new FileTransferResponseHandler());
         networkDispatcher.register(PUSH_NEW_MESSAGE, new PushMessageHandler());
         networkDispatcher.register(PUSH_ROOM_ENTER, new PushRoomEnterHandler());
         networkDispatcher.register(PUSH_ROOM_EXIT, new PushRoomExitHandler());
@@ -62,8 +68,10 @@ public class GuiMain {
         GuiView view = new GuiView(loginPanel, roomListPanel, roomChatManager, privateChatManager);
 
         // 4. UI 리스너 등록
-        ClientUiEventListener uiListener = new ClientUiEventListener(view);
-        EventBus.INSTANCE.register(uiListener);
+        EventBus.INSTANCE.register(new UserGuiListener(view));
+        EventBus.INSTANCE.register(new ChatGuiListener(view));
+        EventBus.INSTANCE.register(new RoomGuiListener(view));
+        EventBus.INSTANCE.register(new SystemGuiListener(view));
 
         try {
             // 5. 서버 연결 및 앱 시작

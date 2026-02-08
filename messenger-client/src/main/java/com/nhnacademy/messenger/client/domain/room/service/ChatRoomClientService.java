@@ -5,7 +5,6 @@ import com.nhnacademy.messenger.client.network.MessageFactory;
 import com.nhnacademy.messenger.client.session.ClientSession;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.chat.ChatHistoryRequest;
-import com.nhnacademy.messenger.common.message.data.chat.ChatRequest;
 import com.nhnacademy.messenger.common.message.data.room.CreateRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.ExitRoomRequest;
@@ -15,6 +14,11 @@ import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import com.nhnacademy.messenger.common.message.data.file.FileTransferRequest;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Base64;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -89,5 +93,33 @@ public class ChatRoomClientService {
         Message message = new Message(header, MessageConverter.toJsonNode(data));
 
         messageClient.send(message);
+    }
+
+    public void sendFile(Long roomId, String filePath) {
+        File file = new File(filePath);
+        if (!file.exists() || !file.isFile()) {
+            throw new IllegalArgumentException("파일을 찾을 수 없습니다: " + filePath);
+        }
+
+        long fileSize = file.length();
+        if (fileSize > 10 * 1024 * 1024) { // 10MB
+            throw new IllegalArgumentException("파일 크기는 10MB를 초과할 수 없습니다.");
+        }
+
+        try {
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+            String encodedString = Base64.getEncoder().encodeToString(fileContent);
+
+            String sessionId = ClientSession.INSTANCE.getSessionId();
+            FileTransferRequest data = new FileTransferRequest(roomId, file.getName(), fileSize, encodedString);
+            
+            RequestHeader header = RequestHeader.of(MessageType.FILE_TRANSFER, sessionId);
+            Message message = new Message(header, MessageConverter.toJsonNode(data));
+
+            messageClient.send(message);
+
+        } catch (IOException e) {
+            throw new RuntimeException("파일 읽기 실패: " + e.getMessage(), e);
+        }
     }
 }

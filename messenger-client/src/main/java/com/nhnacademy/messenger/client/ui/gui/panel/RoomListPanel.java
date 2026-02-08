@@ -1,10 +1,7 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
-import com.nhnacademy.messenger.client.domain.room.listener.RefreshListener;
-import com.nhnacademy.messenger.client.domain.room.listener.CreateRoomListener;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
-import com.nhnacademy.messenger.client.domain.user.listener.LogoutListener;
 import com.nhnacademy.messenger.client.ui.gui.manager.PrivateChatManager;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import com.nhnacademy.messenger.common.message.data.user.UserInfo;
@@ -128,7 +125,10 @@ public class RoomListPanel extends JFrame {
 
         JButton refreshButton = new JButton(TEXT_REFRESH);
         refreshButton.setToolTipText(TOOLTIP_REFRESH);
-        refreshButton.addActionListener(new RefreshListener(chatRoomClientService, userClientService));
+        refreshButton.addActionListener(e -> {
+            chatRoomClientService.getRoomList();
+            userClientService.getUserList();
+        });
         panel.add(refreshButton, BorderLayout.EAST);
         
         return panel;
@@ -140,10 +140,15 @@ public class RoomListPanel extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(SPACING_MEDIUM, 0, 0, 0));
 
         JButton createBtn = new JButton(TEXT_CREATE_ROOM);
-        createBtn.addActionListener(new CreateRoomListener(chatRoomClientService));
+        createBtn.addActionListener(e -> {
+            String roomName = JOptionPane.showInputDialog(this, "방 이름을 입력하세요:", "방 생성", JOptionPane.PLAIN_MESSAGE);
+            if (roomName != null && !roomName.isBlank()) {
+                chatRoomClientService.createRoom(roomName);
+            }
+        });
         
         JButton logoutBtn = new JButton(TEXT_LOGOUT);
-        logoutBtn.addActionListener(new LogoutListener(getContentPane(), userClientService));
+        logoutBtn.addActionListener(e -> userClientService.logout());
 
         panel.add(createBtn);
         panel.add(logoutBtn);

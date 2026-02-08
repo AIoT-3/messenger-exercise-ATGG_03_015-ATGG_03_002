@@ -64,6 +64,7 @@ public class MessageServer implements Runnable {
         this.messageDispatcher.register(CHAT_MESSAGE, new ChatRequestHandler(chatService, chatRoomService));
         this.messageDispatcher.register(PRIVATE_MESSAGE, new PrivateChatRequestHandler(sessionManager));
         this.messageDispatcher.register(CHAT_MESSAGE_HISTORY, new ChatHistoryRequestHandler(userService, chatService, chatRoomService));
+        this.messageDispatcher.register(FILE_TRANSFER, new FileTransferRequestHandler(chatService, chatRoomService));
 
         try {
             this.serverSocket = new ServerSocket(port);
