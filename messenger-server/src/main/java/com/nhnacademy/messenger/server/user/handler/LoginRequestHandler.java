@@ -1,12 +1,11 @@
 package com.nhnacademy.messenger.server.user.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.auth.LoginRequest;
 import com.nhnacademy.messenger.common.message.data.auth.LoginResponse;
 import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.session.domain.Session;
@@ -46,14 +45,16 @@ public class LoginRequestHandler implements RequestHandler {
         sessionManager.addSession(session);
 
         // 4. 성공 응답 전송
-        ResponseHeader header = ResponseHeader.success(MessageType.LOGIN_SUCCESS);
-        JsonNode data = MessageConverter.objectMapper.valueToTree(new LoginResponse(
-                authenticatedUser.getUserId(),
-                sessionId,
-                "Welcome!"
-        ));
+        Message response = MessageBuilder.with(MessageType.LOGIN_SUCCESS)
+                .success(true)
+                .data(new LoginResponse(
+                        authenticatedUser.getUserId(),
+                        sessionId,
+                        "Welcome!"
+                ))
+                .build();
         
-        session.sendMessage(new Message(header, data));
+        session.sendMessage(response);
         log.info("사용자 로그인 성공: {}", authenticatedUser.getUserId());
     }
 }

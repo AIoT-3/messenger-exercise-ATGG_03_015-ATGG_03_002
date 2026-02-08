@@ -1,9 +1,10 @@
 package com.nhnacademy.messenger.server.room.handler;
 
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomRequest;
 import com.nhnacademy.messenger.common.message.data.room.EnterRoomResponse;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
+import com.nhnacademy.messenger.common.message.header.MessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.room.domain.ChatRoom;
@@ -13,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-
-import static com.nhnacademy.messenger.common.message.header.MessageType.CHAT_ROOM_ENTER_SUCCESS;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,9 +39,11 @@ public class EnterRoomRequestHandler implements RequestHandler {
 
         // 3. 응답 전송
         EnterRoomResponse responseData = new EnterRoomResponse(roomId, userIds);
-        ResponseHeader header = ResponseHeader.success(CHAT_ROOM_ENTER_SUCCESS);
 
-        session.sendMessage(new Message(header, MessageConverter.toJsonNode(responseData)));
+        session.sendMessage(MessageBuilder.with(MessageType.CHAT_ROOM_ENTER_SUCCESS)
+                .success(true)
+                .data(responseData)
+                .build());
         log.debug("채팅방 입장 성공 응답 전송: session={}, roomId={}", session.getId(), roomId);
     }
 }

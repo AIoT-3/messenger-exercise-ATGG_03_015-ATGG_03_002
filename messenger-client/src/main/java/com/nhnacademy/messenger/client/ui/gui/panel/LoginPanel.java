@@ -1,7 +1,6 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
 import com.nhnacademy.messenger.client.domain.user.service.UserClientService;
-import com.nhnacademy.messenger.client.domain.user.listener.LoginListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -95,7 +94,13 @@ public class LoginPanel extends JFrame {
     private JButton createLoginButton() {
         JButton loginButton = new JButton(LOGIN_BUTTON_TEXT);
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loginButton.addActionListener(new LoginListener(idField, passwordField, userClientService));
+        loginButton.addActionListener(e -> {
+            String userId = idField.getText();
+            String password = new String(passwordField.getPassword());
+            if (!userId.isBlank() && !password.isBlank()) {
+                userClientService.login(userId, password);
+            }
+        });
         getRootPane().setDefaultButton(loginButton);
         return loginButton;
     }

@@ -1,11 +1,9 @@
 package com.nhnacademy.messenger.server.user.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.auth.LogoutResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
-import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.session.domain.Session;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +22,10 @@ public class LogoutRequestHandler implements RequestHandler {
         session.logout();
 
         // 2. 성공 응답 전송
-        ResponseHeader header = ResponseHeader.success(MessageType.LOGOUT_SUCCESS);
-        JsonNode data = MessageConverter.objectMapper.valueToTree(new LogoutResponse("로그아웃 되었습니다."));
-
-        session.sendMessage(new Message(header, data));
+        session.sendMessage(MessageBuilder.with(MessageType.LOGOUT_SUCCESS)
+                .success(true)
+                .data(new LogoutResponse("로그아웃 되었습니다."))
+                .build());
         log.info("사용자 로그아웃 완료: {}", userId);
     }
 }

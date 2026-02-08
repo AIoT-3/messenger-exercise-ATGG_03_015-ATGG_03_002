@@ -1,11 +1,10 @@
 package com.nhnacademy.messenger.server.room.handler;
 
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.room.ListRoomResponse;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
-import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.room.domain.ChatRoom;
 import com.nhnacademy.messenger.server.room.service.ChatRoomService;
@@ -35,10 +34,12 @@ public class ListRoomRequestHandler implements RequestHandler {
                 ))
                 .toList();
 
-        ResponseHeader header = ResponseHeader.success(MessageType.CHAT_ROOM_LIST_SUCCESS);
         ListRoomResponse responseData = new ListRoomResponse(roomInfos);
 
-        session.sendMessage(new Message(header, MessageConverter.toJsonNode(responseData)));
+        session.sendMessage(MessageBuilder.with(MessageType.CHAT_ROOM_LIST_SUCCESS)
+                .success(true)
+                .data(responseData)
+                .build());
         log.debug("채팅방 목록 전송 완료: 개수={}", roomInfos.size());
     }
 }

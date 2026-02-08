@@ -1,6 +1,5 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
-import com.nhnacademy.messenger.client.domain.room.listener.EnterRoomListener;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import com.nhnacademy.messenger.common.message.data.room.RoomInfo;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public class RoomListItem extends JButton {
         this.setPreferredSize(new Dimension(0, ROOM_BUTTON_HEIGHT));
 
         // CHAT-ROOM-ENTER 전송을 위한 리스너
-        this.addActionListener(new EnterRoomListener(chatRoomClientService, info.roomId()));
+        this.addActionListener(e -> chatRoomClientService.enterRoom(info.roomId()));
     }
 
     public void updateInfo(RoomInfo info) {

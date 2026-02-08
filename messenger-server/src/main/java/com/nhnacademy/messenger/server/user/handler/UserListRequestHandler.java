@@ -1,12 +1,10 @@
 package com.nhnacademy.messenger.server.user.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.user.UserInfo;
 import com.nhnacademy.messenger.common.message.data.user.UserListResponse;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
-import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.session.domain.Session;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
@@ -41,10 +39,10 @@ public class UserListRequestHandler implements RequestHandler {
 
         UserListResponse responseData = new UserListResponse(userInfos);
         
-        ResponseHeader header = ResponseHeader.success(MessageType.USER_LIST_SUCCESS);
-        JsonNode data = MessageConverter.objectMapper.valueToTree(responseData);
-        
-        session.sendMessage(new Message(header, data));
+        session.sendMessage(MessageBuilder.with(MessageType.USER_LIST_SUCCESS)
+                .success(true)
+                .data(responseData)
+                .build());
         log.info("사용자 목록 전송 완료: 요청자={}, 사용자 수={}", session.getUser().getUserId(), userInfos.size());
     }
 }

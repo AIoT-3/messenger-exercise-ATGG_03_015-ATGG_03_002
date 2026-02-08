@@ -22,6 +22,11 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public Chat saveFileMessage(Long roomId, String senderId, String fileName, Long fileSize, String fileData) {
+        return chatRepository.save(Chat.file(roomId, senderId, fileData, fileName, fileSize));
+    }
+
+    @Override
     public List<Chat> getChatHistory(Long roomId, int limit, Long beforeMessageId) {
 
         // 1. roomId 필수 체크

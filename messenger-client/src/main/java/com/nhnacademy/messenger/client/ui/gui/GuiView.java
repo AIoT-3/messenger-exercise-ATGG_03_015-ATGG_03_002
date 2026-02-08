@@ -29,15 +29,102 @@ public class GuiView implements View {
         );
     }
 
-    private void switchView(JFrame targetFrame) {
-        loginPanel.setVisible(false);
-        roomListPanel.setVisible(false);
+    public void switchView(JFrame targetFrame) {
+        SwingUtilities.invokeLater(() -> {
+            loginPanel.setVisible(false);
+            roomListPanel.setVisible(false);
 
-        if (targetFrame != null) {
-            targetFrame.setVisible(true);
-            targetFrame.toFront();
-        }
+            if (targetFrame != null) {
+                targetFrame.setVisible(true);
+                targetFrame.toFront();
+            }
+        });
     }
+
+    // --- User UI Methods ---
+
+    public void showLoginSuccessDialog(String userName) {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
+        });
+    }
+
+    public void clearLoginFields() {
+        SwingUtilities.invokeLater(loginPanel::clearFields);
+    }
+    
+    public void requestRoomListInitialData() {
+        SwingUtilities.invokeLater(roomListPanel::requestInitialData);
+    }
+
+    public void showLogoutSuccessDialog() {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null, "성공적으로 로그아웃 되었습니다.");
+        });
+    }
+
+    public void clearAllData() {
+        SwingUtilities.invokeLater(() -> {
+            roomListPanel.clearLists();
+            roomChatManager.closeAll();
+            privateChatManager.closeAll();
+        });
+    }
+    
+    public void updateUserList(List<UserInfo> users) {
+        SwingUtilities.invokeLater(() -> roomListPanel.updateUserList(users));
+    }
+    
+    public void showLoginPanel() {
+        switchView(loginPanel);
+    }
+    
+    public void showRoomListPanel() {
+        switchView(roomListPanel);
+    }
+
+    // --- Room UI Methods ---
+    
+    public void updateRoomList(List<RoomInfo> rooms) {
+        SwingUtilities.invokeLater(() -> roomListPanel.updateRoomList(rooms));
+    }
+    
+    public String getRoomName(Long roomId) {
+        return roomListPanel.getRoomName(roomId);
+    }
+    
+    public void openChatRoom(Long roomId, String roomName) {
+        SwingUtilities.invokeLater(() -> roomChatManager.openRoom(roomId, roomName));
+    }
+    
+    public void closeChatRoom(Long roomId) {
+        SwingUtilities.invokeLater(() -> roomChatManager.closeRoom(roomId));
+    }
+
+    // --- Chat UI Methods ---
+
+    public void appendMessage(Long roomId, String sender, String content) {
+        SwingUtilities.invokeLater(() -> roomChatManager.appendMessage(roomId, sender, content));
+    }
+    
+    public boolean appendPrivateMessage(String senderId, String content) {
+        return privateChatManager.receiveMessage(senderId, content);
+    }
+    
+    public void setUserNotification(String userId, boolean active) {
+        SwingUtilities.invokeLater(() -> roomListPanel.setUserNotification(userId, active));
+    }
+    
+    public void appendHistory(Long roomId, List<MessageInfo> messages) {
+        SwingUtilities.invokeLater(() -> {
+            for (MessageInfo msg : messages) {
+                roomChatManager.appendMessage(roomId, msg.senderName(), msg.content());
+            }
+        });
+    }
+
+
+    // --- Common ---
 
     @Override
     public void showSystemMessage(String message) {
@@ -56,94 +143,7 @@ public class GuiView implements View {
     }
 
     @Override
-    public void showLoginSuccess(String userName) {
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(loginPanel, "환영합니다, " + userName + "님!", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
-            loginPanel.clearFields();
-            switchView(roomListPanel);
-            roomListPanel.requestInitialData();
-        });
-    }
-
-    @Override
-    public void showLogoutSuccess() {
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(null, "성공적으로 로그아웃 되었습니다.");
-            roomListPanel.clearLists(); // 로그아웃 시 목록 초기화
-            roomChatManager.closeAll();
-            privateChatManager.closeAll();
-            switchView(loginPanel);
-        });
-    }
-
-    public void appendPrivateMessage(String senderId, String content) {
-        SwingUtilities.invokeLater(() -> {
-            boolean isChatVisible = privateChatManager.receiveMessage(senderId, content);
-            
-            if (!isChatVisible) {
-                roomListPanel.setUserNotification(senderId, true);
-            }
-        });
-    }
-
-
-    @Override
-    public void showUserList(List<UserInfo> users) {
-        SwingUtilities.invokeLater(() -> {
-            roomListPanel.updateUserList(users);
-        });
-    }
-
-    @Override
-    public void showRoomList(List<RoomInfo> rooms) {
-        SwingUtilities.invokeLater(() -> {
-            roomListPanel.updateRoomList(rooms);
-        });
-    }
-
-    @Override
-    public void showRoomEnterSuccess(Long roomId, List<String> users) {
-        SwingUtilities.invokeLater(() -> {
-            String roomName = roomListPanel.getRoomName(roomId);
-            roomChatManager.openRoom(roomId, roomName);
-        });
-    }
-
-    @Override
-    public void showRoomExitSuccess(Long roomId) {
-        SwingUtilities.invokeLater(() -> {
-            roomChatManager.closeRoom(roomId);
-            showSystemMessage("채팅방(ID:" + roomId + ")에서 퇴장했습니다.");
-        });
-    }
-
-    @Override
-    public void showPushRoomEnter(Long roomId, String userId, String userName) {
-        SwingUtilities.invokeLater(() -> {
-            roomChatManager.appendMessage(roomId, "시스템", userName + "(" + userId + ") 님이 입장했습니다.");
-        });
-    }
-
-    @Override
-    public void showPushRoomExit(Long roomId, String userId) {
-        SwingUtilities.invokeLater(() -> {
-            roomChatManager.appendMessage(roomId, "시스템", userId + " 님이 퇴장했습니다.");
-        });
-    }
-
-    @Override
-    public void appendMessage(Long roomId, Long messageId, String sender, String content) {
-        SwingUtilities.invokeLater(() -> {
-            roomChatManager.appendMessage(roomId, sender, content);
-        });
-    }
-
-    @Override
-    public void showChatHistory(Long roomId, List<MessageInfo> messages, boolean hasMore) {
-        SwingUtilities.invokeLater(() -> {
-            for (MessageInfo msg : messages) {
-                roomChatManager.appendMessage(roomId, msg.senderName(), msg.content());
-            }
-        });
+    public String readInput() {
+        return "";
     }
 }

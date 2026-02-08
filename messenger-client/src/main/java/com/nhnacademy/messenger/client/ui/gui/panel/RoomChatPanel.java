@@ -1,7 +1,5 @@
 package com.nhnacademy.messenger.client.ui.gui.panel;
 
-import com.nhnacademy.messenger.client.domain.chat.listener.ChatMessageListener;
-import com.nhnacademy.messenger.client.domain.room.listener.ExitRoomListener;
 import com.nhnacademy.messenger.client.domain.room.service.ChatRoomClientService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +16,7 @@ public class RoomChatPanel extends JFrame {
     private static final String TITLE_TEXT = "채팅방";
     private static final String TEXT_SEND = "전송";
     private static final String TEXT_EXIT = "나가기";
+    private static final String TEXT_FILE = "파일";
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 500;
     private static final int TOP_HEIGHT = 40;
@@ -50,8 +49,7 @@ public class RoomChatPanel extends JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
-                new ExitRoomListener(roomId, getContentPane(), chatRoomClientService)
-                        .actionPerformed(null);
+                chatRoomClientService.exitRoom(roomId);
             }
         });
     }
@@ -76,14 +74,6 @@ public class RoomChatPanel extends JFrame {
             messagePanel.removeAll();
             messagePanel.revalidate();
             messagePanel.repaint();
-        }
-
-        // 전송 버튼 리스너 교체
-        if (sendButton != null) {
-            for (ActionListener al : sendButton.getActionListeners()) {
-                sendButton.removeActionListener(al);
-            }
-            sendButton.addActionListener(new ChatMessageListener(roomId, chatInputField));
         }
     }
 
@@ -111,7 +101,7 @@ public class RoomChatPanel extends JFrame {
         JButton exitButton = new JButton(TEXT_EXIT);
         exitButton.setBackground(TRANSPARENT_COLOR);
         exitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, TOP_HEIGHT));
-        exitButton.addActionListener(new ExitRoomListener(roomId, getContentPane(), chatRoomClientService));
+        exitButton.addActionListener(e -> chatRoomClientService.exitRoom(roomId));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         rightPanel.setOpaque(false);
@@ -155,16 +145,39 @@ public class RoomChatPanel extends JFrame {
         // 엔터 입력 시 전송
         chatInputField.addActionListener(e -> sendMessage());
 
+        JButton fileButton = new JButton(TEXT_FILE);
+        fileButton.setBackground(TRANSPARENT_COLOR);
+        fileButton.setForeground(SECONDARY_COLOR);
+        fileButton.setPreferredSize(new Dimension(BUTTON_WIDTH, INPUT_HEIGHT));
+        fileButton.addActionListener(e -> selectAndSendFile());
+
         sendButton = new JButton(TEXT_SEND);
         sendButton.setBackground(TRANSPARENT_COLOR);
         sendButton.setForeground(SECONDARY_COLOR);
         sendButton.setPreferredSize(new Dimension(BUTTON_WIDTH, INPUT_HEIGHT));
         sendButton.addActionListener(e -> sendMessage());
 
+        inputPanel.add(fileButton, BorderLayout.WEST);
         inputPanel.add(chatInputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
         
         return inputPanel;
+    }
+
+    private void selectAndSendFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("전송할 파일 선택");
+        int result = fileChooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            try {
+                chatRoomClientService.sendFile(this.roomId, filePath);
+                JOptionPane.showMessageDialog(this, "파일 전송을 시작합니다: " + fileChooser.getSelectedFile().getName());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "파일 전송 실패: " + e.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void sendMessage() {

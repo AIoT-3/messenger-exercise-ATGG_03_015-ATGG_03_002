@@ -1,11 +1,13 @@
 package com.nhnacademy.messenger.client.domain.chat.handler;
 
+import com.nhnacademy.messenger.client.domain.chat.event.ReceiveFileMessageEvent;
 import com.nhnacademy.messenger.client.domain.chat.event.ReceiveMessageEvent;
 import com.nhnacademy.messenger.client.domain.chat.event.ReceivePrivateMessageEvent;
 import com.nhnacademy.messenger.client.network.ResponseHandler;
 import com.nhnacademy.messenger.common.event.EventBus;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.data.push.PushNewMessage;
+import com.nhnacademy.messenger.common.message.data.push.PushMessageType;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +17,18 @@ public class PushMessageHandler implements ResponseHandler {
     public void handle(Message message) {
         try {
             PushNewMessage data = (PushNewMessage) MessageConverter.toData(message);
+
+            if (data.type() == PushMessageType.FILE) {
+                EventBus.INSTANCE.publish(new ReceiveFileMessageEvent(
+                        data.roomId(),
+                        data.messageId(),
+                        data.senderId(),
+                        data.fileName(),
+                        data.fileSize(),
+                        data.content()
+                ));
+                return;
+            }
 
             // 귓속말 roomId = -1
             if (data.roomId() != null && data.roomId() == -1L) {

@@ -1,5 +1,6 @@
 package com.nhnacademy.messenger.client.session;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 public enum ClientSession {
@@ -9,9 +10,27 @@ public enum ClientSession {
     private final AtomicReference<String> userId = new AtomicReference<>();
     private final AtomicReference<String> userName = new AtomicReference<>();
     private final AtomicReference<Long> currentRoomId = new AtomicReference<>();
+    private final java.util.Map<Long, String> roomNameMap = new ConcurrentHashMap<>();
+    private volatile boolean running = true;
 
     public String getSessionId() {
         return sessionId.get();
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void stop() {
+        this.running = false;
+    }
+
+    public void addRoomName(Long roomId, String roomName) {
+        roomNameMap.put(roomId, roomName);
+    }
+
+    public String getRoomName(Long roomId) {
+        return roomNameMap.getOrDefault(roomId, String.valueOf(roomId));
     }
 
     public void setSessionId(String sessionId) {

@@ -1,13 +1,13 @@
 package com.nhnacademy.messenger.server.chat.handler;
 
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.chat.PrivateChatRequest;
 import com.nhnacademy.messenger.common.message.data.chat.PrivateChatResponse;
 import com.nhnacademy.messenger.common.message.data.error.ErrorCode;
 import com.nhnacademy.messenger.common.message.data.push.PushMessageType;
 import com.nhnacademy.messenger.common.message.data.push.PushNewMessage;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.ResponseHeader;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.network.RequestHandler;
 import com.nhnacademy.messenger.server.session.domain.Session;
@@ -55,10 +55,10 @@ public class PrivateChatRequestHandler implements RequestHandler {
                     0L
             );
 
-            Message pushMessage = new Message(
-                    ResponseHeader.success(MessageType.PUSH_NEW_MESSAGE),
-                    MessageConverter.toJsonNode(pushData)
-            );
+            Message pushMessage = MessageBuilder.with(MessageType.PUSH_NEW_MESSAGE)
+                    .success(true)
+                    .data(pushData)
+                    .build();
             
             receiverSession.sendMessage(pushMessage);
         } else {
@@ -75,9 +75,9 @@ public class PrivateChatRequestHandler implements RequestHandler {
                 messageId
         );
 
-        session.sendMessage(new Message(
-                ResponseHeader.success(MessageType.PRIVATE_MESSAGE_SUCCESS),
-                MessageConverter.toJsonNode(response)
-        ));
+        session.sendMessage(MessageBuilder.with(MessageType.PRIVATE_MESSAGE_SUCCESS)
+                .success(true)
+                .data(response)
+                .build());
     }
 }

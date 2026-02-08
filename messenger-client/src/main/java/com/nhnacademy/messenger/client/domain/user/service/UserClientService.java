@@ -2,10 +2,9 @@ package com.nhnacademy.messenger.client.domain.user.service;
 
 import com.nhnacademy.messenger.client.network.MessageClient;
 import com.nhnacademy.messenger.common.message.Message;
+import com.nhnacademy.messenger.common.message.MessageBuilder;
 import com.nhnacademy.messenger.common.message.data.auth.LoginRequest;
 import com.nhnacademy.messenger.common.message.header.MessageType;
-import com.nhnacademy.messenger.common.message.header.RequestHeader;
-import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import lombok.RequiredArgsConstructor;
 
 import com.nhnacademy.messenger.client.session.ClientSession;
@@ -18,9 +17,9 @@ public class UserClientService {
     private final MessageClient messageClient;
 
     public void login(String userId, String password) {
-        LoginRequest data = new LoginRequest(userId, password);
-        RequestHeader header = RequestHeader.login();
-        Message message = new Message(header, MessageConverter.toJsonNode(data));
+        Message message = MessageBuilder.with(MessageType.LOGIN)
+                .data(new LoginRequest(userId, password))
+                .build();
         
         messageClient.send(message);
     }
@@ -31,8 +30,9 @@ public class UserClientService {
             log.error("세션에 접속되지 않은 상태로 로그아웃을 시도하였습니다.");
             return;
         }
-        RequestHeader header = RequestHeader.of(MessageType.LOGOUT, sessionId);
-        Message message = new Message(header, null);
+        Message message = MessageBuilder.with(MessageType.LOGOUT)
+                .sessionId(sessionId)
+                .build();
 
         messageClient.send(message);
     }
@@ -43,8 +43,9 @@ public class UserClientService {
             log.error("세션에 접속되지 않은 상태로 사용자 목록 조회를 시도하였습니다.");
             return;
         }
-        RequestHeader header = RequestHeader.of(MessageType.USER_LIST, sessionId);
-        Message message = new Message(header, null);
+        Message message = MessageBuilder.with(MessageType.USER_LIST)
+                .sessionId(sessionId)
+                .build();
         messageClient.send(message);
     }
 }

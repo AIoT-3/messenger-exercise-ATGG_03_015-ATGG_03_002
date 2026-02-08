@@ -2,8 +2,8 @@ package com.nhnacademy.messenger.server.chat.handler;
 
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.MessageBuilder;
-import com.nhnacademy.messenger.common.message.data.chat.ChatRequest;
-import com.nhnacademy.messenger.common.message.data.chat.ChatResponse;
+import com.nhnacademy.messenger.common.message.data.file.FileTransferRequest;
+import com.nhnacademy.messenger.common.message.data.file.FileTransferResponse;
 import com.nhnacademy.messenger.common.message.data.push.PushNewMessage;
 import com.nhnacademy.messenger.common.util.converter.MessageConverter;
 import com.nhnacademy.messenger.server.chat.domain.Chat;
@@ -15,38 +15,37 @@ import com.nhnacademy.messenger.server.session.domain.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.nhnacademy.messenger.common.message.header.MessageType.CHAT_MESSAGE_SUCCESS;
+import static com.nhnacademy.messenger.common.message.header.MessageType.FILE_TRANSFER_SUCCESS;
 import static com.nhnacademy.messenger.common.message.header.MessageType.PUSH_NEW_MESSAGE;
 
 @Slf4j
 @RequiredArgsConstructor
-public class ChatRequestHandler implements RequestHandler {
+public class FileTransferRequestHandler implements RequestHandler {
 
     private final ChatService chatService;
     private final ChatRoomService chatRoomService;
 
     @Override
     public void handle(Session session, Message message) {
-
-        // 1. 메시지 데이터 파싱
-        ChatRequest request = (ChatRequest) MessageConverter.toData(message);
+        // 1. 메시지 파싱
+        FileTransferRequest request = (FileTransferRequest) MessageConverter.toData(message);
         Long roomId = request.roomId();
-        String content = request.message();
         String senderId = session.getUser().getUserId();
-        log.debug("채팅 메시지 요청: session={}, roomId={}", session.getId(), roomId);
+        
+        log.debug("파일 전송 요청: roomId={}, fileName={}, size={}", roomId, request.fileName(), request.fileSize());
 
-        // 2. 메시지 저장
-        Chat chat = chatService.saveTextMessage(roomId, senderId, content);
+        // 2. 메시지 저장 (Base64 데이터를 content에 저장)
+        Chat chat = chatService.saveFileMessage(roomId, senderId, request.fileName(), request.fileSize(), request.fileData());
 
-        // 3. 채팅방 조회 및 브로드캐스트
+        // 3. 브로드캐스트
         ChatRoom room = chatRoomService.getChatRoomById(roomId);
-
+        
         PushNewMessage pushData = new PushNewMessage(
                 chat.getRoomId(),
                 chat.getMessageId(),
                 chat.getSenderId(),
-                chat.getContent(),
-                chat.getType(),
+                chat.getContent(), // Base64 data
+                chat.getType(),    // PushMessageType.FILE
                 chat.getFileName(),
                 chat.getFileSize()
         );
@@ -58,13 +57,18 @@ public class ChatRequestHandler implements RequestHandler {
 
         room.broadcast(pushMessage);
 
-        // 4. 클라이언트에 성공 응답 전송
-        ChatResponse responseData = new ChatResponse(roomId, chat.getMessageId());
-        session.sendMessage(MessageBuilder.with(CHAT_MESSAGE_SUCCESS)
+        // 4. 응답 전송
+        FileTransferResponse responseData = new FileTransferResponse(
+                roomId,
+                chat.getMessageId(),
+                chat.getFileName()
+        );
+
+        session.sendMessage(MessageBuilder.with(FILE_TRANSFER_SUCCESS)
                 .success(true)
                 .data(responseData)
                 .build());
-
-        log.debug("채팅 메시지 처리 완료: roomId={}, messageId={}", roomId, chat.getMessageId());
+        
+        log.info("파일 전송 완료: roomId={}, messageId={}", roomId, chat.getMessageId());
     }
 }
