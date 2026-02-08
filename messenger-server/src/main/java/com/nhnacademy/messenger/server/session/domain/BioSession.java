@@ -77,25 +77,10 @@ public class BioSession implements Session, Runnable {
     public void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    // 1. 메시지 수신
-                    Message request = reader.readMessage();
-                    // 2. 공통 규칙 검사
-                    validateMessage(request);
-                    // 3. 메시지 디스패치
-                    messageDispatcher.dispatch(this, request);
-
-                } catch (MessageConvertException e) {
-                    sendError(REQUEST_INVALID_MESSAGE,
-                            "메시지 형식이 올바르지 않습니다. 요청을 다시 확인해주세요.");
-
-                } catch (MessengerException e) {
-                    sendError(e.getErrorCode(), e.getMessage());
-
-                } catch (RuntimeException e) {
-                    sendError(INTERNAL_SERVER_ERROR,
-                            "서버 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-                }
+                // 1. 메시지 수신
+                Message request = reader.readMessage();
+                // 2. 통합된 메시지 처리 로직 호출
+                processRequest(request);
             }
         } catch (EOFException e) {
             log.info("클라이언트가 연결을 종료했습니다.");
@@ -103,6 +88,28 @@ public class BioSession implements Session, Runnable {
             log.error("통신 오류: {}", e.getMessage());
         } finally {
             disconnect();
+        }
+    }
+
+    @Override
+    public void processRequest(Message message) {
+        try {
+            // 1. 공통 규칙 검사
+            validateMessage(message);
+            // 2. 메시지 디스패치
+            messageDispatcher.dispatch(this, message);
+
+        } catch (MessageConvertException e) {
+            sendError(REQUEST_INVALID_MESSAGE,
+                    "메시지 형식이 올바르지 않습니다. 요청을 다시 확인해주세요.");
+
+        } catch (MessengerException e) {
+            sendError(e.getErrorCode(), e.getMessage());
+
+        } catch (RuntimeException e) {
+            log.error("메시지 처리 중 예기치 못한 오류", e);
+            sendError(INTERNAL_SERVER_ERROR,
+                    "서버 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
         }
     }
 

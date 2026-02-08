@@ -26,5 +26,6 @@ public interface Session {
     void logout();
     
     void validateMessage(Message message);
+    void processRequest(Message message); // 메시지 처리 및 에러 응답 전담
     void disconnect();
 }

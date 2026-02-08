@@ -1,6 +1,7 @@
 package com.nhnacademy.messenger.server.session.domain;
 
 import com.nhnacademy.messenger.common.event.EventBus;
+import com.nhnacademy.messenger.common.exception.MessageConvertException;
 import com.nhnacademy.messenger.common.exception.MessengerException;
 import com.nhnacademy.messenger.common.message.Message;
 import com.nhnacademy.messenger.common.message.MessageBuilder;
@@ -11,6 +12,7 @@ import com.nhnacademy.messenger.common.message.header.RequestHeader;
 import com.nhnacademy.messenger.common.util.reader.nio.NioMessageReader;
 import com.nhnacademy.messenger.common.util.writer.MessageWriter;
 import com.nhnacademy.messenger.common.util.writer.nio.NioMessageWriter;
+import com.nhnacademy.messenger.server.network.MessageDispatcher;
 import com.nhnacademy.messenger.server.session.event.SessionDisconnectedEvent;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.domain.User;
@@ -31,8 +33,7 @@ import static com.nhnacademy.messenger.common.message.data.error.ErrorCode.*;
  * NioSession
  * 역할
  * 1. NIO 채널 기반 메시지 수신/전송
- * 2. 공통 규칙 검사 (sessionId 검사, 세션 무결성)
- * 3. 중앙 에러 응답 생성
+ * 2. 통합 에러 처리 및 메시지 디스패치 전담
  */
 @Slf4j
 public class NioSession implements Session {
@@ -50,30 +51,49 @@ public class NioSession implements Session {
     private final NioMessageReader reader;
     private final MessageWriter writer;
 
+    private final MessageDispatcher messageDispatcher;
     private final SessionManager sessionManager;
     
-    // 가상 스레드 친화적인 ReentrantLock 사용 (버퍼 조작 동기화)
     public final ReentrantLock lock = new ReentrantLock();
 
     public NioSession(
             SocketChannel channel,
+            MessageDispatcher messageDispatcher,
             SessionManager sessionManager
     ) {
         this.channel = channel;
+        this.messageDispatcher = messageDispatcher;
         this.sessionManager = sessionManager;
         this.reader = new NioMessageReader();
         this.writer = new NioMessageWriter(channel);
     }
 
-    /**
-     * 채널에서 메시지 읽기 수행 (NioMessageReader에 위임)
-     */
     public Message readMessage() throws IOException {
         lock.lock();
         try {
             return reader.read(channel);
         } finally {
             lock.unlock();
+        }
+    }
+
+    @Override
+    public void processRequest(Message message) {
+        try {
+            // 1. 공통 규칙 검사
+            validateMessage(message);
+            // 2. 메시지 디스패치
+            messageDispatcher.dispatch(this, message);
+
+        } catch (MessageConvertException e) {
+            sendError(REQUEST_INVALID_MESSAGE, "메시지 형식이 올바르지 않습니다.");
+
+        } catch (MessengerException e) {
+            sendError(e.getErrorCode(), e.getMessage());
+
+        } catch (RuntimeException e) {
+            log.error("NIO 메시지 처리 중 예기치 못한 오류", e);
+            sendError(INTERNAL_SERVER_ERROR, "서버 처리 중 오류가 발생했습니다.");
         }
     }
 
@@ -133,7 +153,6 @@ public class NioSession implements Session {
         if (Objects.nonNull(this.id)) {
             sessionManager.removeSession(this.id);
         }
-        // 로그아웃 시 리소스 정리를 위해 이벤트 발행
         EventBus.INSTANCE.publish(new SessionDisconnectedEvent(this));
         
         this.user = null;
@@ -149,7 +168,7 @@ public class NioSession implements Session {
         }
 
         if (!(message.header() instanceof RequestHeader requestHeader)) {
-            throw new MessengerException(REQUEST_INVALID_MESSAGE, "요청 헤더 형식이 아닙니다.");
+            throw new MessengerException(REQUEST_INVALID_MESSAGE, "요청 형식이 아닙니다.");
         }
 
         if (requestHeader.type() == MessageType.LOGIN) {
@@ -185,7 +204,6 @@ public class NioSession implements Session {
         
         try {
             channel.close();
-            // 기존 이벤트 핸들러와 호환되도록 이벤트 발행
             EventBus.INSTANCE.publish(new SessionDisconnectedEvent(this));
         } catch (IOException e) {
             // 무시
