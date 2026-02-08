@@ -9,7 +9,7 @@ import com.nhnacademy.messenger.server.room.handler.*;
 import com.nhnacademy.messenger.server.room.repository.impl.InMemoryChatRoomRepository;
 import com.nhnacademy.messenger.server.room.service.ChatRoomService;
 import com.nhnacademy.messenger.server.room.service.impl.ChatRoomServiceImpl;
-import com.nhnacademy.messenger.server.session.domain.Session;
+import com.nhnacademy.messenger.server.session.domain.BioSession;
 import com.nhnacademy.messenger.server.session.manager.SessionManager;
 import com.nhnacademy.messenger.server.user.handler.*;
 import com.nhnacademy.messenger.server.user.repository.impl.InMemoryUserRepository;
@@ -80,8 +80,8 @@ public class MessageServer implements Runnable {
                 Socket socket = serverSocket.accept();
                 log.info("새로운 클라이언트 연결됨: {}", socket.getRemoteSocketAddress());
                 try {
-                    Session session = new Session(
-                            socket, messageDispatcher, sessionManager); // userService 제거됨
+                    BioSession session = new BioSession(
+                            socket, messageDispatcher, sessionManager);
                     Thread.ofVirtual().start(session);
                 } catch (Exception e) {
                     log.error("세션 초기화 중 오류 발생: {}", e.getMessage());
